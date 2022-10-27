@@ -26,11 +26,11 @@ module.exports = function (req, res, next) {
             }
         }
     } else {
-        return res.badRequest(Utils.jsonErr('NO_AUTHORIZATINO_HEADER_FOUND'));
+        return res.unauthorized(Utils.jsonErr("UNAUTHORIZED"));
     }
 
     if (!token) {
-        return res.badRequest(Utils.jsonErr('FORMAT_IS_AUTHORIZATION:BEARER_[TOKEN]'));
+        return res.unauthorized(Utils.jsonErr('INVALID_TOKEN'));
     }
 
     UserManager
@@ -45,7 +45,7 @@ module.exports = function (req, res, next) {
                 case API_ERRORS.USER_NOT_FOUND:
                 case API_ERRORS.USER_LOCKED:
                 default:
-                    return res.badRequest(Utils.jsonErr('INVALID_TOKEN'));
+                    return res.unauthorized(Utils.jsonErr('INVALID_TOKEN'));
             }
         });
 };

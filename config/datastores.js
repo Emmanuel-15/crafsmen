@@ -49,7 +49,7 @@ module.exports.datastores = {
          *                                                                          *
          ***************************************************************************/
         adapter: 'sails-postgresql',
-        url: 'postgres://pjdljwhjzrrylo:50d11dc215e60891597adcc866e095987a9d97d2a2ae05769f84dfab8d935514@ec2-54-147-36-107.compute-1.amazonaws.com:5432/d91erbfsj619du',
+        url: 'postgres://xlyansimryoyuu:234788169663200d0eaabacb0744ba4f4f11be4edce5eb42d7ef51d773c951cd@ec2-54-86-214-124.compute-1.amazonaws.com:5432/demgsln5timh29',
 
         ssl: { sslmode: 'require', rejectUnauthorized: false },
 

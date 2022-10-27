@@ -1,5 +1,5 @@
 /**
- * Bill.js
+ * Car_category.js
  *
  * @description :: A model definition represents a database table/collection.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
@@ -7,7 +7,7 @@
 
 module.exports = {
 
-  primaryKey: 'bill_id',
+  primaryKey: 'carCategoryId',
 
   attributes: {
 
@@ -29,71 +29,51 @@ module.exports = {
     updatedAt: false,
     id: false,
 
-    bill_id: {
+    carCategoryId: {
       type: 'number',
-      autoIncrement: true
+      autoIncrement: true,
+      columnName: 'car_category_id'
     },
 
-    bill_amount: {
-      type: 'number',
-      columnType: 'float'
+    carCategoryName: {
+      type: 'string',
+      columnName: 'car_category_name',
+      required: true
     },
 
-    payment_type: {
-      type: 'string'
+    carCategorySlug: {
+      type: 'string',
+      columnName: 'car_category_slug',
+      required: true
     },
 
-    pickup_price: {
-      type: 'number',
-      columnType: 'float'
-    },
-
-    drop_price: {
-      type: 'number',
-      columnType: 'float'
-    },
-
-    base_fare: {
-      type: 'number',
-      columnType: 'float'
-    },
-
-    tax_amount: {
-      type: 'number',
-      columnType: 'float'
-    },
-
-    cdw_insurance_amt: {
-      type: 'number',
-      columnType: 'float'
-    },
-
-    securityDepositAmt: {
-      type: 'number',
-      columnType: 'float'
-    },
-
-    other_details: {
-      type: 'string'
-    },
-
-    sub_total: {
-      type: 'number',
-      columnType: 'float'
-    },
-
-    created_date: {
-      type: 'number',
-      autoCreatedAt: true
-    },
-
-    modified_date: {
+    createdDate: {
       type: 'ref',
       columnType: 'timestamptz',
-      autoCreatedAt: true
+      autoCreatedAt: true,
+      columnName: 'created_date'
+    },
+
+    modifiedDate: {
+      type: 'ref',
+      columnType: 'timestamptz',
+      autoUpdatedAt: true,
+      columnName: 'modified_date'
     }
 
   },
 
-};
+  beforeCreate: function (values, next) {
+    console.log("I am values: ", values);
 
+    next();
+
+  },
+
+
+  customToJSON: function () {
+    // Return a shallow copy of this record with the password and ssn removed.
+    return _.omit(this, ['createdDate', 'modifiedDate'])
+  }
+
+};

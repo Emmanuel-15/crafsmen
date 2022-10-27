@@ -67,7 +67,7 @@ module.exports = {
 
         user_email: {
             type: 'string',
-            // isEmail: true,
+            isEmail: true,
             unique: true
         },
 

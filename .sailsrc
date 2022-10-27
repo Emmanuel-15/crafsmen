@@ -6,7 +6,7 @@
     "sails": "1.5.2",
     "sails-generate": "2.0.6"
   },
-  "hooks": {
-    "grunt": false
+  "paths": {
+    "public": "uploads"
   }
 }

@@ -17,4 +17,31 @@ module.exports.routes = {
     'POST   /api/v1/entrance/refreshToken': { controller: 'UserController', action: 'refreshToken' },
     'PUT   /api/v1/entrance/changePassword': { controller: 'UserController', action: 'changePassword' },
 
+
+    //car category
+    'GET    /api/v1/entrance/car-category': { controller: 'CarcategoryController', action: 'getAll' },
+    'GET    /api/v1/entrance/car-category/:id': { controller: 'CarcategoryController', action: 'get' },
+    'POST    /api/v1/entrance/car-category': { controller: 'CarcategoryController', action: 'create' },
+    'PUT    /api/v1/entrance/car-category/:id': { controller: 'CarcategoryController', action: 'update' },
+    'DELETE    /api/v1/entrance/car-category/:id': { controller: 'CarcategoryController', action: 'delete' },
+
+
+    //car model
+    'GET    /api/v1/entrance/car-model': { controller: 'carmodelController', action: 'getAll' },
+    'GET    /api/v1/entrance/car-model/:id': { controller: 'carmodelController', action: 'get' },
+    'POST    /api/v1/entrance/car-model': { controller: 'carmodelController', action: 'create' },
+    'PUT    /api/v1/entrance/car-model/:id': { controller: 'carmodelController', action: 'update' },
+    'DELETE    /api/v1/entrance/car-model/:id': { controller: 'carmodelController', action: 'delete' },
+
+
+    //car
+    'GET    /api/v1/entrance/car': { controller: 'carController', action: 'getAll' },
+    'GET    /api/v1/entrance/car/:id': { controller: 'carController', action: 'get' },
+    'POST    /api/v1/entrance/car': { controller: 'carController', action: 'create' },
+    'PUT    /api/v1/entrance/car/:id': { controller: 'carController', action: 'update' },
+    'DELETE    /api/v1/entrance/car/:id': { controller: 'carController', action: 'delete' },
+
+    //generic controller
+    'POST    /api/v1/entrance/upload': { controller: 'GenericController', action: 'upload' },
+
 };

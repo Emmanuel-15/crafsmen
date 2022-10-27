@@ -47,7 +47,7 @@ module.exports = {
      * @returns {*}
      */
     create: function (req, res) {
-        if (!req.body || Object.keys(req.body).length <= 0)
+        if (!req.body || _.keys(req.body).length <= 0)
             return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
 
         const email = req.body.email;
@@ -74,9 +74,7 @@ module.exports = {
                 password
             })
             .then(jwToken => {
-                res.created({
-                    token: jwToken
-                });
+                res.created('USER_CREATED_SUCCESSFULLY', jwToken);
             })
             .catch(err => {
                 if (err == API_ERRORS.USERNAME_IN_USE) {
@@ -84,6 +82,9 @@ module.exports = {
 
                 } else if (err === API_ERRORS.EMAIL_IN_USE) {
                     return res.badRequest(Utils.jsonErr('THIS_EMAIL_IS_ALREADY_IN_USE'));
+
+                } else if (err === API_ERRORS.EXCEPTION) {
+                    return res.serverError(Utils.jsonErr("EXCEPTION"));
 
                 } else {
                     return res.serverError(Utils.jsonErr(err));
@@ -98,7 +99,7 @@ module.exports = {
      * @returns {*}
      */
     login: function (req, res) {
-        if (!req.body || Object.keys(req.body).length <= 0)
+        if (!req.body || _.keys(req.body).length <= 0)
             return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
 
 
@@ -109,6 +110,7 @@ module.exports = {
 
         if (!password)
             return res.badRequest(Utils.jsonErr('PASSWORD_IS_REQUIRED'));
+
 
         if (validator.isEmail(username))
             isEmail = true;
@@ -133,6 +135,8 @@ module.exports = {
                         return res.badRequest(Utils.jsonErr('INVALID_EMAIL_OR_PASSWORD'));
                     case API_ERRORS.USER_LOCKED:
                         return res.forbidden(Utils.jsonErr('ACCOUNT_LOCKED'));
+                    case API_ERRORS.EXCEPTION:
+                        return res.serverError(Utils.jsonErr("EXCEPTION"));
                     default:
                         /* istanbul ignore next */
                         return res.serverError(Utils.jsonErr(err));
@@ -178,8 +182,9 @@ module.exports = {
                     case API_ERRORS.USER_LOCKED:
                         return res.forbidden(Utils.jsonErr('ACCOUNT_LOCKED'));
                     case API_ERRORS.INACTIVE_TOKEN:
-                        console.log("I am fired")
                         return res.badRequest(Utils.jsonErr("INACTIVE_TOKEN"));
+                    case API_ERRORS.EXCEPTION:
+                        return res.serverError(Utils.jsonErr("EXCEPTION"));
                     default:
                         /* istanbul ignore next */
                         return res.serverError(Utils.jsonErr(err));
@@ -264,6 +269,9 @@ module.exports = {
 
                     case API_ERRORS.INVALID_PASSWORD:
                         return res.badRequest(Utils.jsonErr('INVALID_USERNAME/EMAIL_OR_PASSWORD'));
+
+                    case API_ERRORS.EXCEPTION:
+                        return res.serverError(Utils.jsonErr("EXCEPTION"));
 
                     default:
                         return res.serverError(Utils.jsonErr(err));

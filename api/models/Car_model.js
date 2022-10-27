@@ -1,5 +1,5 @@
 /**
- * Bill.js
+ * Car_model.js
  *
  * @description :: A model definition represents a database table/collection.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
@@ -7,7 +7,7 @@
 
 module.exports = {
 
-  primaryKey: 'bill_id',
+  primaryKey: 'carModelId',
 
   attributes: {
 
@@ -29,70 +29,57 @@ module.exports = {
     updatedAt: false,
     id: false,
 
-    bill_id: {
+    carModelId: {
       type: 'number',
-      autoIncrement: true
+      autoIncrement: true,
+      columnName: 'car_model_id'
     },
 
-    bill_amount: {
-      type: 'number',
-      columnType: 'float'
+    carCategoryId: {
+      // type: 'number'
+      type: 'ref',
+      columnType: 'int',
+      columnName: 'car_category_id'
     },
 
-    payment_type: {
+    carModelName: {
       type: 'string'
+      , columnName: 'car_model_name'
     },
 
-    pickup_price: {
-      type: 'number',
-      columnType: 'float'
-    },
-
-    drop_price: {
-      type: 'number',
-      columnType: 'float'
-    },
-
-    base_fare: {
-      type: 'number',
-      columnType: 'float'
-    },
-
-    tax_amount: {
-      type: 'number',
-      columnType: 'float'
-    },
-
-    cdw_insurance_amt: {
-      type: 'number',
-      columnType: 'float'
+    carModelSlug: {
+      type: 'string',
+      columnName: 'car_model_slug'
     },
 
     securityDepositAmt: {
       type: 'number',
-      columnType: 'float'
+      columnName: 'security_deposit_amt'
     },
 
-    other_details: {
-      type: 'string'
+    isActive: {
+      type: 'boolean',
+      columnName: 'is_active'
     },
 
-    sub_total: {
-      type: 'number',
-      columnType: 'float'
+    modelImage: {
+      type: 'string',
+      columnName: 'model_image'
     },
 
-    created_date: {
-      type: 'number',
-      autoCreatedAt: true
-    },
-
-    modified_date: {
+    createdDate: {
       type: 'ref',
       columnType: 'timestamptz',
-      autoCreatedAt: true
-    }
+      autoCreatedAt: true,
+      columnName: 'created_date'
+    },
 
+    modifiedDate: {
+      type: 'ref',
+      columnType: 'timestamptz',
+      autoUpdatedAt: true,
+      columnName: 'modified_date'
+    }
   },
 
 };
