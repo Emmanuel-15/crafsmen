@@ -6,9 +6,7 @@
  */
 
 const API_ERRORS = require("../constants/APIErrors");
-const test = require("../helpers/test");
 const CarManager = require("../services/CarManager");
-const universalManager = require("../services/universalManager");
 const Utils = require("../services/Utils");
 
 
@@ -36,27 +34,17 @@ module.exports = {
 
 
     get: async function (req, res) {
-        // const valid = await universalManager
-        //     .isValidRequest(req, res, 'GET', true, false)
-        //     .catch(err => {
-        //         console.log("I am in catch block", err)
-        //         switch (err) {
-        //             case API_ERRORS.NOT_ALLOWED:
-        //                 return res.badRequest(Utils.jsonErr("ONLY_JPEG_&_PNG_FILES_ALLOWED"));
-        //             default:
-        //                 return res.badRequest(Utils.jsonErr("ERROR_CREATING_CAR"));
-        //         }
-        //     })
+        await Utils.isValidRequest(req, res, 'GET', true, false);
 
-        if (req.method !== 'GET')
-            return res.notFound();
+        // if (req.method !== 'GET')
+        //     return res.notFound();
 
 
-        if (!req.param || _.isEmpty(req.param) == 0)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        // if (!req.param || _.isEmpty(req.param) == 0)
+        //     return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
 
 
-        if (!_.isNumber(req.param('id')))
+        if (isNaN(req.param('id')))
             return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
 
 
@@ -77,37 +65,41 @@ module.exports = {
 
 
     create: async function (req, res) {
-        if (req.method !== 'POST')
-            return res.notFound();
+        await Utils.isValidRequest(req, res, 'POST', false, true);
+
+        // if (req.method !== 'POST')
+        //     return res.notFound();
 
 
-        if (!req.param || _.isEmpty(req.param) == 0)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        // if (!req.param || _.isEmpty(req.param) == 0)
+        //     return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
 
+        console.log("Started newCar registration process.");
         const newCar = {
             carModelId: req.body.carModelId,
             carRegistrationNumber: req.body.carRegistrationNumber,
             carDescription: req.body.carDescription,
             carImage: '',
-            carCapacity: req.body.carCapacity,
-            heavyLuggage: req.body.heavyLuggage,
-            lightLuggage: req.body.lightLuggage,
-            fuelType: req.body.fuelType,
-            musicSystem: req.body.musicSystem,
-            airConditioning: req.body.airConditioning,
+            carCapacity: req.body.otherDetails.carCapacity,
+            heavyLuggage: req.body.otherDetails.heavyLuggage,
+            lightLuggage: req.body.otherDetails.lightLuggage,
+            fuelType: req.body.otherDetails.fuelType,
+            musicSystem: req.body.otherDetails.musicSystem,
+            airConditioning: req.body.otherDetails.airConditioning,
             isTrash: false,
             isActive: true,
             isDeleted: false,
-            cdwInsurance: req.body.cdwInsurance,
-            cdwInsuranceAmt: req.body.cdwInsuranceAmt,
-            hasAirbags: req.body.hasAirbags,
-            tubelessTyres: req.body.tubelessTyres,
-            hasGps: req.body.hasGps,
-            hasSunroof: req.body.hasSunroof,
-            carPaintColor: req.body.carPaintColor,
-            isAutomatic: req.body.isAutomatic,
-            electricKmRange: req.body.electricKmRange
+            cdwInsurance: req.body.otherDetails.cdwInsurance,
+            cdwInsuranceAmt: req.body.otherDetails.cdwInsuranceAmt,
+            hasAirbags: req.body.otherDetails.hasAirbags,
+            tubelessTyres: req.body.otherDetails.tubelessTyres,
+            hasGps: req.body.otherDetails.hasGps,
+            hasSunroof: req.body.otherDetails.hasSunroof,
+            carPaintColor: req.body.otherDetails.carPaintColor,
+            isAutomatic: req.body.otherDetails.isAutomatic,
+            electricKmRange: req.body.otherDetails.electricKmRange
         };
+
 
         if (!_.isNumber(newCar.carCapacity) || !_.isNumber(newCar.heavyLuggage) || !_.isNumber(newCar.lightLuggage) || !_.isNumber(newCar.fuelType))
             return res.badRequest(Utils.jsonErr("INVALID_INPUT"));

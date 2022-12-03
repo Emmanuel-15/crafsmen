@@ -98,7 +98,7 @@ module.exports = {
      * @param res
      * @returns {*}
      */
-    login: function (req, res) {
+    login: async function (req, res) {
         if (!req.body || _.keys(req.body).length <= 0)
             return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
 
@@ -122,12 +122,17 @@ module.exports = {
                 return res.badRequest(Utils.jsonErr('INVALID_EMAIL'));
         }
 
-        UserManager
+        console.log("before:::");
+        await UserManager
             .authenticateUserByPassword(username, password, isEmail)
             .then((token) => {
-                res.ok('USER_TOKEN', token);
+                console.log("sending user token");
+                return res.ok('USER_TOKEN', token);
+                console.log("sent");
             })
             .catch(err => {
+                console.log("i am in catch.");
+
                 switch (err) {
                     case API_ERRORS.INVALID_EMAIL_PASSWORD:
                         return res.badRequest(Utils.jsonErr('INVALID_EMAIL_OR_PASSWORD'));
@@ -142,6 +147,10 @@ module.exports = {
                         return res.serverError(Utils.jsonErr(err));
                 }
             });
+
+
+        console.log("after:::");
+        return res.ok("second response");
     },
 
     /**
