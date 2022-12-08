@@ -10,7 +10,7 @@
 
 const UserController = require("../api/controllers/UserController");
 
-module.exports.routes = {
+module.exports.routes = {  //this is develop.
     //user
     'POST   /api/v1/entrance/login': { controller: 'UserController', action: 'login' },
     'POST   /api/v1/entrance/create': { controller: 'UserController', action: 'create' },
