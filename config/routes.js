@@ -10,7 +10,7 @@
 
 const UserController = require("../api/controllers/UserController");
 
-module.exports.routes = {
+module.exports.routes = { //delete main and create master branch
     //user
     'POST   /api/v1/entrance/login': { controller: 'UserController', action: 'login' },
     'POST   /api/v1/entrance/create': { controller: 'UserController', action: 'create' },
