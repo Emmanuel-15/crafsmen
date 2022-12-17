@@ -53,7 +53,8 @@ module.exports = {
             // url: 'postgresql://postgres:password@localhost:5432/prosourcing_hub',
 
             adapter: 'sails-postgresql',
-            url: 'postgres://xlyansimryoyuu:234788169663200d0eaabacb0744ba4f4f11be4edce5eb42d7ef51d773c951cd@ec2-54-86-214-124.compute-1.amazonaws.com:5432/demgsln5timh29',
+            url: 'postgres://crafsmen:fRLyPGN0SPjRnjwhYWwVTVUNbM8ILm7c@dpg-ceepuvta499e21p87jag-a.singapore-postgres.render.com/crafsmen',
+
 
 
             // adapter: 'sails-mysql',
@@ -158,7 +159,7 @@ module.exports = {
          ***************************************************************************/
         cors: {
             allowOrigins: [
-                'https://prosourcinghubbackend.herokuapp.com',
+                'https://crafsmen-backend-server.onrender.com',
             ]
         },
 
@@ -260,7 +261,7 @@ module.exports = {
          *                                                                          *
          ***************************************************************************/
         onlyAllowOrigins: [
-            'https://prosourcinghubbackend.herokuapp.com',
+            'https://crafsmen-backend-server.onrender.com',
             //   'https://staging.example.com',
         ],
 

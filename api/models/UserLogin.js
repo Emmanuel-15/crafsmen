@@ -106,6 +106,11 @@ module.exports = {
             type: 'string'
         },
 
+        is_admin: {
+            type: 'number',
+            columnType: 'smallint'
+        },
+
         reset_password: {
             type: 'number',
             columnType: 'smallint'
