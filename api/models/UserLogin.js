@@ -20,10 +20,7 @@ function generatePasswordHash(password) {
 
 module.exports = {
 
-    primaryKey: 'userId',
-
     attributes: {
-
         //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
         //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
         //  ╩  ╩╚═╩╩ ╩╩ ╩ ╩ ╚╝ ╚═╝╚═╝
@@ -38,99 +35,72 @@ module.exports = {
         //  ╠═╣╚═╗╚═╗║ ║║  ║╠═╣ ║ ║║ ║║║║╚═╗
         //  ╩ ╩╚═╝╚═╝╚═╝╚═╝╩╩ ╩ ╩ ╩╚═╝╝╚╝╚═╝
 
-        createdAt: false,
-        updatedAt: false,
-        id: false,
+        // id: {
+        //     model: 'requirements',
+        //     type: 'number',
+        //     autoIncrement: true,
+        //     required: true,
+        //     collection: 'requirements',
+        //     via: 'userloginId'
+        // },
 
-        userId: {
-            type: 'number',
-            autoIncrement: true,
-            columnName: 'user_id'
-            // size: 100
+        user_nicename: {
+            type: 'string',
+            maxLength: 250
         },
 
-        loginUsername: {
+        login_username: {
             type: 'string',
             unique: true,
-            columnName: 'login_username'
+            maxLength: 250
         },
 
-        loginPassword: {
+        login_password: {
             type: 'string',
-            columnName: 'login_password'
+            maxLength: 250
         },
 
-        userName: {
-            type: 'string',
-            columnName: 'user_name'
-        },
-
-        userAddress: {
-            type: 'string',
-            columnName: 'user_address'
-        },
-
-        userEmail: {
+        user_email: {
             type: 'string',
             isEmail: true,
             unique: true,
-            columnName: 'user_email'
+            maxLength: 250
         },
 
-        userContactNumber: {
+        is_admin: {
+            type: 'boolean'
+        },
+
+        user_designation: {
             type: 'string',
-            columnName: 'user_contact_number'
+            maxLength: 250
         },
 
-        userGender: {
-            type: 'number',
-            columnType: 'smallint',
-            columnName: 'user_gender'
-        },
-
-        createdDate: {
-            type: 'ref',
-            columnType: 'timestamptz',
-            autoCreatedAt: true,
-            columnName: 'created_date'
-        },
-
-        modifiedDate: {
-            type: 'ref',
-            columnType: 'timestamptz',
-            autoUpdatedAt: true,
-            columnName: 'modified_date'
-        },
-
-        dtLastLogin: {
-            type: 'ref',
-            columnType: 'timestamptz',
-            // defaultsTo: '0000-00-00 00:00:00',
-            columnName: 'dt_last_login'
-        },
-
-        userImage: {
+        user_profile_img: {
             type: 'string',
-            columnName: 'user_image'
+            maxLength: 250,
+            example: ''
         },
 
-        hashCode: {
-            type: 'string',
-            columnName: 'hash_code'
+        is_deleted: {
+            type: 'boolean'
         },
 
-        isAdmin: {
-            type: 'number',
-            columnType: 'smallint',
-            columnName: 'is_admin'
+        reset_password: {
+            type: 'boolean'
         },
 
-        resetPassword: {
-            type: 'number',
-            columnType: 'smallint',
-            columnName: 'reset_password'
+        reset_password_datetime: {
+            type: 'number'
+        },
+
+        dt_last_login: {
+            type: 'number'
+        },
+
+        user_created_date: {
+            type: 'number'
         }
-
     },
 
 
@@ -143,20 +113,27 @@ module.exports = {
         return bcrypt.compare(password, usr_password);
     },
 
+    // customToJSON: function (user) {
+    //     return {
+    //         id: user.id,
+    //         username: user.login_username
+    //     };
+    // },
 
     customToJSON: function () {
-        // Return a shallow copy of this record with the loginPassword removed.
-        return _.omit(this, ['userId', 'loginUsername', 'loginPassword', 'userName', 'userAddress',
-            'userEmail', 'userContactNumber', 'userGender', 'createdDate', 'modifiedDate', 'dtLastLogin',
-            'userImage', 'hashCode', 'isAdmin', 'resetPassword']);
+        // Return a shallow copy of this record with the password and ssn removed.
+        return _.omit(this, ['createdAt', 'updatedAt', 'login_password', 'user_email',
+            'is_admin', 'user_designation', 'user_profile_img', 'is_deleted', 'reset_password',
+            'reset_password_datetime', 'dt_last_login', 'user_created_date'])
     },
 
 
     beforeCreate: function (values, next) {
-        generatePasswordHash(values.loginPassword)
+
+        generatePasswordHash(values.login_password)
             .then(hash => {
-                delete (values.loginPassword);
-                values.loginPassword = hash;
+                delete (values.login_password);
+                values.login_password = hash;
                 next();
             })
             .catch(err => {
@@ -164,5 +141,4 @@ module.exports = {
                 next(err);
             });
     }
-
 };

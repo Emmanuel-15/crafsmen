@@ -10,38 +10,30 @@
 
 const UserController = require("../api/controllers/UserController");
 
-module.exports.routes = { //delete main and create master branch
+module.exports.routes = {
     //user
     'POST   /api/v1/entrance/login': { controller: 'UserController', action: 'login' },
     'POST   /api/v1/entrance/create': { controller: 'UserController', action: 'create' },
     'POST   /api/v1/entrance/refreshToken': { controller: 'UserController', action: 'refreshToken' },
     'PUT   /api/v1/entrance/changePassword': { controller: 'UserController', action: 'changePassword' },
 
+    //sourcing
+    'GET    /api/v1/entrance/getallsourcing': { controller: 'SourceController', action: 'getallsourcing' },
+    'GET    /api/v1/entrance/getsourcing': { controller: 'SourceController', action: 'getsourcing' },
+    'POST   /api/v1/entrance/sourcing': { controller: 'SourceController', action: 'create' },
+    'PUT   /api/v1/entrance/sourcing': { controller: 'SourceController', action: 'update' },
+    'DELETE   /api/v1/entrance/sourcing': { controller: 'SourceController', action: 'delete' },
 
-    //car category
-    'GET    /api/v1/entrance/car-category': { controller: 'CarcategoryController', action: 'getAll' },
-    'GET    /api/v1/entrance/car-category/:id': { controller: 'CarcategoryController', action: 'get' },
-    'POST    /api/v1/entrance/car-category': { controller: 'CarcategoryController', action: 'create' },
-    'PUT    /api/v1/entrance/car-category/:id': { controller: 'CarcategoryController', action: 'update' },
-    'DELETE    /api/v1/entrance/car-category/:id': { controller: 'CarcategoryController', action: 'delete' },
+    //requirements
+    'GET    /api/v1/entrance/allrequirement': { controller: 'RequirementsController', action: 'getAllRequirement' },
+    'GET    /api/v1/entrance/requirement': { controller: 'RequirementsController', action: 'getRequirement' },
+    'POST   /api/v1/entrance/requirement': { controller: 'RequirementsController', action: 'create' },
+    'PUT    /api/v1/entrance/requirement': { controller: 'RequirementsController', action: 'update' },
+    'DELETE   /api/v1/entrance/requirement': { controller: 'RequirementsController', action: 'delete' },
 
-
-    //car model
-    'GET    /api/v1/entrance/car-model': { controller: 'carmodelController', action: 'getAll' },
-    'GET    /api/v1/entrance/car-model/:id': { controller: 'carmodelController', action: 'get' },
-    'POST    /api/v1/entrance/car-model': { controller: 'carmodelController', action: 'create' },
-    'PUT    /api/v1/entrance/car-model/:id': { controller: 'carmodelController', action: 'update' },
-    'DELETE    /api/v1/entrance/car-model/:id': { controller: 'carmodelController', action: 'delete' },
-
-
-    //car
-    'GET    /api/v1/entrance/car': { controller: 'carController', action: 'getAll' },
-    'GET    /api/v1/entrance/car/:id': { controller: 'carController', action: 'get' },
-    'POST    /api/v1/entrance/car': { controller: 'carController', action: 'create' },
-    'PUT    /api/v1/entrance/car/:id': { controller: 'carController', action: 'update' },
-    'DELETE    /api/v1/entrance/car/:id': { controller: 'carController', action: 'delete' },
-
-    //generic controller
-    'POST    /api/v1/entrance/upload': { controller: 'GenericController', action: 'upload' },
-
+    //comments
+    'GET   /api/v1/entrance/comments/:requirement_id/:step_comment': { controller: 'CommentsController', action: 'getComment' },
+    'POST   /api/v1/entrance/comments': { controller: 'CommentsController', action: 'create' },
+    'PUT   /api/v1/entrance/comments/:comment_id': { controller: 'CommentsController', action: 'update' },
+    'DELETE   /api/v1/entrance/comments/:comment_id': { controller: 'CommentsController', action: 'delete' },
 };

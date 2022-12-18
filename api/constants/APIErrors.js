@@ -10,9 +10,5 @@ module.exports = {
 	USER_NOT_FOUND: 'User not found',
 	INACTIVE_TOKEN: 'Inactive token',
 
-
-	NOT_ALLOWED: 'Only .jpeg & .png files allowed',
-	LARGE_FILE: 'File size limit exceeded',
-	EXCEPTION: 'Error in try catch block',
-
+	NOT_ALLOWED: 'Only .jpeg & .png files allowed.',
 };

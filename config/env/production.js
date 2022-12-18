@@ -53,7 +53,7 @@ module.exports = {
             // url: 'postgresql://postgres:password@localhost:5432/prosourcing_hub',
 
             adapter: 'sails-postgresql',
-            url: 'postgres://xlyansimryoyuu:234788169663200d0eaabacb0744ba4f4f11be4edce5eb42d7ef51d773c951cd@ec2-54-86-214-124.compute-1.amazonaws.com:5432/demgsln5timh29',
+            url: 'postgres://xhfxfyqnfemdiw:fa51560b6382f231015cbab163cb26c7d21fc50ee938043c0d431c500f8e2207@ec2-52-203-118-49.compute-1.amazonaws.com:5432/d8qt2plc5ob409',
 
 
             // adapter: 'sails-mysql',
@@ -383,7 +383,7 @@ module.exports = {
      *                                                                         *
      ***************************************************************************/
     custom: {
-        baseUrl: 'https://example.com',
+        baseUrl: 'https://prosourcinghubbackend.herokuapp.com',
         internalEmailAddress: 'support@example.com',
 
         // sendgridSecret: 'SG.fake.3e0Bn0qSQVnwb1E4qNPz9JZP5vLZYqjh7sn8S93oSHU',

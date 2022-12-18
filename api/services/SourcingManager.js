@@ -2,7 +2,7 @@
  * Utils
  * @type {object}
  */
-module.exports = {
+ module.exports = {
 
 	/**
 	 * Returns an object with error field for response
