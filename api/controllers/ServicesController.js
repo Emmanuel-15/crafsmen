@@ -13,12 +13,12 @@ module.exports = {
 
 
         try {
-            await Car_category.find()
+            await Services.find({ isActive: true })
                 .exec((err, data) => {
                     if (err || data.length == 0)
-                        return res.ok("NO_CATEGORIES_FOUND");
+                        return res.ok("NO_SERVICES_FOUND");
                     else
-                        return res.ok("CAR_CATEGORIES", data);
+                        return res.ok("SERVICES", data);
                 })
 
         } catch (err) {
@@ -37,18 +37,18 @@ module.exports = {
             return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
 
 
-        if (!_.isNumber(req.param('id')))
+        if (isNaN(req.param('id')))
             return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
 
 
         try {
-            await Car_category
-                .findOne({ carCategoryId: req.param('id') })
+            await Services
+                .findOne({ serviceId: req.param('id'), isActive: true })
                 .exec((err, data) => {
                     if (err || !data)
-                        res.ok("NO_CAR_MODEL_FOUND");
+                        res.ok("NO_SERVICE_FOUND");
                     else
-                        res.ok("CAR_MODELS", data);
+                        res.ok("SERVICE", data);
                 })
 
         } catch (err) {
@@ -66,38 +66,30 @@ module.exports = {
         if (!req.param || _.isEmpty(req.param) == 0)
             return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
 
-        const newCarCategory = {
-            carCategoryName: req.body.carCategoryName,
-            carCategorySlug: req.body.carCategorySlug
+
+        const newService = {
+            serviceTypeId: req.body.serviceTypeId,
+            isActive: true,
+            serviceTitle: req.body.serviceTitle,
+            serviceDescription: req.body.serviceDescription,
+            serviceExcept: req.body.serviceExcept
         };
 
-        const validate = ajv.compile(schema);
-        const valid = validate(newCarCategory);
 
-        if (!valid) {
-            let errors = [];
-
-            validate.errors.forEach((data) => {
-                errors.push(data.message);
-            })
-            return res.badRequest(Utils.jsonErr(errors));
-        }
-
-
-        const check = await Car_category.findOne({ carCategoryName: newCarCategory.carCategoryName });
+        const check = await Services.findOne({ serviceTitle: newService.serviceTitle });
 
         if (check)
-            return res.forbidden(Utils.jsonErr("CAR_CATEGORY_ALREADY_EXISTS"));    //use 403 status code. for already existing 
+            return res.forbidden(Utils.jsonErr("SERVICE_ALREADY_EXISTS"));    //use 403 status code. for already existing 
 
 
         try {
-            await Car_category
-                .create(newCarCategory)
+            await Services
+                .create(newService)
                 .exec((err) => {
                     if (err)
                         return res.badRequest(Utils.jsonErr(err));
                     else
-                        return res.created("CAR_CATEGORY_CREATED");
+                        return res.created("SERVICE_CREATED");
                 })
 
         } catch (err) {
@@ -121,39 +113,37 @@ module.exports = {
 
 
         const id = req.param("id");
-        const updateCarCategory = {
-            carCategoryName: req.body.carCategoryName,
-            carCategorySlug: req.body.carCategorySlug
+        const updateService = {
+            serviceTypeId: req.body.serviceTypeId,
+            serviceTitle: req.body.serviceTitle,
+            serviceDescription: req.body.serviceDescription,
+            serviceExcept: req.body.serviceExcept
         };
 
 
-        if (!_.isNumber(id))
+        if (isNaN(id))
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
 
-        // if (!_.isNumber(updateCarCategory.carCategoryName) || !_.isNumber(updateCarCategory.carCategorySlug)) //lodsh vall..
-        // return res.badRequest(Utils.jsonErr("INVALID_carCategoryName_OR_SLUG"));
-
-
-        const idExists = await Car_category.findOne({ carCategoryId: id });
+        const idExists = await Services.findOne({ serviceTypeId: id, isActive: true });
 
         if (!idExists)
-            return res.badRequest(Utils.jsonErr("NO_CAR_CATEGORY"));
+            return res.badRequest(Utils.jsonErr("NO_SERVICE_FOUND"));
 
 
-        const categoryNameExists = await Car_category.findOne({ carCategoryName: updateCarCategory.carCategoryName });
+        const ServiceExists = await Services.findOne({ serviceTitle: updateService.serviceTitle, isActive: true });
 
-        if (categoryNameExists)
-            return res.badRequest(Utils.jsonErr("CAR_CATEGORY_ALREADY_EXISTS"));
+        if (ServiceExists)
+            return res.badRequest(Utils.jsonErr("SERVICE_ALREADY_EXISTS"));
 
 
         try {
-            await Car_category.updateOne({ carCategoryId: id }).set(updateCarCategory)
+            await Services.updateOne({ serviceId: id }).set(updateService)
                 .exec((err) => {
                     if (err)
-                        return res.badRequest(Utils.jsonErr("ERROR_UPDATING_CAR_CATEGORY"));
+                        return res.badRequest(Utils.jsonErr("ERROR_UPDATING_SERVICE"));
                     else
-                        return res.ok("CAR_CATEGORY_UPDATED");
+                        return res.ok("SERVICE_UPDATED");
                 })
 
         } catch (err) {
@@ -172,28 +162,25 @@ module.exports = {
             return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
 
 
-        if (!_.isNumber(req.param('id')))
+        if (isNaN(req.param('id')))
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
 
-        const check = await Car_category.findOne({ carCategoryId: req.param('id') });
+        const check = await Services.findOne({ serviceId: req.param('id'), isActive: true });
 
         if (!check)
-            return res.badRequest(Utils.jsonErr("CAR_CATEGORY_NOT_FOUND"));
+            return res.badRequest(Utils.jsonErr("SERVICE_NOT_FOUND"));
 
 
         try {
-            Car_category.destroy({ carCategoryId: req.param('id') })
+            Services.updateOne({ serviceId: req.param('id') })
+                .set({ isActive: false })
                 .exec((err) => {
-                    if (err) {
+                    if (err)
+                        return res.badRequest(Utils.jsonErr("ERROR_WHILE_DELETING_SERVICE"));
 
-                        if (err.raw && err.raw.code && err.raw.code === '23503')
-                            return res.badRequest(Utils.jsonErr("CAR_CATEGORY_ALREADY_IN_USE"));
-                        else
-                            return res.badRequest(Utils.jsonErr("ERROR_WHILE_DELETING_CAR_CATEGORY"));
-                    }
 
-                    res.ok("CAR_CATEGORY_DELTED");
+                    res.ok("SERVICE_DELTED");
                 })
         }
         catch (e) {
@@ -203,4 +190,3 @@ module.exports = {
     }
 
 };
-
