@@ -13,7 +13,6 @@ module.exports = {
 		return {
 			err_msg: errorMessage
 		};
-<<<<<<< HEAD
 	},
 
 	isValidRequest(req, res, requestType, hasParams, hasBody) {
@@ -51,7 +50,5 @@ module.exports = {
 		else {
 			return res.ok("done");
 		}
-=======
->>>>>>> e7073c0411dfbd61e62084cdc889ad2e7238aaf8
 	}
 };
