@@ -15,7 +15,7 @@ function doesEmailExists(email) {
 
     return new Promise((resolve, reject) => {
         UserLogin
-            .findOne({ user_email: email })
+            .findOne({ userEmail: email })
             .exec((err, user) => {
 
                 if (err) return reject(err);
@@ -28,7 +28,7 @@ function doesUsernameExist(username) {
 
     return new Promise((resolve, reject) => {
         UserLogin
-            .findOne({ login_username: username })
+            .findOne({ loginUsername: username })
             .exec((err, user) => {
 
                 if (err) return reject(err);
@@ -78,24 +78,23 @@ module.exports = {
             doesUsernameExist(username)
                 .then(exits => {
 
-                    if (exits) {
+                    if (exits)
                         return reject(API_ERRORS.USERNAME_IN_USE);
-                    }
 
                     doesEmailExists(email)
                         .then(exists => {
 
-                            if (exists) {
+                            if (exists)
                                 return reject(API_ERRORS.EMAIL_IN_USE);
-                            }
 
                             try {
-                                UserLogin.create({ user_email: email, login_username: username, login_password: password }).exec((createErr, usr) => {
+                                UserLogin.create({ userEmail: email, loginUsername: username, loginPassword: password }).exec((createErr, usr) => {
 
-                                    if (createErr) return reject(createErr);
+                                    if (createErr)
+                                        return reject(createErr);
 
                                     UserLogin
-                                        .findOne({ user_email: email })
+                                        .findOne({ userEmail: email })
                                         .exec((err, user) => {
 
                                             if (err) return reject(err);
@@ -107,7 +106,7 @@ module.exports = {
                                         });
                                 });
                             } catch (e) {
-                                console.log("I am Exception:", e);
+                                return reject(API_ERRORS.EXCEPTION);
                             }
                         })
                         .catch(reject);
@@ -127,7 +126,7 @@ module.exports = {
      */
     _generateToken: function (user, done) {
         const payload = {
-            user: user.login_username
+            user: user.loginUsername
         }
 
         const token = jwt.sign(payload,
@@ -154,21 +153,27 @@ module.exports = {
             jwt.verify(token, sails.config.jwt_secret, (err, tokenData) => {
                 if (err) return reject(err); // JWT parse error
 
-                UserLogin
-                    .findOne({ login_username: tokenData.user })
-                    .exec((err, user) => {
-                        if (err) return reject(err); // Query error
-                        if (!user) return reject(API_ERRORS.USER_NOT_FOUND);
-                        if (user.locked) return reject(API_ERRORS.USER_LOCKED);
+                try {
+                    UserLogin
+                        .findOne({ loginUsername: tokenData.user })
+                        .exec((err, user) => {
+                            if (err) return reject(err); // Query error
+                            if (!user) return reject(API_ERRORS.USER_NOT_FOUND);
+                            if (user.locked) return reject(API_ERRORS.USER_LOCKED);
 
-                        if (tokenData.user !== user.login_username) {   // Old token, built with inactive password
-                            return reject(API_ERRORS.INACTIVE_TOKEN);
-                        }
-                        return resolve(user);
-                    });
+                            if (tokenData.user !== user.loginUsername) {   // Old token, built with inactive password
+                                return reject(API_ERRORS.INACTIVE_TOKEN);
+                            }
+                            return resolve(user);
+                        });
+
+                } catch (err) {
+                    return reject(API_ERRORS.EXCEPTION);
+                }
             });
         });
     },
+
 
     authenticateUserByRefreshToken: function (token) {
         return new Promise((resolve, reject) => {
@@ -176,18 +181,24 @@ module.exports = {
             jwt.verify(token, sails.config.jwt_secret, { ignoreExpiration: true }, (err, tokenData) => {
                 if (err) return reject(err); // JWT parse error
 
-                UserLogin
-                    .findOne({ login_username: tokenData.user })
-                    .exec((err, user) => {
-                        if (err) return reject(err); // Query error
-                        if (!user) return reject(API_ERRORS.USER_NOT_FOUND);
-                        if (user.locked) return reject(API_ERRORS.USER_LOCKED);
+                try {
+                    UserLogin
+                        .findOne({ loginUsername: tokenData.user })
+                        .exec((err, user) => {
+                            if (err) return reject(err); // Query error
+                            if (!user) return reject(API_ERRORS.USER_NOT_FOUND);
+                            if (user.locked) return reject(API_ERRORS.USER_LOCKED);
 
-                        return resolve(user);
-                    });
+                            return resolve(user);
+                        });
+
+                } catch (err) {
+                    return reject(API_ERRORS.EXCEPTION);
+                }
             });
         });
     },
+
 
     /**
      * Validates user password
@@ -199,7 +210,8 @@ module.exports = {
     validatePassword(username, password, isEmail) {
 
         return new Promise((resolve, reject) => {
-            let findObj = (isEmail) ? { user_email: username } : { login_username: username }
+            let findObj = (isEmail) ? { userEmail: username } : { loginUsername: username }
+            console.log("I am findObj: ", findObj);
 
             try {
                 UserLogin.findOne(findObj)
@@ -209,7 +221,7 @@ module.exports = {
                         if (user.locked) return reject(API_ERRORS.USER_LOCKED);
 
                         UserLogin
-                            .validatePassword(password, user.login_password)
+                            .validatePassword(password, user.loginPassword)
                             .then(isValid => {
                                 resolve({ isValid, user });
                             })
@@ -217,7 +229,7 @@ module.exports = {
                     });
             }
             catch (e) {
-                console.log("Exception:::", e)
+                return reject(API_ERRORS.EXCEPTION);
             }
         });
     },
@@ -259,21 +271,26 @@ module.exports = {
      */
     generateResetToken: function (email) {
         return new Promise((resolve, reject) => {
-            UserLogin
-                .findOne({ email })
-                .exec((err, user) => {
-                    if (err) return reject(err); // Query error
-                    if (!user) return reject(API_ERRORS.USER_NOT_FOUND);
+            try {
+                UserLogin
+                    .findOne({ email })
+                    .exec((err, user) => {
+                        if (err) return reject(err); // Query error
+                        if (!user) return reject(API_ERRORS.USER_NOT_FOUND);
 
-                    const resetToken = shortid.generate();
-                    user.resetToken = resetToken;
-                    user.save(saveErr => {
-                        if (saveErr) return reject(saveErr);
+                        const resetToken = shortid.generate();
+                        user.resetToken = resetToken;
+                        user.save(saveErr => {
+                            if (saveErr) return reject(saveErr);
 
-                        EmailService.sendResetToken(email, resetToken);
-                        resolve();
+                            EmailService.sendResetToken(email, resetToken);
+                            resolve();
+                        });
                     });
-                });
+
+            } catch (err) {
+                return reject(API_ERRORS.EXCEPTION);
+            }
         });
     },
 
@@ -296,13 +313,21 @@ module.exports = {
                         UserLogin
                             .setPassword(newPassword)
                             .then((hash) => {
-                                UserLogin
-                                    .updateOne({ id: user.id })
-                                    .set({ login_password: hash })
-                                    .exec((err, data) => {
-                                        if (err) reject(err);
-                                        resolve(data)
-                                    })
+                                console.log("I am user:", user, user.userId)
+                                try {
+                                    console.log("I am hash: ", hash)
+                                    UserLogin
+                                        .updateOne({ userId: user.userId })
+                                        .set({ loginPassword: hash })
+                                        .exec((err, data) => {
+                                            console.log("I am err,data: ", err, data);
+                                            if (err) reject(err);
+                                            resolve(data)
+                                        })
+
+                                } catch (err) {
+                                    return reject(API_ERRORS.EXCEPTION);
+                                }
                             })
                     }
                 })
