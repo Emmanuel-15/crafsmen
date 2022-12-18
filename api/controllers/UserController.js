@@ -122,17 +122,12 @@ module.exports = {
                 return res.badRequest(Utils.jsonErr('INVALID_EMAIL'));
         }
 
-        console.log("before:::");
         await UserManager
             .authenticateUserByPassword(username, password, isEmail)
             .then((token) => {
-                console.log("sending user token");
                 return res.ok('USER_TOKEN', token);
-                console.log("sent");
             })
             .catch(err => {
-                console.log("i am in catch.");
-
                 switch (err) {
                     case API_ERRORS.INVALID_EMAIL_PASSWORD:
                         return res.badRequest(Utils.jsonErr('INVALID_EMAIL_OR_PASSWORD'));
@@ -148,9 +143,6 @@ module.exports = {
                 }
             });
 
-
-        console.log("after:::");
-        return res.ok("second response");
     },
 
     /**
@@ -180,7 +172,7 @@ module.exports = {
             .authenticateUserByRefreshToken(token)
             .then(user => {
                 UserManager._generateToken(user, token => {
-                    res.ok('USER_TOKEN', token);
+                    return res.ok('USER_TOKEN', { token });
                 });
             })
             .catch(err => {
