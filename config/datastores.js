@@ -52,7 +52,6 @@ module.exports.datastores = {
         url: 'postgres://crafsmen:fRLyPGN0SPjRnjwhYWwVTVUNbM8ILm7c@dpg-ceepuvta499e21p87jag-a.singapore-postgres.render.com/crafsmen',
 
         ssl: { sslmode: 'require', rejectUnauthorized: false },
-
     },
 
 };

@@ -2,14 +2,6 @@
  * Utils
  * @type {object}
  */
-const Ajv = require('ajv');
-const addFormats = require("ajv-formats");
-const APIErrors = require('../constants/APIErrors');
-
-const ajv = new Ajv({ allErrors: true });
-require("ajv-errors")(ajv /*, {singleError: true} */)
-addFormats(ajv)
-
 module.exports = {
 
 	/**
@@ -21,6 +13,7 @@ module.exports = {
 		return {
 			err_msg: errorMessage
 		};
+<<<<<<< HEAD
 	},
 
 	isValidRequest(req, res, requestType, hasParams, hasBody) {
@@ -58,6 +51,7 @@ module.exports = {
 		else {
 			return res.ok("done");
 		}
+=======
+>>>>>>> e7073c0411dfbd61e62084cdc889ad2e7238aaf8
 	}
-
 };

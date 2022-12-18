@@ -11,7 +11,7 @@
  *          - pass string to render specified view
  */
 
-module.exports = function created(message, data, options) {
+module.exports = function created(data, options) {
     console.log("Created");
     // Get access to `req`, `res`, & `sails`
     var req = this.req;
@@ -26,7 +26,7 @@ module.exports = function created(message, data, options) {
     // If appropriate, serve data as JSON(P)
     // If views are disabled, revert to json
     if (req.wantsJSON || sails.config.hooks.views === false) {
-        return res.json({ message, data });
+        return res.json(data);
     }
 
     // If second argument is a string, we take that to mean it refers to a view.
