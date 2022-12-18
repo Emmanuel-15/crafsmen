@@ -98,7 +98,7 @@ module.exports = {
      * @param res
      * @returns {*}
      */
-    login: function (req, res) {
+    login: async function (req, res) {
         if (!req.body || _.keys(req.body).length <= 0)
             return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
 
@@ -122,10 +122,10 @@ module.exports = {
                 return res.badRequest(Utils.jsonErr('INVALID_EMAIL'));
         }
 
-        UserManager
+        await UserManager
             .authenticateUserByPassword(username, password, isEmail)
             .then((token) => {
-                res.ok('USER_TOKEN', token);
+                return res.ok('USER_TOKEN', token);
             })
             .catch(err => {
                 switch (err) {
@@ -142,6 +142,7 @@ module.exports = {
                         return res.serverError(Utils.jsonErr(err));
                 }
             });
+
     },
 
     /**
@@ -171,7 +172,7 @@ module.exports = {
             .authenticateUserByRefreshToken(token)
             .then(user => {
                 UserManager._generateToken(user, token => {
-                    res.ok('USER_TOKEN', token);
+                    return res.ok('USER_TOKEN', { token });
                 });
             })
             .catch(err => {

@@ -20,7 +20,7 @@ function generatePasswordHash(password) {
 
 module.exports = {
 
-    primaryKey: 'user_id',
+    primaryKey: 'userId',
 
     attributes: {
 
@@ -42,73 +42,93 @@ module.exports = {
         updatedAt: false,
         id: false,
 
-        user_id: {
+        userId: {
             type: 'number',
             autoIncrement: true,
+            columnName: 'user_id'
             // size: 100
         },
 
-        login_username: {
+        loginUsername: {
             type: 'string',
-            unique: true
+            unique: true,
+            columnName: 'login_username'
         },
 
-        login_password: {
-            type: 'string'
+        loginPassword: {
+            type: 'string',
+            columnName: 'login_password'
         },
 
-        user_name: {
-            type: 'string'
+        userName: {
+            type: 'string',
+            columnName: 'user_name'
         },
 
-        user_address: {
-            type: 'string'
+        userAddress: {
+            type: 'string',
+            columnName: 'user_address'
         },
 
-        user_email: {
+        userEmail: {
             type: 'string',
             isEmail: true,
-            unique: true
+            unique: true,
+            columnName: 'user_email'
         },
 
-        user_contact_number: {
-            type: 'string'
+        userContactNumber: {
+            type: 'string',
+            columnName: 'user_contact_number'
         },
 
-        user_gender: {
+        userGender: {
             type: 'number',
-            columnType: 'smallint'
+            columnType: 'smallint',
+            columnName: 'user_gender'
         },
 
-        created_date: {
+        createdDate: {
             type: 'ref',
             columnType: 'timestamptz',
-            autoCreatedAt: true
+            autoCreatedAt: true,
+            columnName: 'created_date'
         },
 
-        modified_date: {
+        modifiedDate: {
             type: 'ref',
             columnType: 'timestamptz',
-            autoUpdatedAt: true
+            autoUpdatedAt: true,
+            columnName: 'modified_date'
         },
 
-        dt_last_login: {
+        dtLastLogin: {
             type: 'ref',
             columnType: 'timestamptz',
-            // defaultsTo: '0000-00-00 00:00:00'
+            // defaultsTo: '0000-00-00 00:00:00',
+            columnName: 'dt_last_login'
         },
 
-        user_image: {
-            type: 'string'
+        userImage: {
+            type: 'string',
+            columnName: 'user_image'
         },
 
-        hash_code: {
-            type: 'string'
+        hashCode: {
+            type: 'string',
+            columnName: 'hash_code'
         },
 
-        reset_password: {
+        isAdmin: {
             type: 'number',
-            columnType: 'smallint'
+            columnType: 'smallint',
+            columnName: 'is_admin'
+        },
+
+        resetPassword: {
+            type: 'number',
+            columnType: 'smallint',
+            columnName: 'reset_password'
         }
 
     },
@@ -125,16 +145,18 @@ module.exports = {
 
 
     customToJSON: function () {
-        // Return a shallow copy of this record with the login_password removed.
-        return _.omit(this, ['login_password']);
+        // Return a shallow copy of this record with the loginPassword removed.
+        return _.omit(this, ['userId', 'loginUsername', 'loginPassword', 'userName', 'userAddress',
+            'userEmail', 'userContactNumber', 'userGender', 'createdDate', 'modifiedDate', 'dtLastLogin',
+            'userImage', 'hashCode', 'isAdmin', 'resetPassword']);
     },
 
 
     beforeCreate: function (values, next) {
-        generatePasswordHash(values.login_password)
+        generatePasswordHash(values.loginPassword)
             .then(hash => {
-                delete (values.login_password);
-                values.login_password = hash;
+                delete (values.loginPassword);
+                values.loginPassword = hash;
                 next();
             })
             .catch(err => {

@@ -15,7 +15,7 @@ function doesEmailExists(email) {
 
     return new Promise((resolve, reject) => {
         UserLogin
-            .findOne({ user_email: email })
+            .findOne({ userEmail: email })
             .exec((err, user) => {
 
                 if (err) return reject(err);
@@ -28,7 +28,7 @@ function doesUsernameExist(username) {
 
     return new Promise((resolve, reject) => {
         UserLogin
-            .findOne({ login_username: username })
+            .findOne({ loginUsername: username })
             .exec((err, user) => {
 
                 if (err) return reject(err);
@@ -88,13 +88,13 @@ module.exports = {
                                 return reject(API_ERRORS.EMAIL_IN_USE);
 
                             try {
-                                UserLogin.create({ user_email: email, login_username: username, login_password: password }).exec((createErr, usr) => {
+                                UserLogin.create({ userEmail: email, loginUsername: username, loginPassword: password }).exec((createErr, usr) => {
 
                                     if (createErr)
                                         return reject(createErr);
 
                                     UserLogin
-                                        .findOne({ user_email: email })
+                                        .findOne({ userEmail: email })
                                         .exec((err, user) => {
 
                                             if (err) return reject(err);
@@ -126,7 +126,7 @@ module.exports = {
      */
     _generateToken: function (user, done) {
         const payload = {
-            user: user.login_username
+            user: user.loginUsername
         }
 
         const token = jwt.sign(payload,
@@ -155,13 +155,13 @@ module.exports = {
 
                 try {
                     UserLogin
-                        .findOne({ login_username: tokenData.user })
+                        .findOne({ loginUsername: tokenData.user })
                         .exec((err, user) => {
                             if (err) return reject(err); // Query error
                             if (!user) return reject(API_ERRORS.USER_NOT_FOUND);
                             if (user.locked) return reject(API_ERRORS.USER_LOCKED);
 
-                            if (tokenData.user !== user.login_username) {   // Old token, built with inactive password
+                            if (tokenData.user !== user.loginUsername) {   // Old token, built with inactive password
                                 return reject(API_ERRORS.INACTIVE_TOKEN);
                             }
                             return resolve(user);
@@ -183,7 +183,7 @@ module.exports = {
 
                 try {
                     UserLogin
-                        .findOne({ login_username: tokenData.user })
+                        .findOne({ loginUsername: tokenData.user })
                         .exec((err, user) => {
                             if (err) return reject(err); // Query error
                             if (!user) return reject(API_ERRORS.USER_NOT_FOUND);
@@ -210,7 +210,8 @@ module.exports = {
     validatePassword(username, password, isEmail) {
 
         return new Promise((resolve, reject) => {
-            let findObj = (isEmail) ? { user_email: username } : { login_username: username }
+            let findObj = (isEmail) ? { userEmail: username } : { loginUsername: username }
+            console.log("I am findObj: ", findObj);
 
             try {
                 UserLogin.findOne(findObj)
@@ -220,7 +221,7 @@ module.exports = {
                         if (user.locked) return reject(API_ERRORS.USER_LOCKED);
 
                         UserLogin
-                            .validatePassword(password, user.login_password)
+                            .validatePassword(password, user.loginPassword)
                             .then(isValid => {
                                 resolve({ isValid, user });
                             })
@@ -312,11 +313,14 @@ module.exports = {
                         UserLogin
                             .setPassword(newPassword)
                             .then((hash) => {
+                                console.log("I am user:", user, user.userId)
                                 try {
+                                    console.log("I am hash: ", hash)
                                     UserLogin
-                                        .updateOne({ user_id: user.user_id })
-                                        .set({ login_password: hash })
+                                        .updateOne({ userId: user.userId })
+                                        .set({ loginPassword: hash })
                                         .exec((err, data) => {
+                                            console.log("I am err,data: ", err, data);
                                             if (err) reject(err);
                                             resolve(data)
                                         })
