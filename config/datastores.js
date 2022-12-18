@@ -49,10 +49,9 @@ module.exports.datastores = {
          *                                                                          *
          ***************************************************************************/
         adapter: 'sails-postgresql',
-        url: 'postgres://car_rent_goa_user:CZHJeAvYHuCpg1jvR4rLvwtR6JNIH7TP@dpg-ceff2m1gp3jk7mha4ov0-a.singapore-postgres.render.com/car_rent_goa',
+        url: 'postgres://crafsmen:fRLyPGN0SPjRnjwhYWwVTVUNbM8ILm7c@dpg-ceepuvta499e21p87jag-a.singapore-postgres.render.com/crafsmen',
 
         ssl: { sslmode: 'require', rejectUnauthorized: false },
-
     },
 
 };
