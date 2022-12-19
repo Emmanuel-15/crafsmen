@@ -88,7 +88,7 @@ module.exports = {
                                 return reject(API_ERRORS.EMAIL_IN_USE);
 
                             try {
-                                UserLogin.create({ userEmail: email, loginUsername: username, loginPassword: password }).exec((createErr, usr) => {
+                                UserLogin.create({ userEmail: email, loginUsername: username, loginPassword: password, isActive: true }).exec((createErr, usr) => {
 
                                     if (createErr)
                                         return reject(createErr);
@@ -211,7 +211,6 @@ module.exports = {
 
         return new Promise((resolve, reject) => {
             let findObj = (isEmail) ? { userEmail: username } : { loginUsername: username }
-            console.log("I am findObj: ", findObj);
 
             try {
                 UserLogin.findOne(findObj)
@@ -313,14 +312,11 @@ module.exports = {
                         UserLogin
                             .setPassword(newPassword)
                             .then((hash) => {
-                                console.log("I am user:", user, user.userId)
                                 try {
-                                    console.log("I am hash: ", hash)
                                     UserLogin
                                         .updateOne({ userId: user.userId })
                                         .set({ loginPassword: hash })
                                         .exec((err, data) => {
-                                            console.log("I am err,data: ", err, data);
                                             if (err) reject(err);
                                             resolve(data)
                                         })

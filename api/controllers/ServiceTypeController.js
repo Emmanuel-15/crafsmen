@@ -165,9 +165,14 @@ module.exports = {
         try {
             ServiceType.destroy({ serviceTypeId: req.param('id') })
                 .exec((err) => {
-                    if (err)
-                        return res.badRequest(Utils.jsonErr("ERROR_WHILE_DELETING_SERVICE_TYPE"));
+                    if (err) {
 
+                        if (err.raw && err.raw.code && err.raw.code === '23503')
+                            return res.badRequest(Utils.jsonErr("SERVICE_TYPE_ALREADY_IN_USE"));
+                        else
+                            return res.badRequest(Utils.jsonErr("ERROR_WHILE_DELETING_SERVICE_TYPE"));
+
+                    }
 
                     res.ok("SERVICE_TYPE_DELTED");
                 })

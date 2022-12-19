@@ -50,7 +50,10 @@ module.exports = {
     },
 
     serviceTypeId: {
-      type: 'number',
+      // type: 'number',
+      type: 'ref',
+      columnType: 'int',
+      // unique: 'true',
       columnName: 'service_type_id'
     },
 

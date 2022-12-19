@@ -125,6 +125,12 @@ module.exports = {
             columnName: 'is_admin'
         },
 
+        isActive: {
+            type: 'number',
+            columnType: 'smallint',
+            columnName: 'is_active'
+        },
+
         resetPassword: {
             type: 'number',
             columnType: 'smallint',

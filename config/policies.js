@@ -20,9 +20,14 @@ module.exports.policies = {
     '*': 'jwtAuth',
 
     'userController': {
+        
         'create': true,
         'login': true,
-        'refreshToken': true,
+        'refreshToken': true
     },
+
+    'servicesController': {
+        'getAll': true
+    }
 
 };
