@@ -25,6 +25,17 @@ passSchema
     .has().letters()
     .has().digits();
 
+
+// both variables used for phone number validation
+const yup = require("yup");
+const yup_phone = require("yup-phone");
+
+// See ref https://www.npmjs.com/package/yup-phone
+// validate phone number strictly in the given region (India)
+const phoneSchema = yup.string()
+    .phone("IN", true)
+    .required();
+
 module.exports = {
 
     /**
@@ -327,4 +338,47 @@ module.exports = {
                 return res.serverError(Utils.jsonErr(err));
             });
     },
+
+    /**
+     * Action for /customer
+     * @param req
+     * @param res
+     * @returns {*}
+     */
+
+    createCustomer: function (req, res) {
+        if (req.method !== 'POST')
+            return res.notFound();
+
+
+        if (!req.body || _.keys(req.body).length <= 0)
+            return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
+
+
+        const input = req.body.input;
+        let isEmail = false;
+        let isNumber = false;
+
+        if (validator.isEmail(input.toString()))
+            isEmail = true;
+
+        if (phoneSchema.isValidSync(input))
+            isNumber = true;
+
+
+        if (isEmail == false && isNumber == false)
+            return res.badRequest(Utils.jsonErr("INVALID_INPUT"));
+
+
+        if (isEmail) {
+            // email service
+
+        } else if (isNumber) {
+            // SMS service
+
+        }
+
+
+        return res.ok("done");
+    }
 };

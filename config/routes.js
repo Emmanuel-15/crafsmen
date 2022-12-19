@@ -17,6 +17,10 @@ module.exports.routes = {
     'POST   /api/v1/entrance/refreshToken': { controller: 'UserController', action: 'refreshToken' },
     'PUT   /api/v1/entrance/changePassword': { controller: 'UserController', action: 'changePassword' },
 
+    //customer
+    'POST   /api/v1/entrance/customer': { controller: 'UserController', action: 'createCustomer' },
+
+
     //service
     'GET   /api/v1/entrance/services': { controller: 'ServicesController', action: 'getAll' },
     'GET   /api/v1/entrance/services/:id': { controller: 'ServicesController', action: 'get' },
