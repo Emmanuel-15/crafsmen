@@ -1,4 +1,4 @@
-# prosouring-hub
+# Crafsmen
 
 a [Sails v1](https://sailsjs.com) application
 
@@ -14,7 +14,7 @@ a [Sails v1](https://sailsjs.com) application
 
 ### Version info
 
-This app was originally generated on Sun Mar 06 2022 13:23:02 GMT+0530 (India Standard Time) using Sails v1.5.2.
+This app was originally generated on Sun Dec 17 2022 13:23:02 GMT+0530 (India Standard Time) using Sails v1.5.2.
 
 <!-- Internally, Sails used [`sails-generate@2.0.6`](https://github.com/balderdashy/sails-generate/tree/v2.0.6/lib/core-generators/new). -->
 
