@@ -53,12 +53,7 @@ module.exports = {
             // url: 'postgresql://postgres:password@localhost:5432/prosourcing_hub',
 
             adapter: 'sails-postgresql',
-<<<<<<< HEAD
             url: 'postgres://crafsmen:fRLyPGN0SPjRnjwhYWwVTVUNbM8ILm7c@dpg-ceepuvta499e21p87jag-a.singapore-postgres.render.com/crafsmen',
-
-=======
-            url: 'postgres://xhfxfyqnfemdiw:fa51560b6382f231015cbab163cb26c7d21fc50ee938043c0d431c500f8e2207@ec2-52-203-118-49.compute-1.amazonaws.com:5432/d8qt2plc5ob409',
->>>>>>> e7073c0411dfbd61e62084cdc889ad2e7238aaf8
 
 
             // adapter: 'sails-mysql',
