@@ -8,7 +8,6 @@
  * https://sailsjs.com/anatomy/config/routes-js
  */
 
-const UserController = require("../api/controllers/UserController");
 
 module.exports.routes = {
     //user
@@ -19,7 +18,7 @@ module.exports.routes = {
 
     //customer
     'POST   /api/v1/entrance/customer': { controller: 'UserController', action: 'createCustomer' },
-
+    'POST   /api/v1/entrance/validate-customer': { controller: 'UserController', action: 'validate' },
 
     //service
     'GET   /api/v1/entrance/services': { controller: 'ServicesController', action: 'getAll' },

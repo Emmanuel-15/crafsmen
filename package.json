@@ -19,6 +19,7 @@
     "sails-hook-sockets": "^2.0.0",
     "sails-postgresql": "^4.0.0",
     "shortid": "^2.2.16",
+    "validation-master": "^1.0.34",
     "validator": "^13.7.0",
     "yup-phone": "^1.3.2"
   },

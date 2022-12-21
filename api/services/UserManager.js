@@ -7,6 +7,8 @@ const API_ERRORS = require('../constants/APIErrors');
 const { exits, login } = require('../controllers/UserController');
 const { hash } = require('bcrypt');
 const { find } = require('sails-postgresql');
+// const UserLogin = require('../models/UserLogin');
+// const Temp = require('../models/Temp');
 
 const LOCK_INTERVAL_SEC = 120;
 const LOCK_TRY_COUNT = 5;
@@ -125,14 +127,15 @@ module.exports = {
      * @private
      */
     _generateToken: function (user, done) {
-        const payload = {
-            user: user.loginUsername
-        }
+        // const payload = {
+        //     user: user.loginUsername
+        // }
+        const payload = (user.userEmail) ? { email: user.userEmail } : { phone: user.userContactNumber }
 
         const token = jwt.sign(payload,
             sails.config.jwt_secret,
             { expiresIn: '24h' },
-            { header: { "id": user.id } })
+            { header: { "id": user.userId } })
 
         return done(token);
     },
@@ -254,6 +257,7 @@ module.exports = {
                         return reject(API_ERRORS.INVALID_EMAIL_PASSWORD);
                     } else {
                         UserManager._generateToken(user, (token) => {
+                            console.log("I am user::: ", user)
                             resolve({ token });
                         });
                     }
@@ -362,5 +366,62 @@ module.exports = {
                         .catch(reject);
                 });
         });
+    },
+
+
+    otpViaEmail: function (findObj, emailOrPhone) {
+        return new Promise(async (resolve, reject) => {
+            const user = await UserLogin.findOne(findObj);
+
+            if (user) {
+                // email service...
+
+                const otp = 1234;
+
+                await UserLogin.updateOne(findObj).set({ hashCode: otp });
+
+                resolve();
+
+            } else {
+                // email service...
+
+                const userInput = emailOrPhone;
+                const otp = 1234;
+
+                await Temp.create({ emailOrPhone: userInput, otp: otp });
+
+                resolve();
+
+            }
+        })
+    },
+
+    otpViaPhone: function (findObj, emailOrPhone) {
+        return new Promise(async (resolve, reject) => {
+            const user = await UserLogin.findOne(findObj);
+
+            if (user) {
+                // SMS service...
+
+                const otp = 1234;
+
+                await UserLogin.updateOne(findObj).set({ hashCode: otp });
+
+                resolve();
+
+            } else {
+                // SMS service...
+
+                const userInput = emailOrPhone;
+                const otp = 1234;
+
+                await Temp.create({ emailOrPhone: userInput, otp: otp });
+
+                resolve();
+
+            }
+        })
+
     }
+
 };

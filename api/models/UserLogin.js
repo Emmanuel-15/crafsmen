@@ -52,6 +52,7 @@ module.exports = {
         loginUsername: {
             type: 'string',
             unique: true,
+            allowNull: true,
             columnName: 'login_username'
         },
 
@@ -74,11 +75,13 @@ module.exports = {
             type: 'string',
             isEmail: true,
             unique: true,
+            allowNull: true,
             columnName: 'user_email'
         },
 
         userContactNumber: {
             type: 'string',
+            allowNull: true,
             columnName: 'user_contact_number'
         },
 
@@ -159,16 +162,23 @@ module.exports = {
 
 
     beforeCreate: function (values, next) {
-        generatePasswordHash(values.loginPassword)
-            .then(hash => {
-                delete (values.loginPassword);
-                values.loginPassword = hash;
-                next();
-            })
-            .catch(err => {
-                /* istanbul ignore next */
-                next(err);
-            });
+
+        if (values.loginPassword.length == 0)
+            next();
+        else {
+
+            generatePasswordHash(values.loginPassword)
+                .then(hash => {
+                    delete (values.loginPassword);
+                    values.loginPassword = hash;
+                    next();
+                })
+                .catch(err => {
+                    /* istanbul ignore next */
+                    next(err);
+                });
+        }
+
     }
 
 };

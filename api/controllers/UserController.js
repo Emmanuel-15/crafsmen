@@ -8,7 +8,6 @@
 const API_ERRORS = require('../constants/APIErrors');
 const validator = require('validator');
 const passValidator = require('password-validator');
-const UserLogin = require('../models/UserLogin');
 const UserManager = require('../services/UserManager');
 
 const TOKEN_RE = /^Bearer$/i;
@@ -25,16 +24,8 @@ passSchema
     .has().letters()
     .has().digits();
 
-
-// both variables used for phone number validation
-const yup = require("yup");
-const yup_phone = require("yup-phone");
-
-// See ref https://www.npmjs.com/package/yup-phone
-// validate phone number strictly in the given region (India)
-const phoneSchema = yup.string()
-    .phone("IN", true)
-    .required();
+// See ref https://www.npmjs.com/package/validation-master
+const validation_master = require('validation-master');
 
 module.exports = {
 
@@ -153,7 +144,6 @@ module.exports = {
                         return res.serverError(Utils.jsonErr(err));
                 }
             });
-
     },
 
     /**
@@ -162,7 +152,6 @@ module.exports = {
      * @param res
      * @returns {*}
      */
-
     refreshToken: function (req, res) {
         if (req.headers && req.headers.authorization) {
             const parts = req.headers.authorization.split(' ');
@@ -210,7 +199,6 @@ module.exports = {
      * @param res
      * @returns {*}
      */
-
     forgotPassword: function (req, res) {
         if (!req.body) {
             return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
@@ -297,7 +285,6 @@ module.exports = {
      * @param res
      * @returns {*}
      */
-
     resetPasswordByResetToken: function (req, res) {
         if (!req.body) {
             return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
@@ -345,8 +332,7 @@ module.exports = {
      * @param res
      * @returns {*}
      */
-
-    createCustomer: function (req, res) {
+    createCustomer: async function (req, res) {
         if (req.method !== 'POST')
             return res.notFound();
 
@@ -355,30 +341,103 @@ module.exports = {
             return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
 
 
-        const input = req.body.input;
+        const emailOrPhone = req.body.emailOrPhone;
         let isEmail = false;
         let isNumber = false;
 
-        if (validator.isEmail(input.toString()))
+        if (validator.isEmail(emailOrPhone.toString()))
             isEmail = true;
 
-        if (phoneSchema.isValidSync(input))
+        else if (validation_master.phoneNumberValidator(emailOrPhone))
             isNumber = true;
 
 
         if (isEmail == false && isNumber == false)
-            return res.badRequest(Utils.jsonErr("INVALID_INPUT"));
+            return res.badRequest(Utils.jsonErr("INVALID_EMAIL_PHONE"));
+
+        let findObj = (isEmail) ? { userEmail: emailOrPhone } : { userContactNumber: emailOrPhone }
 
 
         if (isEmail) {
-            // email service
+            await UserManager
+                .otpViaEmail(findObj, emailOrPhone)
+                .then(() => {
+                    return res.ok("OTP_SENT_SUCCESS");
+                })
 
-        } else if (isNumber) {
-            // SMS service
+        } else {
+            await UserManager
+                .otpViaPhone(findObj, emailOrPhone)
+                .then(() => {
+                    return res.ok("OTP_SENT_SUCCESS");
+                })
+        }
+    },
+    /**
+         * Action for /customer-validate
+         * @param req
+         * @param res
+         * @returns {*}
+         */
+    validate: async function (req, res) {
+        if (req.method !== 'POST')
+            return res.notFound();
 
+
+        if (!req.body || _.keys(req.body).length <= 0)
+            return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
+
+
+        const emailOrPhone = req.body.emailOrPhone;
+        const otp = req.body.otp;
+        let isEmail = false;
+        let isNumber = false;
+
+        if (isNaN(otp))
+            return res.badRequest(Utils.jsonErr("INVALID_OTP"));
+
+        if (validator.isEmail(emailOrPhone.toString()))
+            isEmail = true;
+
+        else if (validation_master.phoneNumberValidator(emailOrPhone))
+            isNumber = true;
+
+
+        if (isEmail == false && isNumber == false)
+            return res.badRequest(Utils.jsonErr("INVALID_EMAIL_PHONE"));
+
+
+        let obj = (isEmail) ? { userEmail: emailOrPhone } : { userContactNumber: emailOrPhone }
+
+        const user_table = await UserLogin.findOne(obj);
+        let temp_table;
+
+        if (!user_table) {
+            temp_table = await Temp.findOne({ emailOrPhone: emailOrPhone });
+
+            if (!temp_table)
+                return res.badRequest(Utils.jsonErr("EMAIL_OR_PHONE_NUMBER_NOT_FOUND"))
         }
 
 
-        return res.ok("done");
+        if (user_table) {
+            if (user_table.hashCode != otp)
+                return res.unauthorized("INVALID_OTP");
+            else {
+                UserManager._generateToken(user_table, (token) => {
+                    return res.ok("VERIFIED", { token });
+                });
+            }
+
+        } else {
+            if (temp_table.otp != otp)
+                return res.unauthorized("INVALID_OTP");
+            else {
+                await UserLogin.create(obj)
+                    .then(() => {
+                        return res.ok("VERIFIED");
+                    })
+            }
+        }
     }
 };
