@@ -126,11 +126,25 @@ module.exports = {
      * @returns {*}
      * @private
      */
-    _generateToken: function (user, done) {
+    _generateToken: async function (user, done) {
         // const payload = {
         //     user: user.loginUsername
         // }
-        const payload = (user.userEmail) ? { email: user.userEmail } : { phone: user.userContactNumber }
+
+        let payload;
+        let isEmail;
+
+        if (user.emailOrPhone) {
+            isEmail = await Temp.check(user.emailOrPhone);
+
+            if (isEmail)
+                payload = { email: user.emailOrPhone }
+            else
+                payload = { phone: user.emailOrPhone }
+        } else {
+            payload = (user.userEmail) ? { email: user.userEmail } : { phone: user.userContactNumber }
+
+        }
 
         const token = jwt.sign(payload,
             sails.config.jwt_secret,
@@ -156,17 +170,22 @@ module.exports = {
             jwt.verify(token, sails.config.jwt_secret, (err, tokenData) => {
                 if (err) return reject(err); // JWT parse error
 
+                let obj = (tokenData.email) ? { userEmail: tokenData.email } : { userContactNumber: tokenData.phone }
+
                 try {
                     UserLogin
-                        .findOne({ loginUsername: tokenData.user })
+                        .findOne(obj)
                         .exec((err, user) => {
                             if (err) return reject(err); // Query error
                             if (!user) return reject(API_ERRORS.USER_NOT_FOUND);
                             if (user.locked) return reject(API_ERRORS.USER_LOCKED);
 
-                            if (tokenData.user !== user.loginUsername) {   // Old token, built with inactive password
+                            if (tokenData.email && tokenData.email !== user.userEmail)
+                                return reject(API_ERRORS.INACTIVE_TOKEN)
+
+                            if (tokenData.phone && tokenData.phone !== user.userContactNumber)
                                 return reject(API_ERRORS.INACTIVE_TOKEN);
-                            }
+
                             return resolve(user);
                         });
 

@@ -88,7 +88,8 @@ module.exports = {
         userGender: {
             type: 'number',
             columnType: 'smallint',
-            columnName: 'user_gender'
+            columnName: 'user_gender',
+            allowNull: true
         },
 
         createdDate: {
@@ -155,9 +156,8 @@ module.exports = {
 
     customToJSON: function () {
         // Return a shallow copy of this record with the loginPassword removed.
-        return _.omit(this, ['userId', 'loginUsername', 'loginPassword', 'userName', 'userAddress',
-            'userEmail', 'userContactNumber', 'userGender', 'createdDate', 'modifiedDate', 'dtLastLogin',
-            'userImage', 'hashCode', 'isAdmin', 'resetPassword']);
+        return _.omit(this, ['loginUsername', 'loginPassword', 'createdDate', 'modifiedDate', 'dtLastLogin',
+            'userImage', 'hashCode', 'isAdmin', 'isActive', 'resetPassword']);
     },
 
 

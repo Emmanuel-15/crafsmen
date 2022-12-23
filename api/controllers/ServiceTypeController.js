@@ -12,6 +12,7 @@ module.exports = {
         if (req.method !== 'GET')
             return res.notFound();
 
+        // console.log("I am user: ", req.user);
 
         try {
             await ServiceType.find()

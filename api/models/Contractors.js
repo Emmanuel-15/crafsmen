@@ -1,13 +1,13 @@
 /**
- * Temp.js
+ * Contractors.js
  *
  * @description :: A model definition represents a database table/collection.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
-const validator = require('validator');
-
 module.exports = {
+
+  primaryKey: 'contractorId',
 
   attributes: {
 
@@ -27,14 +27,48 @@ module.exports = {
 
     createdAt: false,
     updatedAt: false,
+    id: false,
 
-    emailOrPhone: {
-      type: 'string',
-      columnName: 'email_or_phone'
+    contractorId: {
+      type: 'number',
+      autoIncrement: true,
+      columnName: 'contractor_id'
+      // size: 100
     },
 
-    otp: {
-      type: 'string'
+    contractorName: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'contractor_name'
+    },
+
+    contractorAddress: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'contractor_address'
+    },
+
+    contactNumber1: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'contact_number1'
+    },
+
+    contactNumber2: {
+      type: 'string',
+      allowNull: true,
+      columnName: 'contact_number2'
+    },
+
+    contractorEmail: {
+      type: 'string',
+      columnName: 'contractor_email'
+    },
+
+    isActive: {
+      type: 'number',
+      columnType: 'smallint',
+      columnName: 'is_active'
     },
 
     createdDate: {
@@ -50,14 +84,8 @@ module.exports = {
       autoUpdatedAt: true,
       columnName: 'modified_date'
     },
+
   },
 
-  check: function (email_or_phone) {
-    if (validator.isEmail(email_or_phone))
-      return true;
-    else
-      return false;
-
-  }
 };
 

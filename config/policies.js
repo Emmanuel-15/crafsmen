@@ -23,13 +23,16 @@ module.exports.policies = {
 
         'create': true,
         'login': true,
-        'refreshToken': true,
-        'createCustomer': true,
-        'validate': true
+        'refreshToken': true
     },
 
     'servicesController': {
         'getAll': true
+    },
+
+    'customerController': {
+        'createCustomer': true,
+        'validate': true
     }
 
 };
