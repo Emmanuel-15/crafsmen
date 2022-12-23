@@ -21,7 +21,6 @@
 
 module.exports = {
 
-    // jwt_secret: 'SECRET123',
     jwt_secret: 'SECRET123',
     refresh_secret: 'SECRET123456',
     /**************************************************************************
@@ -49,13 +48,9 @@ module.exports = {
          *                                                                          *
          ***************************************************************************/
         default: {
-            // adapter: 'sails-postgresql',
-            // url: 'postgresql://postgres:password@localhost:5432/prosourcing_hub',
 
             adapter: 'sails-postgresql',
             url: 'postgres://crafsmen:LgHYyHMJRcMB5Ey0YN3VUnetnkJbujjL@dpg-ceio7uta499eu9229oe0-a.singapore-postgres.render.com/crafsmen_7jcf',
-
-
 
             // url: 'postgres://crafsmen:fRLyPGN0SPjRnjwhYWwVTVUNbM8ILm7c@dpg-ceepuvta499e21p87jag-a.singapore-postgres.render.com/crafsmen',
 
@@ -83,12 +78,11 @@ module.exports = {
              *                                                                           *
              ****************************************************************************/
             // ssl: { rejectUnauthorized: true },
-            ssl: { sslmode: 'require', rejectUnauthorized: false },
+            ssl: { sslmode: 'require', rejectUnauthorized: false }
 
         },
 
     },
-
 
     models: {
 
@@ -117,8 +111,6 @@ module.exports = {
 
     },
 
-
-
     /**************************************************************************
      *                                                                         *
      * Always disable "shortcut" blueprint routes.                             *
@@ -132,8 +124,6 @@ module.exports = {
     blueprints: {
         shortcuts: false,
     },
-
-
 
     /***************************************************************************
      *                                                                          *
@@ -166,8 +156,6 @@ module.exports = {
         },
 
     },
-
-
 
     /***************************************************************************
      *                                                                          *
@@ -236,10 +224,7 @@ module.exports = {
             secure: true,
             maxAge: 24 * 60 * 60 * 1000, // 24 hours
         },
-
     },
-
-
 
     /**************************************************************************
      *                                                                          *
@@ -252,7 +237,6 @@ module.exports = {
      *                                                                          *
      ***************************************************************************/
     sockets: {
-
         /***************************************************************************
          *                                                                          *
          * Uncomment the `onlyAllowOrigins` whitelist below to configure which      *
@@ -266,7 +250,6 @@ module.exports = {
             'https://crafsmen-backend-server.onrender.com',
             //   'https://staging.example.com',
         ],
-
 
         /***************************************************************************
          *                                                                          *
@@ -291,10 +274,7 @@ module.exports = {
         // sails_sockets__url=redis://admin:myc00lpAssw2D@bigsquid.redistogo.com:9562/0
         // ```
         //--------------------------------------------------------------------------
-
     },
-
-
 
     /**************************************************************************
      *                                                                         *
@@ -307,10 +287,7 @@ module.exports = {
         level: 'debug'
     },
 
-
-
     http: {
-
         /***************************************************************************
          *                                                                          *
          * The number of milliseconds to cache static assets in production.         *
@@ -338,9 +315,7 @@ module.exports = {
          *                                                                          *
          ***************************************************************************/
         // trustProxy: true,
-
     },
-
 
 
     /**************************************************************************
@@ -353,8 +328,6 @@ module.exports = {
      *                                                                         *
      ***************************************************************************/
     port: 1338,
-
-
 
     /**************************************************************************
      *                                                                         *
@@ -401,9 +374,6 @@ module.exports = {
         // sails_custom__stripeSecret=sk_prod__fake_Nfgh82401348jaDa3lkZ0d9Hm
         // ```
         //--------------------------------------------------------------------------
-
     },
-
-
 
 };

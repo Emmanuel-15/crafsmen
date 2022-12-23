@@ -6,22 +6,22 @@
  */
 const validator = require('validator');
 const validation_master = require('validation-master');
+const UserManager = require('../services/UserManager');
 
 module.exports = {
+
     /**
-      * Action for /customer
-      * @param req
-      * @param res
-      * @returns {*}
-      */
-    createCustomer: async function (req, res) {
+     * Action for /customer
+     * @param req
+     * @param res
+     * @returns {*}
+     */
+    create: async function (req, res) {
         if (req.method !== 'POST')
             return res.notFound();
 
-
-        if (!req.body || _.keys(req.body).length <= 0)
-            return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
-
+        if (!req.body || _.keys(req.body).length == 0)
+            return res.badRequest(Utils.jsonErr("EMPTY_BODY"));
 
         const emailOrPhone = req.body.emailOrPhone;
         let isEmail = false;
@@ -37,43 +37,42 @@ module.exports = {
         if (isEmail == false && isNumber == false)
             return res.badRequest(Utils.jsonErr("INVALID_EMAIL_PHONE"));
 
-        let findObj = (isEmail) ? { userEmail: emailOrPhone } : { userContactNumber: emailOrPhone }
-
+        let findObj = (isEmail) ? { userEmail: emailOrPhone } : { userContactNumber: emailOrPhone };
 
         if (isEmail) {
             await UserManager
                 .otpViaEmail(findObj, emailOrPhone)
                 .then(() => {
                     return res.ok("OTP_SENT_SUCCESS");
-                })
+                });
 
         } else {
             await UserManager
                 .otpViaPhone(findObj, emailOrPhone)
                 .then(() => {
                     return res.ok("OTP_SENT_SUCCESS");
-                })
+                });
         }
     },
+
     /**
-         * Action for /customer-validate
-         * @param req
-         * @param res
-         * @returns {*}
-         */
+     * Action for /validate-customer
+     * @param req
+     * @param res
+     * @returns {*}
+     */
     validate: async function (req, res) {
         if (req.method !== 'POST')
             return res.notFound();
 
-
         if (!req.body || _.keys(req.body).length <= 0)
-            return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
-
+            return res.badRequest(Utils.jsonErr("EMPTY_BODY"));
 
         const emailOrPhone = req.body.emailOrPhone;
         const otp = req.body.otp;
         let isEmail = false;
         let isNumber = false;
+        let temp_table = null;
 
         if (isNaN(otp))
             return res.badRequest(Utils.jsonErr("INVALID_OTP"));
@@ -84,15 +83,12 @@ module.exports = {
         else if (validation_master.phoneNumberValidator(emailOrPhone))
             isNumber = true;
 
-
         if (isEmail == false && isNumber == false)
             return res.badRequest(Utils.jsonErr("INVALID_EMAIL_PHONE"));
 
-
-        let obj = (isEmail) ? { userEmail: emailOrPhone } : { userContactNumber: emailOrPhone }
+        let obj = (isEmail) ? { userEmail: emailOrPhone } : { userContactNumber: emailOrPhone };
 
         const user_table = await UserLogin.findOne(obj);
-        let temp_table;
 
         if (!user_table) {
             temp_table = await Temp.findOne({ emailOrPhone: emailOrPhone });
@@ -101,13 +97,10 @@ module.exports = {
                 return res.badRequest(Utils.jsonErr("EMAIL_OR_PHONE_NUMBER_NOT_FOUND"))
         }
 
-
         if (user_table) {
             if (user_table.hashCode != otp)
                 return res.unauthorized("INVALID_OTP");
             else {
-
-                console.log("I am user_table: ", user_table)
                 UserManager._generateToken(user_table, (token) => {
                     return res.ok("VERIFIED", { token });
                 });
@@ -119,14 +112,19 @@ module.exports = {
             else {
                 await UserLogin.create(obj);
 
-                console.log("I am temp_table", temp_table)
-
                 UserManager._generateToken(temp_table, (token) => {
                     return res.ok("VERIFIED", { token });
                 });
             }
         }
     },
+
+    /**
+     * Action for /customer-details
+     * @param req
+     * @param res
+     * @returns {*}
+     */
     getDetails: async function (req, res) {
         if (req.method !== 'GET')
             return res.notFound();
@@ -142,12 +140,18 @@ module.exports = {
 
     },
 
+    /**
+     * Action for /customer-details
+     * @param req
+     * @param res
+     * @returns {*}
+     */
     enterDetails: async function (req, res) {
         if (req.method !== 'POST')
             return res.notFound();
 
-        if (!req.body || _.keys(req.body).length <= 0)
-            return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
+        if (!req.body || _.keys(req.body).length == 0)
+            return res.badRequest(Utils.jsonErr("EMPTY_BODY"));
 
         const updateCustomerDetails = {
             userName: req.body.userName,
@@ -163,14 +167,11 @@ module.exports = {
         if (updateCustomerDetails.userContactNumber && !validation_master.phoneNumberValidator(updateCustomerDetails.userContactNumber))
             return res.badRequest(Utils.jsonErr("INVALID_PHONE_NUMBER"));
 
-        console.log("check: ", updateCustomerDetails.userAddress.length)
-
-        console.log("I am obj: ", updateCustomerDetails)
-
         try {
-            await UserLogin.updateOne({ userId: req.user.userId }).set(updateCustomerDetails)
+            await UserLogin.updateOne({ userId: req.user.userId }).set(updateCustomerDetails);
 
             return res.ok("UPDATED");
+
         } catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
         }

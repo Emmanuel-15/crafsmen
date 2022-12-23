@@ -7,19 +7,15 @@ const API_ERRORS = require('../constants/APIErrors');
 const { exits, login } = require('../controllers/UserController');
 const { hash } = require('bcrypt');
 const { find } = require('sails-postgresql');
-// const UserLogin = require('../models/UserLogin');
-// const Temp = require('../models/Temp');
 
 const LOCK_INTERVAL_SEC = 120;
 const LOCK_TRY_COUNT = 5;
 
 function doesEmailExists(email) {
-
     return new Promise((resolve, reject) => {
         UserLogin
             .findOne({ userEmail: email })
             .exec((err, user) => {
-
                 if (err) return reject(err);
                 return resolve(!!user);
             });
@@ -27,12 +23,10 @@ function doesEmailExists(email) {
 }
 
 function doesUsernameExist(username) {
-
     return new Promise((resolve, reject) => {
         UserLogin
             .findOne({ loginUsername: username })
             .exec((err, user) => {
-
                 if (err) return reject(err);
                 return resolve(!!user);
             });
@@ -98,7 +92,6 @@ module.exports = {
                                     UserLogin
                                         .findOne({ userEmail: email })
                                         .exec((err, user) => {
-
                                             if (err) return reject(err);
 
                                             UserManager._generateToken(user, (token, refresh_token) => {
@@ -117,7 +110,6 @@ module.exports = {
         });
     },
 
-
     /**
      * Generates JWT token
      * TODO Promisify
@@ -127,9 +119,6 @@ module.exports = {
      * @private
      */
     _generateToken: async function (user, done) {
-        // const payload = {
-        //     user: user.loginUsername
-        // }
 
         let payload;
         let isEmail;
@@ -143,7 +132,6 @@ module.exports = {
                 payload = { phone: user.emailOrPhone }
         } else {
             payload = (user.userEmail) ? { email: user.userEmail } : { phone: user.userContactNumber }
-
         }
 
         const token = jwt.sign(payload,
@@ -221,7 +209,6 @@ module.exports = {
         });
     },
 
-
     /**
      * Validates user password
      * @param email
@@ -230,7 +217,6 @@ module.exports = {
      * @returns {Promise}
      */
     validatePassword(username, password, isEmail) {
-
         return new Promise((resolve, reject) => {
             let findObj = (isEmail) ? { userEmail: username } : { loginUsername: username }
 
@@ -255,7 +241,6 @@ module.exports = {
         });
     },
 
-
     /**
      * Authenticates user by email and password.
      * @param username
@@ -276,7 +261,6 @@ module.exports = {
                         return reject(API_ERRORS.INVALID_EMAIL_PASSWORD);
                     } else {
                         UserManager._generateToken(user, (token) => {
-                            console.log("I am user::: ", user)
                             resolve({ token });
                         });
                     }
@@ -389,7 +373,7 @@ module.exports = {
 
 
     otpViaEmail: function (findObj, emailOrPhone) {
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             const user = await UserLogin.findOne(findObj);
 
             if (user) {
@@ -416,7 +400,7 @@ module.exports = {
     },
 
     otpViaPhone: function (findObj, emailOrPhone) {
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             const user = await UserLogin.findOne(findObj);
 
             if (user) {
@@ -440,7 +424,5 @@ module.exports = {
 
             }
         })
-
     }
-
 };

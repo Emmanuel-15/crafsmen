@@ -31,7 +31,7 @@ module.exports.policies = {
     },
 
     'customerController': {
-        'createCustomer': true,
+        'create': true,
         'validate': true
     }
 

@@ -16,7 +16,6 @@ module.exports = {
 	},
 
 	isValidRequest(req, res, requestType, hasParams, hasBody) {
-		console.log("Started isValidRequest function.")
 		if (req.method !== requestType)
 			return res.notFound();
 
@@ -31,7 +30,6 @@ module.exports = {
 			if (_.isEmpty(req.body))
 				return res.badRequest(Utils.jsonErr("EMPTY_BODY"));
 		}
-		console.log("Finished isValidRequest function.");
 
 	},
 

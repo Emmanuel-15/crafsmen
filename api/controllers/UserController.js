@@ -30,27 +30,14 @@ const validation_master = require('validation-master');
 module.exports = {
 
     /**
-     * Action for /user
-     * @param req
-     * @param res
-     */
-    index: function (req, res) {
-        // We use here req.userInfo which is set in policies/jwtAuth.js
-        res.ok({
-            id: req.userInfo.id,
-            email: req.userInfo.email
-        });
-    },
-
-    /**
-     * Action for /user/create
+     * Action for /create
      * @param req
      * @param res
      * @returns {*}
      */
     create: function (req, res) {
         if (!req.body || _.keys(req.body).length <= 0)
-            return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
+            return res.badRequest(Utils.jsonErr("EMPTY_BODY"));
 
         const email = req.body.email;
         const username = req.body.username;
@@ -58,16 +45,13 @@ module.exports = {
         const passwordConfirm = req.body.password_confirm;
 
         if (!email || !validator.isEmail(email))
-            return res.badRequest(Utils.jsonErr('INVALID_EMAIL'));
-
+            return res.badRequest(Utils.jsonErr("INVALID_EMAIL"));
 
         if (password !== passwordConfirm)
-            return res.badRequest(Utils.jsonErr('PASSWORD_DOES_NOT_MATCH'));
-
+            return res.badRequest(Utils.jsonErr("PASSWORD_DOES_NOT_MATCH"));
 
         if (!passSchema.validate(password))
-            return res.badRequest(Utils.jsonErr('PASSWORD_MUST_BE_6-24_CHARACTERS_INCLUDING_LETTERS_AND_DIGITS'));
-
+            return res.badRequest(Utils.jsonErr("PASSWORD_MUST_BE_6-24_CHARACTERS_INCLUDING_LETTERS_AND_DIGITS"));
 
         UserManager
             .createUser({
@@ -76,14 +60,14 @@ module.exports = {
                 password
             })
             .then(jwToken => {
-                res.created('USER_CREATED_SUCCESSFULLY', jwToken);
+                res.created("USER_CREATED_SUCCESSFULLY", jwToken);
             })
             .catch(err => {
                 if (err == API_ERRORS.USERNAME_IN_USE) {
-                    return res.badRequest(Utils.jsonErr('THIS_USERNAME_IS_ALREADY_IN_USE'));
+                    return res.badRequest(Utils.jsonErr("USERNAME_IS_ALREADY_IN_USE"));
 
                 } else if (err === API_ERRORS.EMAIL_IN_USE) {
-                    return res.badRequest(Utils.jsonErr('THIS_EMAIL_IS_ALREADY_IN_USE'));
+                    return res.badRequest(Utils.jsonErr("EMAIL_IS_ALREADY_IN_USE"));
 
                 } else if (err === API_ERRORS.EXCEPTION) {
                     return res.serverError(Utils.jsonErr("EXCEPTION"));
@@ -95,15 +79,14 @@ module.exports = {
     },
 
     /**
-     * Action for /user/login
+     * Action for /login
      * @param req
      * @param res
      * @returns {*}
      */
     login: async function (req, res) {
-        if (!req.body || _.keys(req.body).length <= 0)
-            return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
-
+        if (!req.body || _.keys(req.body).length == 0)
+            return res.badRequest(Utils.jsonErr("EMPTY_BODY"));
 
         const username = req.body.username;
         const password = req.body.password;
@@ -111,32 +94,29 @@ module.exports = {
         let isEmail = false;
 
         if (!password)
-            return res.badRequest(Utils.jsonErr('PASSWORD_IS_REQUIRED'));
-
+            return res.badRequest(Utils.jsonErr("PASSWORD_IS_REQUIRED"));
 
         if (validator.isEmail(username))
             isEmail = true;
 
-
-        if (isEmail) {
-            // User has provided the email as username.
+        if (isEmail) { // User has provided the email as username.
             if (!username || !validator.isEmail(username))
-                return res.badRequest(Utils.jsonErr('INVALID_EMAIL'));
+                return res.badRequest(Utils.jsonErr("INVALID_EMAIL"));
         }
 
         await UserManager
             .authenticateUserByPassword(username, password, isEmail)
             .then((token) => {
-                return res.ok('USER_TOKEN', token);
+                return res.ok("USER_TOKEN", token);
             })
             .catch(err => {
                 switch (err) {
                     case API_ERRORS.INVALID_EMAIL_PASSWORD:
-                        return res.badRequest(Utils.jsonErr('INVALID_EMAIL_OR_PASSWORD'));
+                        return res.badRequest(Utils.jsonErr("INVALID_EMAIL_OR_PASSWORD"));
                     case API_ERRORS.USER_NOT_FOUND:
-                        return res.badRequest(Utils.jsonErr('INVALID_EMAIL_OR_PASSWORD'));
+                        return res.badRequest(Utils.jsonErr("INVALID_EMAIL_OR_PASSWORD"));
                     case API_ERRORS.USER_LOCKED:
-                        return res.forbidden(Utils.jsonErr('ACCOUNT_LOCKED'));
+                        return res.forbidden(Utils.jsonErr("ACCOUNT_LOCKED"));
                     case API_ERRORS.EXCEPTION:
                         return res.serverError(Utils.jsonErr("EXCEPTION"));
                     default:
@@ -147,7 +127,7 @@ module.exports = {
     },
 
     /**
-     * Action for /user/token
+     * Action for /refreshToken
      * @param req
      * @param res
      * @returns {*}
@@ -162,26 +142,26 @@ module.exports = {
                 token = credentials;
             }
         } else {
-            return res.badRequest(Utils.jsonErr('NO_AUTHORIZATION_HEADER_FOUND'));
+            return res.badRequest(Utils.jsonErr("NO_AUTHORIZATION_HEADER_FOUND"));
         }
 
         if (!token)
-            return res.badRequest(Utils.jsonErr('FORMAT_IS_AUTHORIZATION:BEARER_[TOKEN]'));
+            return res.badRequest(Utils.jsonErr("FORMAT_IS_AUTHORIZATION:BEARER_[TOKEN]"));
 
         UserManager
             .authenticateUserByRefreshToken(token)
             .then(user => {
                 UserManager._generateToken(user, token => {
-                    return res.ok('USER_TOKEN', { token });
+                    return res.ok("USER_TOKEN", { token });
                 });
             })
             .catch(err => {
                 switch (err) {
                     case API_ERRORS.INVALID_EMAIL_PASSWORD:
                     case API_ERRORS.USER_NOT_FOUND:
-                        return res.badRequest(Utils.jsonErr('INVALID_EMAIL_OR_PASSWORD'));
+                        return res.badRequest(Utils.jsonErr("INVALID_EMAIL_OR_PASSWORD"));
                     case API_ERRORS.USER_LOCKED:
-                        return res.forbidden(Utils.jsonErr('ACCOUNT_LOCKED'));
+                        return res.forbidden(Utils.jsonErr("ACCOUNT_LOCKED"));
                     case API_ERRORS.INACTIVE_TOKEN:
                         return res.badRequest(Utils.jsonErr("INACTIVE_TOKEN"));
                     case API_ERRORS.EXCEPTION:
@@ -194,81 +174,81 @@ module.exports = {
     },
 
     /**
-     * Action for /user/forgot
+     * Action for /forgot
      * @param req
      * @param res
      * @returns {*}
      */
     forgotPassword: function (req, res) {
         if (!req.body) {
-            return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
+            return res.badRequest(Utils.jsonErr("EMPTY_BODY"));
         }
 
         const email = req.body.email;
 
         if (!email || !validator.isEmail(email)) {
-            return res.badRequest(Utils.jsonErr('INVALID_EMAIL'));
+            return res.badRequest(Utils.jsonErr("INVALID_EMAIL"));
         }
 
         UserManager
             .generateResetToken(email)
             .then(function () {
-                res.ok('CHECK_YOUR_MAIL');
+                res.ok("CHECK_YOUR_MAIL");
             })
             .catch(err => {
-                if (err === API_ERRORS.USER_NOT_FOUND) {
-                    return res.notFound(Utils.jsonErr('USER_NOT_FOUND'));
-                }
+                if (err === API_ERRORS.USER_NOT_FOUND)
+                    return res.notFound(Utils.jsonErr("USER_NOT_FOUND"));
+
                 /* istanbul ignore next */
                 return res.serverError(Utils.jsonErr(err));
             });
     },
 
     /**
-     * Action for /user/change_password
+     * Action for /change_password
      * @param req
      * @param res
      * @returns {*}
      */
     changePassword: function (req, res) {
-        if (!req.body) {
+        if (!req.body)
             return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
-        }
 
         const username = req.body.username;
         const currentPassword = req.body.password;
         const newPassword = req.body.new_password;
         const newPasswordConfirm = req.body.new_password_confirm;
+
         let isEmail = false;
 
         if (validator.isEmail(username))
             isEmail = true;
 
         if (!username)
-            return res.badRequest(Utils.jsonErr('USERNAME_OR_EMAIL_IS_REQUIRED'));
+            return res.badRequest(Utils.jsonErr("USERNAME_OR_EMAIL_IS_REQUIRED"));
 
         if (!currentPassword)
-            return res.badRequest(Utils.jsonErr('CURRENT_PASSWORD_IS_REQUIRED'));
+            return res.badRequest(Utils.jsonErr("CURRENT_PASSWORD_IS_REQUIRED"));
 
         if (!newPassword || newPassword !== newPasswordConfirm)
-            return res.badRequest(Utils.jsonErr('PASSWORD_DOES_NOT_MATCH'));
+            return res.badRequest(Utils.jsonErr("PASSWORD_DOES_NOT_MATCH"));
 
         if (!passSchema.validate(newPassword))
-            return res.badRequest(Utils.jsonErr('PASSWORD_MUST_BE_6-24_CHARACTERS_INCLUDING_LETTERS_AND_DIGITS'));
+            return res.badRequest(Utils.jsonErr("PASSWORD_MUST_BE_6-24_CHARACTERS_INCLUDING_LETTERS_AND_DIGITS"));
 
 
         UserManager
             .changePassword(username, currentPassword, newPassword, isEmail)
-            .then(function (data) {
-                res.ok('PASSWORD_UPDATED_SUCCESSFULLY');
+            .then(() => {
+                res.ok("PASSWORD_UPDATED_SUCCESSFULLY");
             })
             .catch(err => {
                 switch (err) {
                     case API_ERRORS.USER_NOT_FOUND:
-                        return res.badRequest(Utils.jsonErr('EMAIL_NOT_FOUND'));
+                        return res.badRequest(Utils.jsonErr("EMAIL_NOT_FOUND"));
 
                     case API_ERRORS.INVALID_PASSWORD:
-                        return res.badRequest(Utils.jsonErr('INVALID_USERNAME/EMAIL_OR_PASSWORD'));
+                        return res.badRequest(Utils.jsonErr("INVALID_USERNAME/EMAIL_OR_PASSWORD"));
 
                     case API_ERRORS.EXCEPTION:
                         return res.serverError(Utils.jsonErr("EXCEPTION"));
@@ -280,14 +260,14 @@ module.exports = {
     },
 
     /**
-     * Action for /user/reset_password
+     * Action for /reset_password
      * @param req
      * @param res
      * @returns {*}
      */
     resetPasswordByResetToken: function (req, res) {
         if (!req.body) {
-            return res.badRequest(Utils.jsonErr('EMPTY_BODY'));
+            return res.badRequest(Utils.jsonErr("EMPTY_BODY"));
         }
 
         const email = req.body.email;
@@ -296,30 +276,30 @@ module.exports = {
         const newPasswordConfirm = req.body.new_password_confirm;
 
         if (!email || !validator.isEmail(email)) {
-            return res.badRequest(Utils.jsonErr('INVALID_EMAIL'));
+            return res.badRequest(Utils.jsonErr("INVALID_EMAIL"));
         }
 
         if (!resetToken) {
-            return res.badRequest(Utils.jsonErr('RESET_TOKEN_IS_REQUIRED'));
+            return res.badRequest(Utils.jsonErr("RESET_TOKEN_IS_REQUIRED"));
         }
 
         if (!newPassword || newPassword !== newPasswordConfirm) {
-            return res.badRequest(Utils.jsonErr('PASSWORD_DOES_NOT_MATCH'));
+            return res.badRequest(Utils.jsonErr("PASSWORD_DOES_NOT_MATCH"));
         }
 
         if (!passSchema.validate(newPassword)) {
-            return res.badRequest(Utils.jsonErr('PASSWORD_MUST_BE_6-24_CHARACTERS_INCLUDING_LETTERS_AND_DIGITS'));
+            return res.badRequest(Utils.jsonErr("PASSWORD_MUST_BE_6-24_CHARACTERS_INCLUDING_LETTERS_AND_DIGITS"));
         }
 
         UserManager
             .resetPasswordByResetToken(email, resetToken, newPassword)
             .then(() => {
-                res.ok('DONE');
+                res.ok("DONE");
             })
             .catch(err => {
                 if (err === API_ERRORS.USER_NOT_FOUND) {
                     // We show invalid email instead of User Not Found
-                    return res.badRequest(Utils.jsonErr('INVALID_EMAIL'));
+                    return res.badRequest(Utils.jsonErr("INVALID_EMAIL"));
                 }
                 /* istanbul ignore next */
                 return res.serverError(Utils.jsonErr(err));

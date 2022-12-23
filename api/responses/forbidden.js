@@ -12,7 +12,7 @@
  * ```
  */
 
-module.exports = function forbidden(data, options) {
+module.exports = function forbidden(message, data, options) {
     console.log("Forbidden");
     // Get access to `req`, `res`, & `sails`
     var req = this.req;
@@ -37,7 +37,7 @@ module.exports = function forbidden(data, options) {
     // If the user-agent wants JSON, always respond with JSON
     // If views are disabled, revert to json
     if (req.wantsJSON || sails.config.hooks.views === false) {
-        return res.json(data);
+        return res.json(message, data);
     }
 
     // If second argument is a string, we take that to mean it refers to a view.
@@ -63,7 +63,7 @@ module.exports = function forbidden(data, options) {
 
     // If no second argument provided, try to serve the default view,
     // but fall back to sending JSON(P) if any errors occur.
-    else return res.view('403', { data: viewData, title: 'Forbidden' }, function(err, html) {
+    else return res.view('403', { data: viewData, title: 'Forbidden' }, function (err, html) {
 
         // If a view error occured, fall back to JSON(P).
         if (err) {

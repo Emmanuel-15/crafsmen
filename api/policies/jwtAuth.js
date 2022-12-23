@@ -8,7 +8,6 @@
  */
 
 const API_ERRORS = require('../constants/APIErrors');
-const UserLogin = require('../models/UserLogin');
 const TOKEN_RE = /^Bearer$/i;
 
 module.exports = function (req, res, next) {
@@ -26,11 +25,11 @@ module.exports = function (req, res, next) {
             }
         }
     } else {
-        return res.badRequest(Utils.jsonErr('NO_AUTHORIZATINO_HEADER_FOUND'));
+        return res.badRequest(Utils.jsonErr("NO_AUTHORIZATINO_HEADER_FOUND"));
     }
 
     if (!token) {
-        return res.badRequest(Utils.jsonErr('FORMAT_IS_AUTHORIZATION:BEARER_[TOKEN]'));
+        return res.badRequest(Utils.jsonErr("FORMAT_IS_AUTHORIZATION:BEARER_[TOKEN]"));
     }
 
     UserManager
@@ -45,7 +44,7 @@ module.exports = function (req, res, next) {
                 case API_ERRORS.USER_NOT_FOUND:
                 case API_ERRORS.USER_LOCKED:
                 default:
-                    return res.badRequest(Utils.jsonErr('INVALID_TOKEN'));
+                    return res.badRequest(Utils.jsonErr("INVALID_TOKEN"));
             }
         });
 };
