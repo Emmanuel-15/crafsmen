@@ -242,7 +242,7 @@ module.exports = {
             .catch(err => {
                 switch (err) {
                     case API_ERRORS.USER_NOT_FOUND:
-                        return res.badRequest(Utils.jsonErr("EMAIL_NOT_FOUND"));
+                        return res.badRequest(Utils.jsonErr("USER_NOT_FOUND"));
 
                     case API_ERRORS.INVALID_PASSWORD:
                         return res.badRequest(Utils.jsonErr("INVALID_USERNAME/EMAIL_OR_PASSWORD"));

@@ -112,6 +112,7 @@ module.exports = {
             if (temp_table.otp != otp)
                 return res.unauthorized("INVALID_OTP");
             else {
+                obj.isActive = true;
                 await UserLogin.create(obj);
 
                 UserManager._generateToken(temp_table, (token) => {
@@ -168,6 +169,23 @@ module.exports = {
 
         if (updateCustomerDetails.userContactNumber && !validation_master.phoneNumberValidator(updateCustomerDetails.userContactNumber))
             return res.badRequest(Utils.jsonErr("INVALID_PHONE_NUMBER"));
+
+
+        if (updateCustomerDetails.userEmail) {
+            const checkEmail = await UserLogin.findOne({ userEmail: updateCustomerDetails.userEmail });
+
+            if (checkEmail)
+                return res.badRequest(Utils.jsonErr("EMAIL_ALREADY_IN_USE"));
+
+        }
+
+        if (updateCustomerDetails.userContactNumber) {
+            const checkPhone = await UserLogin.findOne({ userContactNumber: updateCustomerDetails.userContactNumber });
+
+            if (checkPhone)
+                return res.badRequest(Utils.jsonErr("PHONE_NUMBER_ALREADY_IN_USE"));
+
+        }
 
         try {
             await UserLogin.updateOne({ userId: req.user.userId }).set(updateCustomerDetails);
