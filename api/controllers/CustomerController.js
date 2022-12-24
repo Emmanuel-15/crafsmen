@@ -5,8 +5,10 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const validator = require('validator');
-const validation_master = require('validation-master');
 const UserManager = require('../services/UserManager');
+
+// See ref https://www.npmjs.com/package/validation-master
+const validation_master = require('validation-master');
 
 module.exports = {
 

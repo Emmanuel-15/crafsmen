@@ -4,7 +4,7 @@ const moment = require('moment');
 const farmhash = require('farmhash');
 
 const API_ERRORS = require('../constants/APIErrors');
-const { exits, login } = require('../controllers/UserController');
+// const { exits, login } = require('../controllers/UserController');
 const { hash } = require('bcrypt');
 const { find } = require('sails-postgresql');
 
@@ -192,8 +192,10 @@ module.exports = {
                 if (err) return reject(err); // JWT parse error
 
                 try {
+                    let obj = (tokenData.email) ? { userEmail: tokenData.email } : { userContactNumber: tokenData.phone }
+
                     UserLogin
-                        .findOne({ loginUsername: tokenData.user })
+                        .findOne(obj)
                         .exec((err, user) => {
                             if (err) return reject(err); // Query error
                             if (!user) return reject(API_ERRORS.USER_NOT_FOUND);

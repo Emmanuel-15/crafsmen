@@ -72,6 +72,9 @@ module.exports = {
         if (req.method !== 'POST')
             return res.notFound();
 
+        if (req.user.isAdmin != true)
+            return res.forbidden("NOT_ALLOWED");
+
         if (!req.param || _.isEmpty(req.param) == 0)
             return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
 
@@ -112,6 +115,9 @@ module.exports = {
     update: async function (req, res) {
         if (req.method !== 'PUT')
             return res.notFound();
+
+        if (req.user.isAdmin != true)
+            return res.forbidden("NOT_ALLOWED");
 
         if (!req.body || _.keys(req.body).length == 0)
             return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
@@ -163,6 +169,9 @@ module.exports = {
     delete: async function (req, res) {
         if (req.method !== 'DELETE')
             return res.notFound();
+
+        if (req.user.isAdmin != true)
+            return res.forbidden("NOT_ALLOWED");
 
         if (!req.param || _.isEmpty(req.param) == 0)
             return res.badRequest(Utils.jsonErr("BAD_REQUEST"));

@@ -6,22 +6,22 @@
  */
 
 function doesNameExist(name) {
-    return Contractors.findOne({ contractorName: name })
+    return Contractors.findOne({ contractorName: name });
 }
 
 function doesNumberExist(number, col) {
     let obj;
 
     if (col)
-        obj = { contactNumber1: number }
+        obj = { contactNumber1: number };
     else
-        obj = { contactNumber2: number }
+        obj = { contactNumber2: number };
 
-    return Contractors.findOne(obj)
+    return Contractors.findOne(obj);
 }
 
 function doesEmailExist(email) {
-    return Contractors.findOne({ contractorEmail: email })
+    return Contractors.findOne({ contractorEmail: email });
 }
 
 module.exports = {
@@ -39,7 +39,7 @@ module.exports = {
         try {
             await Contractors.find({ isActive: true })
                 .exec((err, data) => {
-                    if (err || !data)
+                    if (err || data.length == 0)
                         return res.ok("NO_CONTRACTORS_FOUND");
                     else
                         return res.ok("CONTRACTORS", data);
@@ -92,6 +92,9 @@ module.exports = {
         if (req.method !== 'POST')
             return res.notFound();
 
+        if (req.user.isAdmin != true)
+            return res.forbidden("NOT_ALLOWED");
+
         if (!req.param || _.isEmpty(req.param) == 0)
             return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
 
@@ -140,6 +143,9 @@ module.exports = {
     update: async function (req, res) {
         if (req.method !== 'PUT')
             return res.notFound();
+
+        if (req.user.isAdmin != true)
+            return res.forbidden("NOT_ALLOWED");
 
         if (!req.body || _.keys(req.body).length == 0)
             return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
@@ -200,6 +206,9 @@ module.exports = {
     delete: async function (req, res) {
         if (req.method !== 'DELETE')
             return res.notFound();
+
+        if (req.user.isAdmin != true)
+            return res.forbidden("NOT_ALLOWED");
 
         if (!req.param || _.isEmpty(req.param) == 0)
             return res.badRequest(Utils.jsonErr("BAD_REQUEST"));

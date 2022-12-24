@@ -37,7 +37,7 @@ module.exports = function forbidden(message, data, options) {
     // If the user-agent wants JSON, always respond with JSON
     // If views are disabled, revert to json
     if (req.wantsJSON || sails.config.hooks.views === false) {
-        return res.json(message, data);
+        return res.json({ message, data });
     }
 
     // If second argument is a string, we take that to mean it refers to a view.

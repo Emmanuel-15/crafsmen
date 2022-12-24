@@ -24,9 +24,6 @@ passSchema
     .has().letters()
     .has().digits();
 
-// See ref https://www.npmjs.com/package/validation-master
-const validation_master = require('validation-master');
-
 module.exports = {
 
     /**
