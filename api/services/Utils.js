@@ -41,16 +41,6 @@ module.exports = {
 		}
 
 		if (hasBody) {
-			let empty_Field = null;
-
-			_.valuesIn(req.body).forEach(val => {
-				if (val.length == 0)
-					return empty_Field = APIErrors.REQUIRED;
-			});
-
-			if (empty_Field)
-				return empty_Field;
-
 			if (_.isEmpty(req.body))
 				return APIErrors.NO_BODY;
 		}

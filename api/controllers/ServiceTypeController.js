@@ -76,6 +76,7 @@ module.exports = {
             return res.badRequest(Utils.jsonErr(validReq));
 
         const newServiceType = { serviceType: req.body.serviceType };
+        //    { serviceType: newServiceType.serviceType }
 
         const schema = {
             type: 'object',
@@ -88,7 +89,6 @@ module.exports = {
                     }
                 }
             }, errorMessage: {
-                type: 'should be an object',
                 required: {
                     serviceType: 'SERVICE_TYPE_IS_REQUIRED'
                 }
@@ -101,7 +101,7 @@ module.exports = {
             return res.badRequest(Utils.jsonErr(validations));
 
         try {
-            const check = await ServiceType.findOne({ serviceType: newServiceType.serviceType });
+            const check = await ServiceType.findOne(newServiceType);
 
             if (check)
                 return res.forbidden(Utils.jsonErr("SERVICE_TYPE_ALREADY_EXISTS"));
