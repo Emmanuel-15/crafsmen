@@ -8,7 +8,7 @@ const Ajv = require('ajv')
 const addFormats = require('ajv-formats')
 const ajvErrors = require('ajv-errors')
 
-const ajv = new Ajv({ allErrors: true, $data: true });
+const ajv = new Ajv.default({ allErrors: true, $data: true });
 addFormats(ajv);
 ajvErrors(ajv);
 ajv.addFormat('custom-date-time', function (dateTimeString) {
