@@ -35,7 +35,6 @@ module.exports = {
         else if (validation_master.phoneNumberValidator(emailOrPhone))
             isNumber = true;
 
-
         if (isEmail == false && isNumber == false)
             return res.badRequest(Utils.jsonErr("INVALID_EMAIL_PHONE"));
 
@@ -170,13 +169,11 @@ module.exports = {
         if (updateCustomerDetails.userContactNumber && !validation_master.phoneNumberValidator(updateCustomerDetails.userContactNumber))
             return res.badRequest(Utils.jsonErr("INVALID_PHONE_NUMBER"));
 
-
         if (updateCustomerDetails.userEmail) {
             const checkEmail = await UserLogin.findOne({ userEmail: updateCustomerDetails.userEmail });
 
             if (checkEmail)
                 return res.badRequest(Utils.jsonErr("EMAIL_ALREADY_IN_USE"));
-
         }
 
         if (updateCustomerDetails.userContactNumber) {
@@ -184,7 +181,6 @@ module.exports = {
 
             if (checkPhone)
                 return res.badRequest(Utils.jsonErr("PHONE_NUMBER_ALREADY_IN_USE"));
-
         }
 
         try {
@@ -196,6 +192,4 @@ module.exports = {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
         }
     }
-
 };
-

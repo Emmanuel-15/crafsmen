@@ -10,5 +10,9 @@ module.exports = {
 	USER_NOT_FOUND: 'User not found',
 	INACTIVE_TOKEN: 'Inactive token',
 
-	NOT_ALLOWED: 'Only .jpeg & .png files allowed.',
+	NOT_ALLOWED: 'Only .jpeg & .png files allowed',
+
+	NO_PARAMS: 'NO_PARAMS_FOUND',
+	NO_BODY: 'EMPTY_BODY',
+	REQUIRED: 'EMPTY_FIELDS_NOT_ALLOWED'
 };

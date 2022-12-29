@@ -37,6 +37,13 @@ module.exports.routes = {
     'PUT   /api/v1/entrance/service-type/:id': { controller: 'ServiceTypeController', action: 'update' },
     'DELETE   /api/v1/entrance/service-type/:id': { controller: 'ServiceTypeController', action: 'delete' },
 
+    // service-price
+    'GET   /api/v1/entrance/service-price': { controller: 'ServicePriceController', action: 'getAll' },
+    'GET   /api/v1/entrance/service-price/:id': { controller: 'ServicePriceController', action: 'get' },
+    'POST   /api/v1/entrance/service-price': { controller: 'ServicePriceController', action: 'create' },
+    'PUT   /api/v1/entrance/service-price/:id': { controller: 'ServicePriceController', action: 'update' },
+    'DELETE   /api/v1/entrance/service-price/:id': { controller: 'ServicePriceController', action: 'delete' },
+
     // contractos
     'GET   /api/v1/entrance/contractors': { controller: 'ContractorsController', action: 'getAll' },
     'GET   /api/v1/entrance/contractors/:id': { controller: 'ContractorsController', action: 'get' },
@@ -44,4 +51,20 @@ module.exports.routes = {
     'PUT   /api/v1/entrance/contractors/:id': { controller: 'ContractorsController', action: 'update' },
     'DELETE   /api/v1/entrance/contractors/:id': { controller: 'ContractorsController', action: 'delete' },
 
+    // contractor-services
+    'GET   /api/v1/entrance/contractor-services': { controller: 'ContractorServicesController', action: 'getAll' },
+    'GET   /api/v1/entrance/contractor-services/:id': { controller: 'ContractorServicesController', action: 'get' },
+    'POST   /api/v1/entrance/contractor-services': { controller: 'ContractorServicesController', action: 'create' },
+    'PUT   /api/v1/entrance/contractor-services/:id': { controller: 'ContractorServicesController', action: 'update' },
+    'DELETE   /api/v1/entrance/contractor-services/:id': { controller: 'ContractorServicesController', action: 'delete' },
+
+    // bookings
+    'GET   /api/v1/entrance/bookings': { controller: 'BookingsController', action: 'getAll' },
+    'GET   /api/v1/entrance/bookings/:id': { controller: 'BookingsController', action: 'get' },
+    'POST   /api/v1/entrance/bookings': { controller: 'BookingsController', action: 'create' },
+    'PUT   /api/v1/entrance/bookings/:id': { controller: 'BookingsController', action: 'update' },
+    'DELETE   /api/v1/entrance/bookings/:id': { controller: 'BookingsController', action: 'delete' },
+
+    //generic controller
+    'POST    /api/v1/entrance/upload-image': { controller: 'GenericController', action: 'upload' }
 };

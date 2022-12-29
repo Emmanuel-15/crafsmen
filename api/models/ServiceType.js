@@ -35,26 +35,24 @@ module.exports = {
       columnName: 'service_type_id'
     },
 
+    serviceType: {
+      type: 'string',
+      columnName: 'service_type'
+    },
+
     createdDate: {
       type: 'ref',
-      columnType: 'timestamptz',
+      columnType: 'timestamp',
       autoCreatedAt: true,
       columnName: 'created_date'
     },
 
     modifiedDate: {
       type: 'ref',
-      columnType: 'timestamptz',
+      columnType: 'timestamp',
       autoUpdatedAt: true,
       columnName: 'modified_date'
-    },
-
-    serviceType: {
-      type: 'string',
-      columnName: 'service_type'
     }
-
-  },
-
+  }
 };
 

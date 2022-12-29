@@ -5,6 +5,8 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+const Utils = require("../services/Utils");
+
 module.exports = {
 
     /**
@@ -14,9 +16,6 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
-        if (req.method !== 'GET')
-            return res.notFound();
-
         try {
             await ServiceType.find()
                 .exec((err, data) => {
@@ -38,11 +37,10 @@ module.exports = {
      * @returns {*}
      */
     get: async function (req, res) {
-        if (req.method !== 'GET')
-            return res.notFound();
+        const validReq = await Utils.isValidRequest(req, true, false);
 
-        if (!req.param || _.isEmpty(req.param) == 0)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
 
         if (isNaN(req.param('id')))
             return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
@@ -69,23 +67,45 @@ module.exports = {
      * @returns {*}
      */
     create: async function (req, res) {
-        if (req.method !== 'POST')
-            return res.notFound();
-
         if (req.user.isAdmin != true)
             return res.forbidden("NOT_ALLOWED");
 
-        if (!req.param || _.isEmpty(req.param) == 0)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        const validReq = await Utils.isValidRequest(req, false, true);
+
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
 
         const newServiceType = { serviceType: req.body.serviceType };
 
-        const check = await ServiceType.findOne({ serviceType: newServiceType.serviceType });
+        const schema = {
+            type: 'object',
+            required: ['serviceType'],
+            properties: {
+                serviceType: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'INVALID_SERVICE_TYPE'
+                    }
+                }
+            }, errorMessage: {
+                type: 'should be an object',
+                required: {
+                    serviceType: 'SERVICE_TYPE_IS_REQUIRED'
+                }
+            }
+        }
 
-        if (check)
-            return res.forbidden(Utils.jsonErr("SERVICE_TYPE_ALREADY_EXISTS"));
+        const validations = Utils.validate(schema, newServiceType);
+
+        if (validations)
+            return res.badRequest(Utils.jsonErr(validations));
 
         try {
+            const check = await ServiceType.findOne({ serviceType: newServiceType.serviceType });
+
+            if (check)
+                return res.forbidden(Utils.jsonErr("SERVICE_TYPE_ALREADY_EXISTS"));
+
             await ServiceType
                 .create(newServiceType)
                 .exec((err) => {
@@ -107,35 +127,55 @@ module.exports = {
      * @returns {*}
      */
     update: async function (req, res) {
-        if (req.method !== 'PUT')
-            return res.notFound();
-
         if (req.user.isAdmin != true)
             return res.forbidden("NOT_ALLOWED");
 
-        if (!req.body || _.keys(req.body).length == 0)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        const validReq = await Utils.isValidRequest(req, true, true);
 
-        if (!req.param || req.param.length != 2)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
 
         const id = req.param("id");
-        const updateServiceType = { serviceType: req.body.serviceType, };
 
         if (isNaN(id))
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
-        const idExists = await ServiceType.findOne({ serviceTypeId: id });
+        const updateServiceType = { serviceType: req.body.serviceType };
 
-        if (!idExists)
-            return res.badRequest(Utils.jsonErr("NO_SERVICE_TYPE_FOUND"));
+        const schema = {
+            type: 'object',
+            required: ['serviceType'],
+            properties: {
+                serviceType: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'INVALID_SERVICE_TYPE'
+                    }
+                }
+            }, errorMessage: {
+                type: 'should be an object',
+                required: {
+                    serviceType: 'SERVICE_TYPE_IS_REQUIRED'
+                }
+            }
+        }
 
-        const ServiceExists = await ServiceType.findOne({ serviceType: updateServiceType.serviceType });
+        const validations = Utils.validate(schema, updateServiceType);
 
-        if (ServiceExists)
-            return res.badRequest(Utils.jsonErr("SERVICE_TYPE_ALREADY_EXISTS"));
+        if (validations)
+            return res.badRequest(Utils.jsonErr(validations));
 
         try {
+            const idExists = await ServiceType.findOne({ serviceTypeId: id });
+
+            if (!idExists)
+                return res.badRequest(Utils.jsonErr("NO_SERVICE_TYPE_FOUND"));
+
+            const ServiceExists = await ServiceType.findOne({ serviceType: updateServiceType.serviceType });
+
+            if (ServiceExists)
+                return res.badRequest(Utils.jsonErr("SERVICE_TYPE_ALREADY_EXISTS"));
+
             await ServiceType.updateOne({ serviceTypeId: id }).set(updateServiceType)
                 .exec((err) => {
                     if (err)
@@ -156,24 +196,23 @@ module.exports = {
      * @returns {*}
      */
     delete: async function (req, res) {
-        if (req.method !== 'DELETE')
-            return res.notFound();
-
         if (req.user.isAdmin != true)
             return res.forbidden("NOT_ALLOWED");
 
-        if (!req.param || _.isEmpty(req.param) == 0)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        const validReq = await Utils.isValidRequest(req, true, false);
+
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
 
         if (isNaN(req.param('id')))
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
-        const check = await ServiceType.findOne({ serviceTypeId: req.param('id') });
-
-        if (!check)
-            return res.badRequest(Utils.jsonErr("SERVICE_TYPE_NOT_FOUND"));
-
         try {
+            const check = await ServiceType.findOne({ serviceTypeId: req.param('id') });
+
+            if (!check)
+                return res.badRequest(Utils.jsonErr("SERVICE_TYPE_NOT_FOUND"));
+
             ServiceType.destroy({ serviceTypeId: req.param('id') })
                 .exec((err) => {
                     if (err) {
@@ -192,4 +231,3 @@ module.exports = {
         }
     }
 };
-

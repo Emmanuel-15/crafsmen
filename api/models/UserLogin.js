@@ -140,26 +140,21 @@ module.exports = {
             columnType: 'smallint',
             columnName: 'reset_password'
         }
-
     },
-
 
     setPassword: async function (password) {
         return await generatePasswordHash(password)
     },
 
-
     validatePassword: async function (password, usr_password) {
         return bcrypt.compare(password, usr_password);
     },
-
 
     customToJSON: function () {
         // Return a shallow copy of this record with the loginPassword removed.
         return _.omit(this, ['loginUsername', 'loginPassword', 'createdDate', 'modifiedDate', 'dtLastLogin',
             'userImage', 'hashCode', 'isAdmin', 'isActive', 'resetPassword']);
     },
-
 
     beforeCreate: function (values, next) {
 
@@ -178,7 +173,5 @@ module.exports = {
                     next(err);
                 });
         }
-
     }
-
 };

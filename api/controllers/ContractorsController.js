@@ -5,6 +5,8 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+const Utils = require("../services/Utils");
+
 function doesNameExist(name) {
     return Contractors.findOne({ contractorName: name });
 }
@@ -26,6 +28,7 @@ function doesEmailExist(email) {
 
 module.exports = {
 
+
     /**
      * Action for 'GET' /contractors
      * @param req
@@ -33,8 +36,10 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
-        if (req.method !== 'GET')
-            return res.notFound();
+        const validReq = await Utils.isValidRequest(req, false, false);
+
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
 
         try {
             await Contractors.find({ isActive: true })
@@ -58,11 +63,10 @@ module.exports = {
      * @returns {*}
      */
     get: async function (req, res) {
-        if (req.method !== 'GET')
-            return res.notFound();
+        const validReq = await Utils.isValidRequest(req, true, false);
 
-        if (!req.param || _.isEmpty(req.param) == 0)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
 
         if (isNaN(req.param('id')))
             return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
@@ -89,14 +93,13 @@ module.exports = {
      * @returns {*}
      */
     create: async function (req, res) {
-        if (req.method !== 'POST')
-            return res.notFound();
-
         if (req.user.isAdmin != true)
             return res.forbidden("NOT_ALLOWED");
 
-        if (!req.param || _.isEmpty(req.param) == 0)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        const validReq = await Utils.isValidRequest(req, false, true);
+
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
 
         const newContractor = {
             contractorName: req.body.contractorName,
@@ -106,6 +109,64 @@ module.exports = {
             contractorEmail: req.body.contractorEmail,
             isActive: true,
         };
+
+        const schema = {
+            type: 'object',
+            required: ['contractorName', 'contractorAddress', 'contactNumber1', 'contractorEmail'],
+            properties: {
+                contractorName: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'INVALID_NAME'
+                    }
+                },
+                contractorAddress: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'INVALID_ADDRESS'
+                    }
+                },
+                contactNumber1: {
+                    type: 'number',
+                    errorMessage: {
+                        type: 'INVALID_PHONE_NUMBER'
+                    }
+                },
+                contactNumber2: {
+                    type: 'number',
+                    errorMessage: {
+                        type: 'INVALID_PHONE_NUMBER'
+                    }
+                },
+                contractorEmail: {
+                    type: 'string',
+                    format: 'email',
+                    errorMessage: {
+                        type: 'EMAIL_SHOUL_BE_STRING',
+                        format: 'INVALID_EMAIL'
+                    }
+                },
+
+            }, errorMessage: {
+                type: 'should be an object',
+                required: {
+                    contractorName: 'foo field is missing',
+                    contractorAddress: 'foo field is missing',
+                    contactNumber1: 'foo field is missing',
+                    contractorEmail: 'foo field is missing'
+                }
+            },
+            // additionalProperties: false
+        }
+
+        const validations = Utils.validate(schema, newContractor);
+
+        if (validations) {
+            // const obj = Object.assign({}, validations); // converts array to object
+            // return res.badRequest(Utils.jsonErr(obj));
+
+            return res.badRequest(Utils.jsonErr(validations));
+        }
 
         if (newContractor.contactNumber2 && newContractor.contactNumber1 == newContractor.contactNumber2)
             return res.badRequest(Utils.jsonErr("PROVIDE_DIFFERENT_NUMBERS"));
@@ -141,17 +202,13 @@ module.exports = {
      * @returns {*}
      */
     update: async function (req, res) {
-        if (req.method !== 'PUT')
-            return res.notFound();
-
         if (req.user.isAdmin != true)
             return res.forbidden("NOT_ALLOWED");
 
-        if (!req.body || _.keys(req.body).length == 0)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        const validReq = await Utils.isValidRequest(req, true, true);
 
-        if (!req.param || req.param.length != 2)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
 
         const id = req.param("id");
 
@@ -166,10 +223,62 @@ module.exports = {
         if (isNaN(id))
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
-        const idExists = await Contractors.findOne({ contractorId: id, isActive: true });
+        const schema = {
+            type: 'object',
+            properties: {
+                contractorName: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'INVALID_NAME'
+                    }
+                },
+                contractorAddress: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'INVALID_ADDRESS'
+                    }
+                },
+                contactNumber1: {
+                    type: 'number',
+                    errorMessage: {
+                        type: 'INVALID_PHONE_NUMBER'
+                    }
+                },
+                contactNumber2: {
+                    type: 'number',
+                    errorMessage: {
+                        type: 'INVALID_PHONE_NUMBER'
+                    }
+                },
+                contractorEmail: {
+                    type: 'string',
+                    format: 'email',
+                    errorMessage: {
+                        type: 'EMAIL_SHOUL_BE_STRING',
+                        format: 'INVALID_EMAIL'
+                    }
+                },
 
-        if (!idExists)
-            return res.badRequest(Utils.jsonErr("NO_CONTRACTOR_FOUND"));
+            }, errorMessage: {
+                type: 'should be an object',
+            },
+            // additionalProperties: false
+        }
+
+        const validations = Utils.validate(schema, updateContractor);
+
+        if (validations)
+            return res.badRequest(Utils.jsonErr(validations));
+
+        try {
+            const idExists = await Contractors.findOne({ contractorId: id, isActive: true });
+
+            if (!idExists)
+                return res.badRequest(Utils.jsonErr("NO_CONTRACTOR_FOUND"));
+
+        } catch (err) {
+            return res.serverError(Utils.jsonErr("EXCEPTION"));
+        }
 
         if (updateContractor.contactNumber2 && updateContractor.contactNumber1 == updateContractor.contactNumber2)
             return res.badRequest(Utils.jsonErr("PROVIDE_DIFFERENT_NUMBERS"));
@@ -204,24 +313,23 @@ module.exports = {
      * @returns {*}
      */
     delete: async function (req, res) {
-        if (req.method !== 'DELETE')
-            return res.notFound();
-
         if (req.user.isAdmin != true)
             return res.forbidden("NOT_ALLOWED");
 
-        if (!req.param || _.isEmpty(req.param) == 0)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        const validReq = await Utils.isValidRequest(req, true, false);
+
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
 
         if (isNaN(req.param('id')))
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
-        const check = await Contractors.findOne({ contractorId: req.param('id'), isActive: true });
-
-        if (!check)
-            return res.badRequest(Utils.jsonErr("CONTRACTOR_NOT_FOUND"));
-
         try {
+            const check = await Contractors.findOne({ contractorId: req.param('id'), isActive: true });
+
+            if (!check)
+                return res.badRequest(Utils.jsonErr("CONTRACTOR_NOT_FOUND"));
+
             Contractors.updateOne({ contractorId: req.param('id') })
                 .set({ isActive: false })
                 .exec((err) => {

@@ -20,19 +20,40 @@ module.exports.policies = {
     '*': 'jwtAuth',
 
     'userController': {
-
         'create': true,
         'login': true,
         'refreshToken': true
     },
 
     'servicesController': {
-        'getAll': true
+        'getAll': true,
+        'get': true
+    },
+
+    'serviceTypeController': {
+        'getAll': true,
+        'get': true
     },
 
     'customerController': {
         'create': true,
         'validate': true
-    }
+    },
 
+    // '*': ['isValidRequest', 'jwtAuth'],
+
+    // 'userController': {
+    //     'create': true,
+    //     'login': true,
+    //     'refreshToken': true
+    // },
+
+    // 'servicesController': {
+    //     'getAll': 'isValidRequest'
+    // },
+
+    // 'customerController': {
+    //     'create': 'isValidRequest',
+    //     'validate': 'isValidRequest'
+    // }
 };

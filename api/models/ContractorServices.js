@@ -1,13 +1,13 @@
 /**
- * Contractors.js
- *
- * @description :: A model definition represents a database table/collection.
- * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
- */
+* ContractorServices.js
+*
+* @description :: A model definition represents a database table/collection.
+* @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
+*/
 
 module.exports = {
 
-  primaryKey: 'contractorId',
+  primaryKey: 'contractorServiceId',
 
   attributes: {
 
@@ -29,50 +29,25 @@ module.exports = {
     updatedAt: false,
     id: false,
 
-    contractorId: {
+    contractorServiceId: {
       type: 'number',
       autoIncrement: true,
+      columnName: 'contractor_service_id'
+    },
+
+    contractorId: {
+      type: 'number',
       columnName: 'contractor_id'
-      // size: 100
     },
 
-    contractorName: {
-      type: 'string',
-      allowNull: true,
-      columnName: 'contractor_name'
-    },
-
-    contractorAddress: {
-      type: 'string',
-      allowNull: true,
-      columnName: 'contractor_address'
-    },
-
-    contactNumber1: {
-      type: 'string',
-      allowNull: true,
-      columnName: 'contact_number1'
-    },
-
-    contactNumber2: {
-      type: 'string',
-      allowNull: true,
-      columnName: 'contact_number2'
-    },
-
-    contractorEmail: {
-      type: 'string',
-      columnName: 'contractor_email'
-    },
-
-    serviceTypeId: {
-      type: 'ref',
-      columnType: 'int',
-      columnName: 'service_type_id'
+    serviceId: {
+      type: 'number',
+      columnName: 'service_id'
     },
 
     isActive: {
       type: 'boolean',
+      defaultsTo: true,
       columnName: 'is_active'
     },
 
@@ -88,8 +63,7 @@ module.exports = {
       columnType: 'timestamptz',
       autoUpdatedAt: true,
       columnName: 'modified_date'
-    },
-
+    }
   },
 
 };

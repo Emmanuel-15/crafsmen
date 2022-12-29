@@ -1,5 +1,5 @@
 /**
- * Contractors.js
+ * Bookings.js
  *
  * @description :: A model definition represents a database table/collection.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
@@ -7,7 +7,7 @@
 
 module.exports = {
 
-  primaryKey: 'contractorId',
+  primaryKey: 'bookingId',
 
   attributes: {
 
@@ -29,50 +29,50 @@ module.exports = {
     updatedAt: false,
     id: false,
 
-    contractorId: {
+    bookingId: {
       type: 'number',
       autoIncrement: true,
-      columnName: 'contractor_id'
-      // size: 100
+      columnName: 'booking_id'
     },
 
-    contractorName: {
-      type: 'string',
-      allowNull: true,
-      columnName: 'contractor_name'
-    },
-
-    contractorAddress: {
-      type: 'string',
-      allowNull: true,
-      columnName: 'contractor_address'
-    },
-
-    contactNumber1: {
-      type: 'string',
-      allowNull: true,
-      columnName: 'contact_number1'
-    },
-
-    contactNumber2: {
-      type: 'string',
-      allowNull: true,
-      columnName: 'contact_number2'
-    },
-
-    contractorEmail: {
-      type: 'string',
-      columnName: 'contractor_email'
-    },
-
-    serviceTypeId: {
+    userId: {
       type: 'ref',
       columnType: 'int',
-      columnName: 'service_type_id'
+      columnName: 'user_id'
+    },
+
+    contractorId: {
+      type: 'ref',
+      columnType: 'int',
+      columnName: 'contractor_id'
+    },
+
+    serviceId: {
+      type: 'ref',
+      columnType: 'text[]',
+      columnName: 'service_id'
+    },
+
+    bookingDateTimeFrom: {
+      type: 'ref',
+      columnType: 'timestamp',
+      columnName: 'booking_date_time_from'
+    },
+
+    bookingDateTimeTo: {
+      type: 'ref',
+      columnType: 'timestamp',
+      columnName: 'booking_date_time_to'
+    },
+
+    servicePrice: {
+      type: 'number',
+      columnName: 'service_price'
     },
 
     isActive: {
       type: 'boolean',
+      defaultsTo: true,
       columnName: 'is_active'
     },
 
@@ -88,9 +88,7 @@ module.exports = {
       columnType: 'timestamptz',
       autoUpdatedAt: true,
       columnName: 'modified_date'
-    },
-
-  },
+    }
+  }
 
 };
-

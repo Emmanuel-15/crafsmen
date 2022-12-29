@@ -50,10 +50,8 @@ module.exports = {
     },
 
     serviceTypeId: {
-      // type: 'number',
       type: 'ref',
       columnType: 'int',
-      // unique: 'true',
       columnName: 'service_type_id'
     },
 
@@ -64,6 +62,7 @@ module.exports = {
 
     isActive: {
       type: 'boolean',
+      defaultsTo: true,
       columnName: 'is_active'
     },
 
@@ -81,8 +80,6 @@ module.exports = {
       type: 'string',
       columnName: 'service_except'
     }
-
-  },
-
+  }
 };
 

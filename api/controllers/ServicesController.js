@@ -5,6 +5,8 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+const Utils = require("../services/Utils");
+
 module.exports = {
 
     /**
@@ -14,8 +16,10 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
-        if (req.method !== 'GET')
-            return res.notFound();
+        const validReq = await Utils.isValidRequest(req, false, false);
+
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
 
         try {
             await Services.find({ isActive: true })
@@ -38,11 +42,10 @@ module.exports = {
      * @returns {*}
      */
     get: async function (req, res) {
-        if (req.method !== 'GET')
-            return res.notFound();
+        const validReq = await Utils.isValidRequest(req, true, false);
 
-        if (!req.param || _.isEmpty(req.param) == 0)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
 
         if (isNaN(req.param('id')))
             return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
@@ -69,22 +72,65 @@ module.exports = {
      * @returns {*}
      */
     create: async function (req, res) {
-        if (req.method !== 'POST')
-            return res.notFound();
-
         if (req.user.isAdmin != true)
             return res.forbidden("NOT_ALLOWED");
 
-        if (!req.param || _.isEmpty(req.param) == 0)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        const valid = await Utils.isValidRequest(req, false, true);
+
+        if (valid)
+            return res.badRequest(Utils.jsonErr(valid));
 
         const newService = {
             serviceTypeId: req.body.serviceTypeId,
-            isActive: true,
             serviceTitle: req.body.serviceTitle,
             serviceDescription: req.body.serviceDescription,
             serviceExcept: req.body.serviceExcept
         };
+
+        const schema = {
+            type: 'object',
+            required: ['serviceTypeId', 'serviceTitle', 'serviceDescription', 'serviceExcept'],
+            properties: {
+                serviceTypeId: {
+                    type: 'number',
+                    errorMessage: {
+                        type: 'INVALID_SERVICE_ID'
+                    }
+                },
+                serviceTitle: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'TITLE_SHOULD_BE_CHARACTERS'
+                    }
+                },
+                serviceDescription: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'DESCRIPTION_SHOULD_BE_CHARACTERS'
+                    }
+                },
+                serviceExcept: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'EXCEPT_SHOULD_BE_CHARACTERS'
+                    }
+                }
+
+            }, errorMessage: {
+                type: 'should be an object',
+                required: {
+                    serviceTypeId: 'SERVICE_TYPE_ID_IS_REQUIRED',
+                    serviceTitle: 'SERVICE_TITLE_IS_REQUIRED',
+                    serviceDescription: 'SERVICE_DESCRIPTION_IS_REQUIRED',
+                    serviceExcept: 'SERVICE_EXCEPT_IS_REQUIRED'
+                }
+            }
+        }
+
+        const validations = Utils.validate(schema, newService);
+
+        if (validations)
+            return res.badRequest(Utils.jsonErr(validations));
 
         const check = await Services.findOne({ serviceTitle: newService.serviceTitle });
 
@@ -113,19 +159,18 @@ module.exports = {
      * @returns {*}
      */
     update: async function (req, res) {
-        if (req.method !== 'PUT')
-            return res.notFound();
-
         if (req.user.isAdmin != true)
             return res.forbidden("NOT_ALLOWED");
 
-        if (!req.body || _.keys(req.body).length == 0)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        const validReq = await Utils.isValidRequest(req, true, true);
 
-        if (!req.param || req.param.length != 2)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
 
         const id = req.param("id");
+        if (isNaN(id))
+            return res.badRequest(Utils.jsonErr("INVALID_ID"));
+
         const updateService = {
             serviceTypeId: req.body.serviceTypeId,
             serviceTitle: req.body.serviceTitle,
@@ -133,20 +178,55 @@ module.exports = {
             serviceExcept: req.body.serviceExcept
         };
 
-        if (isNaN(id))
-            return res.badRequest(Utils.jsonErr("INVALID_ID"));
+        const schema = {
+            type: 'object',
+            properties: {
+                serviceTypeId: {
+                    type: 'number',
+                    errorMessage: {
+                        type: 'INVALID_SERVICE_ID'
+                    }
+                },
+                serviceTitle: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'TITLE_SHOULD_BE_CHARACTERS'
+                    }
+                },
+                serviceDescription: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'DESCRIPTION_SHOULD_BE_CHARACTERS'
+                    }
+                },
+                serviceExcept: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'EXCEPT_SHOULD_BE_CHARACTERS'
+                    }
+                }
 
-        const serviceExists = await Services.findOne({ serviceTypeId: id, isActive: true });
+            }, errorMessage: {
+                type: 'should be an object'
+            }
+        }
 
-        if (!serviceExists)
-            return res.badRequest(Utils.jsonErr("NO_SERVICE_FOUND"));
+        const validations = Utils.validate(schema, updateService);
 
-        const check = await Services.findOne({ serviceTitle: updateService.serviceTitle, isActive: true });
-
-        if (check)
-            return res.badRequest(Utils.jsonErr("SERVICE_ALREADY_EXISTS"));
+        if (validations)
+            return res.badRequest(Utils.jsonErr(validations));
 
         try {
+            const serviceExists = await Services.findOne({ serviceId: id, isActive: true });
+
+            if (!serviceExists)
+                return res.badRequest(Utils.jsonErr("NO_SERVICE_FOUND"));
+
+            const check = await Services.findOne({ serviceTitle: updateService.serviceTitle, isActive: true });
+
+            if (check)
+                return res.badRequest(Utils.jsonErr("SERVICE_ALREADY_EXISTS"));
+
             await Services.updateOne({ serviceId: id }).set(updateService)
                 .exec((err) => {
                     if (err)
@@ -167,30 +247,28 @@ module.exports = {
      * @returns {*}
      */
     delete: async function (req, res) {
-        if (req.method !== 'DELETE')
-            return res.notFound();
-
         if (req.user.isAdmin != true)
             return res.forbidden("NOT_ALLOWED");
 
-        if (!req.param || _.isEmpty(req.param) == 0)
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+        const validReq = await Utils.isValidRequest(req, true, false);
+
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
 
         if (isNaN(req.param('id')))
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
-        const check = await Services.findOne({ serviceId: req.param('id'), isActive: true });
-
-        if (!check)
-            return res.badRequest(Utils.jsonErr("SERVICE_NOT_FOUND"));
-
         try {
+            const check = await Services.findOne({ serviceId: req.param('id'), isActive: true });
+
+            if (!check)
+                return res.badRequest(Utils.jsonErr("SERVICE_NOT_FOUND"));
+
             Services.updateOne({ serviceId: req.param('id') })
                 .set({ isActive: false })
                 .exec((err) => {
                     if (err)
                         return res.badRequest(Utils.jsonErr("ERROR_WHILE_DELETING_SERVICE"));
-
 
                     res.ok("SERVICE_DELTED");
                 });

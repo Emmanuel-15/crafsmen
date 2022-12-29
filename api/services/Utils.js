@@ -1,7 +1,26 @@
 /**
  * Utils
  * @type {object}
- */
+*/
+const APIErrors = require("../constants/APIErrors");
+
+const Ajv = require('ajv')
+const addFormats = require('ajv-formats')
+const ajvErrors = require('ajv-errors')
+
+const ajv = new Ajv({ allErrors: true, $data: true });
+addFormats(ajv);
+ajvErrors(ajv);
+ajv.addFormat('custom-date-time', function (dateTimeString) {
+	// console.log("value: ", dateTimeString)
+	// console.log("date: ", new Date(dateTimeString))
+
+	if (typeof dateTimeString === 'object')
+		dateTimeString = dateTimeString.toISOString();
+
+	return !isNaN(Date.parse(dateTimeString));  // any test that returns true/false 
+});
+
 module.exports = {
 
 	/**
@@ -15,27 +34,31 @@ module.exports = {
 		};
 	},
 
-	isValidRequest(req, res, requestType, hasParams, hasBody) {
-		if (req.method !== requestType)
-			return res.notFound();
-
-
+	isValidRequest(req, hasParams, hasBody) {
 		if (hasParams) {
-			if (!req.param || _.isEmpty(req.param))
-				return res.badRequest(Utils.jsonErr("NO_PARAMS_FOUND"));
+			if (!req.params || _.isEmpty(req.params))
+				return APIErrors.NO_PARAMS;
 		}
-
 
 		if (hasBody) {
-			if (_.isEmpty(req.body))
-				return res.badRequest(Utils.jsonErr("EMPTY_BODY"));
-		}
+			let empty_Field = null;
 
+			_.valuesIn(req.body).forEach(val => {
+				if (val.length == 0)
+					return empty_Field = APIErrors.REQUIRED;
+			});
+
+			if (empty_Field)
+				return empty_Field;
+
+			if (_.isEmpty(req.body))
+				return APIErrors.NO_BODY;
+		}
 	},
 
-	validate(schema, newCarCategory, res) {
-		const validate = ajv.compile(schema);
-		const valid = validate(newCarCategory);
+	validate(schema, data) {
+		const validate = ajv.compile(schema)
+		const valid = validate(data);
 
 		if (!valid) {
 			let errors = [];
@@ -43,10 +66,10 @@ module.exports = {
 			validate.errors.forEach((data) => {
 				errors.push(data.message);
 			})
-			return res.badRequest(Utils.jsonErr(errors));
+			return errors;
 		}
 		else {
-			return res.ok("done");
+			return;
 		}
 	}
 };
