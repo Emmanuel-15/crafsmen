@@ -18,6 +18,7 @@ module.exports = {
     getAll: async function (req, res) {
         try {
             await ServiceType.find()
+                .sort('serviceTypeId DESC')
                 .exec((err, data) => {
                     if (err || !data)
                         return res.ok("NO_SERVICE_TYPE_FOUND");
