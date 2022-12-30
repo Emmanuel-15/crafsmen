@@ -49,7 +49,7 @@ module.exports = {
             return res.badRequest(Utils.jsonErr(validReq));
 
         if (isNaN(req.param('id')))
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+            return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
         try {
             await Services
@@ -142,8 +142,12 @@ module.exports = {
             await Services
                 .create(newService)
                 .exec((err) => {
-                    if (err)
-                        return res.badRequest(Utils.jsonErr("ERROR_WHILE_CREATING_SERVICE"));
+                    if (err) {
+                        if (err.raw && err.raw.code && err.raw.code === '23503')
+                            return res.badRequest(Utils.jsonErr("SERVICE_TYPE_NOT_PRESENT"));
+                        else
+                            return res.badRequest(Utils.jsonErr("ERROR_WHILE_CREATING_SERVICE"));
+                    }
                     else
                         return res.created("SERVICE_CREATED");
                 });
@@ -230,8 +234,12 @@ module.exports = {
 
             await Services.updateOne({ serviceId: id }).set(updateService)
                 .exec((err) => {
-                    if (err)
-                        return res.badRequest(Utils.jsonErr("ERROR_UPDATING_SERVICE"));
+                    if (err) {
+                        if (err.raw && err.raw.code && err.raw.code === '23503')
+                            return res.badRequest(Utils.jsonErr("SERVICE_TYPE_DOES_NOT_EXIST"));
+                        else
+                            return res.badRequest(Utils.jsonErr("ERROR_UPDATING_SERVICE"));
+                    }
                     else
                         return res.ok("SERVICE_UPDATED");
                 });
