@@ -27,6 +27,7 @@ module.exports = {
             service_description AS "serviceDescription",
             service_except AS "serviceExcept",
             is_active AS "isActive",
+            Services.service_type_id AS "serviceTypeId",
             ServiceType.service_type AS "serviceType",
             Services.created_date AS "CreatedDate",
             services.modified_date AS "ModifiedDate"
