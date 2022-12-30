@@ -28,7 +28,6 @@ function doesEmailExist(email) {
 
 module.exports = {
 
-
     /**
      * Action for 'GET' /contractors
      * @param req
@@ -315,6 +314,8 @@ module.exports = {
         if (validReq)
             return res.badRequest(Utils.jsonErr(validReq));
 
+        const id = req.param('id');
+
         if (isNaN(req.param('id')))
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
@@ -323,6 +324,21 @@ module.exports = {
 
             if (!check)
                 return res.badRequest(Utils.jsonErr("CONTRACTOR_NOT_FOUND"));
+
+            const query = `SELECT contractors.contractor_id
+            FROM contractors
+                LEFT JOIN contractorservices ON contractorservices.contractor_id = contractors.contractor_id
+                LEFT JOIN serviceprice ON serviceprice.contractor_id = contractors.contractor_id
+                LEFT JOIN bookings ON bookings.contractor_id = contractors.contractor_id
+            WHERE contractorservices.contractor_id = $1 OR
+                serviceprice.contractor_id = $1 OR
+                bookings.contractor_id = $1
+            LIMIT (1);`;
+
+            const id_in_use = await Contractors.getDatastore().sendNativeQuery(query, [id]);
+
+            if (id_in_use && id_in_use.rows.length > 0)
+                return res.badRequest(Utils.jsonErr("CONTRACTOR_ID_IN_USE"));
 
             Contractors.updateOne({ contractorId: req.param('id') })
                 .set({ isActive: false })
@@ -333,7 +349,7 @@ module.exports = {
                         res.ok("CONTRACTOR_DELTED");
                 });
         }
-        catch (e) {
+        catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
         }
     }
