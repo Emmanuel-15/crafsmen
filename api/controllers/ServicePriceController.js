@@ -16,6 +16,7 @@ module.exports = {
     getAll: async function (req, res) {
         try {
             await ServicePrice.find({ isActive: true })
+                .populate('serviceTypeId')
                 .exec((err, data) => {
                     if (err || !data)
                         return res.ok("NO_SERVICE_PRICES_FOUND");

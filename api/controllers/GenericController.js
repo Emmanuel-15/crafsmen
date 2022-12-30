@@ -18,14 +18,12 @@ module.exports = {
         let month = new Date().getMonth();
         let date = new Date().getDate();
 
-
         req.file('image').upload({
             // don't allow the total upload size to exceed ~10MB
             maxBytes: 10000000,
 
             // skipper default upload directory .tmp/uploads/
             dirname: '../../uploads/' + year + '/' + monthNames[month] + '/' + date,
-
 
             saveAs: function (file, cb) {
                 if (file.byteCount > 10000000)
@@ -54,15 +52,11 @@ module.exports = {
             if (err)
                 return res.serverError(err);
 
-
             // If no files were uploaded, respond with an error.
             if (uploadedFiles.length === 0)
                 return res.badRequest('No file was uploaded');
 
-
             return res.ok("CAR_CREATED", uploadedFiles[0].fd);
         });
     }
-
 };
-

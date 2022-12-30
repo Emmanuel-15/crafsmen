@@ -22,7 +22,6 @@ ajv.addFormat('custom-date-time', function (dateTimeString) {
 });
 
 module.exports = {
-
 	/**
 	 * Returns an object with error field for response
 	 * @param errorMessage {string}
@@ -41,7 +40,7 @@ module.exports = {
 		}
 
 		if (hasBody) {
-			if (_.isEmpty(req.body))
+			if (!req.body || _.isEmpty(req.body))
 				return APIErrors.NO_BODY;
 		}
 	},

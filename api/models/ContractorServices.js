@@ -36,12 +36,12 @@ module.exports = {
     },
 
     contractorId: {
-      type: 'number',
+      model: 'contractors',
       columnName: 'contractor_id'
     },
 
     serviceId: {
-      type: 'number',
+      model: 'services',
       columnName: 'service_id'
     },
 
@@ -64,7 +64,5 @@ module.exports = {
       autoUpdatedAt: true,
       columnName: 'modified_date'
     }
-  },
-
+  }
 };
-

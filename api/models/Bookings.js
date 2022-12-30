@@ -90,5 +90,4 @@ module.exports = {
       columnName: 'modified_date'
     }
   }
-
 };

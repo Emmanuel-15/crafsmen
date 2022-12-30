@@ -33,7 +33,6 @@ module.exports = {
       type: 'number',
       autoIncrement: true,
       columnName: 'contractor_id'
-      // size: 100
     },
 
     contractorName: {
@@ -65,14 +64,9 @@ module.exports = {
       columnName: 'contractor_email'
     },
 
-    serviceTypeId: {
-      type: 'ref',
-      columnType: 'int',
-      columnName: 'service_type_id'
-    },
-
     isActive: {
       type: 'boolean',
+      defaultsTo: true,
       columnName: 'is_active'
     },
 
@@ -90,7 +84,6 @@ module.exports = {
       columnName: 'modified_date'
     },
 
-  },
-
+  }
 };
 

@@ -16,6 +16,13 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
+        // let { page, limit } = req.query;
+
+        // if (!page) page = 1;
+
+        // if (!limit) limit = 10;
+
+        // .paginate({page: 2, limit: 10})
         try {
             await ServiceType.find()
                 .sort('serviceTypeId DESC')

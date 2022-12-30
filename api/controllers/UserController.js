@@ -32,9 +32,11 @@ module.exports = {
      * @param res
      * @returns {*}
      */
-    create: function (req, res) {
-        if (!req.body || _.keys(req.body).length <= 0)
-            return res.badRequest(Utils.jsonErr("EMPTY_BODY"));
+    create: async function (req, res) {
+        const validReq = await Utils.isValidRequest(req, false, true);
+
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
 
         const email = req.body.email;
         const username = req.body.username;

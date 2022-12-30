@@ -18,6 +18,9 @@ module.exports = {
     getAll: async function (req, res) {
         try {
             await ContractorServices.find({ isActive: true })
+                .populate('contractorId')
+                .populate('serviceId')
+                .sort('contractorServiceId DESC')
                 .exec((err, data) => {
                     if (err || !data)
                         return res.ok("NO_CONTRACTOR_SERVICES_FOUND");
@@ -48,6 +51,8 @@ module.exports = {
         try {
             await ContractorServices
                 .findOne({ contractorServiceId: req.param('id'), isActive: true })
+                .populate('contractorId')
+                .populate('serviceId')
                 .exec((err, data) => {
                     if (err || !data)
                         res.ok("NO_CONTRACTOR_SERVICES_FOUND");
@@ -86,26 +91,27 @@ module.exports = {
             properties: {
                 contractorId: {
                     type: 'number',
+                    minimum: 1,
                     errorMessage: {
-                        type: 'INVALID_CONTRACTOR_ID'
+                        type: 'INVALID_CONTRACTOR_ID',
+                        minimum: 'INVALID_CONTRACTOR_ID'
                     }
                 },
                 serviceId: {
                     type: 'number',
+                    minimum: 1,
                     errorMessage: {
-                        type: 'INVALID_SERVICE_ID'
+                        type: 'INVALID_SERVICE_ID',
+                        minimum: 'INVALID_CONTRACTOR_ID'
                     }
                 }
 
             }, errorMessage: {
-                type: 'should be an object',
                 required: {
                     contractorId: 'CONTRACTOR_ID_IS_MISSING',
                     serviceId: 'SERVICE_ID_IS_MISSING'
                 }
-            },
-            additionalProperties: false,
-            errorMessage: "ONLY_CONTRACTOR_ID_AND_SERVICE_ID_IS_REQUIRED"
+            }
         }
 
         const validations = Utils.validate(schema, newcontractorService);
@@ -113,18 +119,13 @@ module.exports = {
         if (validations)
             return res.badRequest(Utils.jsonErr(validations));
 
-        if (isNaN(newcontractorService.contractorId) || isNaN(newcontractorService.serviceId))
-            return res.badRequest(Utils.jsonErr("INVALID_ID'S"))
-
         try {
-            const check = await ContractorServices.findOne({
-                serviceId: newcontractorService.serviceId,
-                contractorId: newcontractorService.contractorId,
-                isActive: true
-            });
+            newcontractorService.isActive = true;
+
+            const check = await ContractorServices.findOne(newcontractorService);
 
             if (check)
-                return res.forbidden(Utils.jsonErr("CONTRACTOR_SERVICES_ALREADY_EXISTS"));
+                return res.forbidden(Utils.jsonErr("CONTRACTOR_SERVICE_ALREADY_EXISTS"));
 
             await ContractorServices
                 .create(newcontractorService)
@@ -132,7 +133,7 @@ module.exports = {
                     if (err)
                         return res.badRequest(Utils.jsonErr("ERROR_WHILE_CREATING_CONTRACTOR_SERVICE"));
                     else
-                        return res.created("CONTRACTOR_SERVICES_CREATED");
+                        return res.created("CONTRACTOR_SERVICE_CREATED");
                 });
 
         } catch (err) {
@@ -165,21 +166,24 @@ module.exports = {
             serviceId: req.body.serviceId
         };
 
-
         const schema = {
             type: 'object',
             required: ['contractorId', 'serviceId'],
             properties: {
                 contractorId: {
                     type: 'number',
+                    minimum: 1,
                     errorMessage: {
-                        type: 'INVALID_CONTRACTOR_ID'
+                        type: 'INVALID_CONTRACTOR_ID',
+                        minimum: 'INVALID_CONTRACTOR_ID'
                     }
                 },
                 serviceId: {
                     type: 'number',
+                    minimum: 1,
                     errorMessage: {
-                        type: 'INVALID_SERVICE_ID'
+                        type: 'INVALID_SERVICE_ID',
+                        minimum: 'INVALID_SERVICE_ID'
                     }
                 }
 
@@ -198,7 +202,9 @@ module.exports = {
             return res.badRequest(Utils.jsonErr(validations));
 
         try {
-            const check = await ContractorServices.findOne({ contractorId: updateContractorService.contractorId, serviceId: updateContractorService.serviceId, isActive: true });
+            updateContractorService.isActive = true;
+
+            const check = await ContractorServices.findOne(updateContractorService);
 
             if (check)
                 return res.badRequest(Utils.jsonErr("CONTRACTOR_SERVICES_ALREADY_EXISTS"));

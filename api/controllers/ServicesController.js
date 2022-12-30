@@ -23,6 +23,7 @@ module.exports = {
 
         try {
             await Services.find({ isActive: true })
+                .populate('serviceTypeId')
                 .exec((err, data) => {
                     if (err || data.length == 0)
                         return res.ok("NO_SERVICES_FOUND");

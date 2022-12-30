@@ -36,12 +36,14 @@ module.exports = {
     },
 
     serviceId: {
-      type: 'number',
+      type: 'ref',
+      columnType: 'int',
       columnName: 'service_id'
     },
 
     contractorId: {
-      type: 'number',
+      type: 'ref',
+      columnType: 'int',
       columnName: 'contractor_id'
     },
 
@@ -81,7 +83,6 @@ module.exports = {
       autoUpdatedAt: true,
       columnName: 'modified_date'
     }
-  },
-
+  }
 };
 

@@ -36,13 +36,9 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
-        const validReq = await Utils.isValidRequest(req, false, false);
-
-        if (validReq)
-            return res.badRequest(Utils.jsonErr(validReq));
-
         try {
             await Contractors.find({ isActive: true })
+                .sort('contractorId DESC')
                 .exec((err, data) => {
                     if (err || data.length == 0)
                         return res.ok("NO_CONTRACTORS_FOUND");
@@ -53,7 +49,6 @@ module.exports = {
         } catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
         }
-
     },
 
     /**
@@ -107,7 +102,6 @@ module.exports = {
             contactNumber1: req.body.contactNumber1,
             contactNumber2: req.body.contactNumber2,
             contractorEmail: req.body.contractorEmail,
-            isActive: true,
         };
 
         const schema = {
@@ -145,18 +139,16 @@ module.exports = {
                         type: 'EMAIL_SHOUL_BE_STRING',
                         format: 'INVALID_EMAIL'
                     }
-                },
+                }
 
             }, errorMessage: {
-                type: 'should be an object',
                 required: {
-                    contractorName: 'foo field is missing',
-                    contractorAddress: 'foo field is missing',
-                    contactNumber1: 'foo field is missing',
-                    contractorEmail: 'foo field is missing'
+                    contractorName: 'CONTRACTOR_NAME_IS_REQUIRED',
+                    contractorAddress: 'CONTRACTOR_ADDRESS_IS_REQUIRED',
+                    contactNumber1: 'MIN_1_CONTACT_NUMBER_IS_REQUIRED',
+                    contractorEmail: 'CONTRACTOR_EMAIL_IS_REQUIRED'
                 }
-            },
-            // additionalProperties: false
+            }
         }
 
         const validations = Utils.validate(schema, newContractor);
@@ -174,8 +166,11 @@ module.exports = {
         if (await doesNameExist(newContractor.contractorName))
             return res.forbidden(Utils.jsonErr("NAME_ALREADY_IN_USE"));
 
-        if (await doesNumberExist(newContractor.contactNumber1, 1) || await doesNumberExist(newContractor.contactNumber2))
-            return res.forbidden(Utils.jsonErr("NUMBER_ALREADY_IN_USE"));
+        if (await doesNumberExist(newContractor.contactNumber1, 1))
+            return res.forbidden(Utils.jsonErr("CONTACT_NUMBER_1_ALREADY_IN_USE"));
+
+        if (newContractor.contactNumber2 && await doesNumberExist(newContractor.contactNumber2))
+            return res.forbidden(Utils.jsonErr("CONTACT_NUMBER_2_ALREADY_IN_USE"));
 
         if (await doesEmailExist(newContractor.contractorEmail))
             return res.forbidden(Utils.jsonErr("EMAIL_ALREADY_IN_USE"));
@@ -212,16 +207,16 @@ module.exports = {
 
         const id = req.param("id");
 
+        if (isNaN(id))
+            return res.badRequest(Utils.jsonErr("INVALID_ID"));
+
         const updateContractor = {
             contractorName: req.body.contractorName,
             contractorAddress: req.body.contractorAddress,
             contactNumber1: req.body.contactNumber1,
             contactNumber2: req.body.contactNumber2,
-            contractorEmail: req.body.contractorEmail,
+            contractorEmail: req.body.contractorEmail
         };
-
-        if (isNaN(id))
-            return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
         const schema = {
             type: 'object',
@@ -241,13 +236,13 @@ module.exports = {
                 contactNumber1: {
                     type: 'number',
                     errorMessage: {
-                        type: 'INVALID_PHONE_NUMBER'
+                        type: 'INVALID_PHONE_NUMBER_1'
                     }
                 },
                 contactNumber2: {
                     type: 'number',
                     errorMessage: {
-                        type: 'INVALID_PHONE_NUMBER'
+                        type: 'INVALID_PHONE_NUMBER_2'
                     }
                 },
                 contractorEmail: {
@@ -257,12 +252,8 @@ module.exports = {
                         type: 'EMAIL_SHOUL_BE_STRING',
                         format: 'INVALID_EMAIL'
                     }
-                },
-
-            }, errorMessage: {
-                type: 'should be an object',
-            },
-            // additionalProperties: false
+                }
+            }
         }
 
         const validations = Utils.validate(schema, updateContractor);
@@ -280,16 +271,19 @@ module.exports = {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
         }
 
-        if (updateContractor.contactNumber2 && updateContractor.contactNumber1 == updateContractor.contactNumber2)
+        if (updateContractor.contactNumber2 && (updateContractor.contactNumber1 == updateContractor.contactNumber2))
             return res.badRequest(Utils.jsonErr("PROVIDE_DIFFERENT_NUMBERS"));
 
-        if (await doesNameExist(updateContractor.contractorName))
+        if (updateContractor.contractorName && await doesNameExist(updateContractor.contractorName))
             return res.forbidden(Utils.jsonErr("NAME_ALREADY_IN_USE"));
 
-        if (await doesNumberExist(updateContractor.contactNumber1, 1) || await doesNumberExist(updateContractor.contactNumber2))
-            return res.forbidden(Utils.jsonErr("NUMBER_ALREADY_IN_USE"));
+        if (updateContractor.contactNumber1 && await doesNumberExist(updateContractor.contactNumber1, 1))
+            return res.forbidden(Utils.jsonErr("CONTACT_NUMBER_1_ALREADY_IN_USE"));
 
-        if (await doesEmailExist(updateContractor.contractorEmail))
+        if (updateContractor.contactNumber2 && await doesNumberExist(updateContractor.contactNumber2))
+            return res.forbidden(Utils.jsonErr("CONTACT_NUMBER_2_ALREADY_IN_USE"));
+
+        if (updateContractor.contractorEmail && await doesEmailExist(updateContractor.contractorEmail))
             return res.forbidden(Utils.jsonErr("EMAIL_ALREADY_IN_USE"));
 
         try {
@@ -344,4 +338,3 @@ module.exports = {
         }
     }
 };
-

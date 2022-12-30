@@ -92,27 +92,6 @@ module.exports = {
             allowNull: true
         },
 
-        createdDate: {
-            type: 'ref',
-            columnType: 'timestamptz',
-            autoCreatedAt: true,
-            columnName: 'created_date'
-        },
-
-        modifiedDate: {
-            type: 'ref',
-            columnType: 'timestamptz',
-            autoUpdatedAt: true,
-            columnName: 'modified_date'
-        },
-
-        dtLastLogin: {
-            type: 'ref',
-            columnType: 'timestamptz',
-            // defaultsTo: '0000-00-00 00:00:00',
-            columnName: 'dt_last_login'
-        },
-
         userImage: {
             type: 'string',
             columnName: 'user_image'
@@ -130,8 +109,8 @@ module.exports = {
         },
 
         isActive: {
-            type: 'number',
-            columnType: 'smallint',
+            type: 'boolean',
+            defaultsTo: true,
             columnName: 'is_active'
         },
 
@@ -139,6 +118,26 @@ module.exports = {
             type: 'number',
             columnType: 'smallint',
             columnName: 'reset_password'
+        },
+
+        dtLastLogin: {
+            type: 'ref',
+            columnType: 'timestamp',
+            columnName: 'dt_last_login'
+        },
+
+        createdDate: {
+            type: 'ref',
+            columnType: 'timestamptz',
+            autoCreatedAt: true,
+            columnName: 'created_date'
+        },
+
+        modifiedDate: {
+            type: 'ref',
+            columnType: 'timestamptz',
+            autoUpdatedAt: true,
+            columnName: 'modified_date'
         }
     },
 

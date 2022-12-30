@@ -35,35 +35,14 @@ module.exports = {
       columnName: 'service_id'
     },
 
-    createdDate: {
-      type: 'ref',
-      columnType: 'timestamptz',
-      autoCreatedAt: true,
-      columnName: 'created_date'
-    },
-
-    modifiedDate: {
-      type: 'ref',
-      columnType: 'timestamptz',
-      autoUpdatedAt: true,
-      columnName: 'modified_date'
-    },
-
     serviceTypeId: {
-      type: 'ref',
-      columnType: 'int',
+      model: 'servicetype',
       columnName: 'service_type_id'
     },
 
     serviceImage: {
       type: 'string',
       columnName: 'service_image'
-    },
-
-    isActive: {
-      type: 'boolean',
-      defaultsTo: true,
-      columnName: 'is_active'
     },
 
     serviceTitle: {
@@ -79,7 +58,26 @@ module.exports = {
     serviceExcept: {
       type: 'string',
       columnName: 'service_except'
+    },
+
+    isActive: {
+      type: 'boolean',
+      defaultsTo: true,
+      columnName: 'is_active'
+    },
+
+    createdDate: {
+      type: 'ref',
+      columnType: 'timestamptz',
+      autoCreatedAt: true,
+      columnName: 'created_date'
+    },
+
+    modifiedDate: {
+      type: 'ref',
+      columnType: 'timestamptz',
+      autoUpdatedAt: true,
+      columnName: 'modified_date'
     }
   }
 };
-
