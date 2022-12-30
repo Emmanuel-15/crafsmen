@@ -21,15 +21,27 @@ module.exports = {
         if (validReq)
             return res.badRequest(Utils.jsonErr(validReq));
 
+        const query = `SELECT service_id AS "serviceId",
+            service_image AS "serviceImage",
+            service_title AS "serviceTitle",
+            service_description AS "serviceDescription",
+            service_except AS "serviceExcept",
+            is_active AS "isActive",
+            ServiceType.service_type AS "serviceType",
+            Services.created_date AS "CreatedDate",
+            services.modified_date AS "ModifiedDate"
+            FROM Services, ServiceType
+            WHERE  Services.service_type_id = ServiceType.service_type_id 
+            AND is_active = true
+            ORDER BY Services.service_id DESC`;
+
         try {
-            await Services.find({ isActive: true })
-                .populate('serviceTypeId')
-                .exec((err, data) => {
-                    if (err || data.length == 0)
-                        return res.ok("NO_SERVICES_FOUND");
-                    else
-                        return res.ok("SERVICES", data);
-                });
+            await Services.getDatastore().sendNativeQuery(query, function (err, data) {
+                if (err)
+                    return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_SERVICES"));
+                else
+                    res.ok("SERVICES", data.rows);
+            })
 
         } catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));

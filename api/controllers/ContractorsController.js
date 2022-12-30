@@ -64,7 +64,7 @@ module.exports = {
             return res.badRequest(Utils.jsonErr(validReq));
 
         if (isNaN(req.param('id')))
-            return res.badRequest(Utils.jsonErr("BAD_REQUEST"));
+            return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
         try {
             await Contractors

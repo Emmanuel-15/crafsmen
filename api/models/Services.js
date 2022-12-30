@@ -47,7 +47,7 @@ module.exports = {
 
     serviceTitle: {
       type: 'string',
-      columnName: 'service_titile'
+      columnName: 'service_title'
     },
 
     serviceDescription: {

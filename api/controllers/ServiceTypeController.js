@@ -92,8 +92,10 @@ module.exports = {
             properties: {
                 serviceType: {
                     type: 'string',
+                    minLength: 3,
                     errorMessage: {
-                        type: 'INVALID_SERVICE_TYPE'
+                        type: 'INVALID_SERVICE_TYPE',
+                        minLength: 'MIN_3_CHAR_REQUIRED'
                     }
                 }
             }, errorMessage: {
