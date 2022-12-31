@@ -36,12 +36,14 @@ module.exports = {
     },
 
     contractorId: {
-      model: 'contractors',
+      type: 'ref',
+      columnType: 'int',
       columnName: 'contractor_id'
     },
 
     serviceId: {
-      model: 'services',
+      type: 'ref',
+      columnType: 'int',
       columnName: 'service_id'
     },
 

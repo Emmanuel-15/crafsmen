@@ -57,6 +57,5 @@ module.exports = {
       return true;
     else
       return false;
-
   }
 };

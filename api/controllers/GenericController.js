@@ -54,9 +54,9 @@ module.exports = {
 
             // If no files were uploaded, respond with an error.
             if (uploadedFiles.length === 0)
-                return res.badRequest('No file was uploaded');
+                return res.badRequest('NO_FILE_WAS_UPLOADED');
 
-            return res.ok("CAR_CREATED", uploadedFiles[0].fd);
+            return res.ok("IMAGE_UPLOADED", uploadedFiles[0].fd);
         });
     }
 };

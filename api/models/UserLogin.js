@@ -58,16 +58,19 @@ module.exports = {
 
         loginPassword: {
             type: 'string',
+            allowNull: true,
             columnName: 'login_password'
         },
 
         userName: {
             type: 'string',
+            allowNull: true,
             columnName: 'user_name'
         },
 
         userAddress: {
             type: 'string',
+            allowNull: true,
             columnName: 'user_address'
         },
 
@@ -86,10 +89,9 @@ module.exports = {
         },
 
         userGender: {
-            type: 'number',
-            columnType: 'smallint',
-            columnName: 'user_gender',
-            allowNull: true
+            type: 'boolean',
+            allowNull: true,
+            columnName: 'user_gender'
         },
 
         userImage: {
@@ -104,8 +106,8 @@ module.exports = {
         },
 
         isAdmin: {
-            type: 'number',
-            columnType: 'smallint',
+            type: 'boolean',
+            defaultsTo: false,
             columnName: 'is_admin'
         },
 
@@ -116,8 +118,7 @@ module.exports = {
         },
 
         resetPassword: {
-            type: 'number',
-            columnType: 'smallint',
+            type: 'boolean',
             columnName: 'reset_password'
         },
 
@@ -151,17 +152,15 @@ module.exports = {
     },
 
     customToJSON: function () {
-        // Return a shallow copy of this record with the loginPassword removed.
+        // Return a shallow copy of this record with the creatain fields removed.
         return _.omit(this, ['loginUsername', 'loginPassword', 'createdDate', 'modifiedDate',
             'dtLastLogin', 'hashCode', 'isAdmin', 'isActive', 'resetPassword']);
     },
 
     beforeCreate: function (values, next) {
-
         if (values.loginPassword.length == 0)
             next();
         else {
-
             generatePasswordHash(values.loginPassword)
                 .then(hash => {
                     delete (values.loginPassword);

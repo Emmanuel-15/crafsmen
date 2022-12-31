@@ -49,7 +49,7 @@ module.exports = {
 
     serviceId: {
       type: 'ref',
-      columnType: 'text[]',
+      columnType: 'int',
       columnName: 'service_id'
     },
 
@@ -65,9 +65,10 @@ module.exports = {
       columnName: 'booking_date_time_to'
     },
 
-    servicePrice: {
-      type: 'number',
-      columnName: 'service_price'
+    servicePriceId: {
+      type: 'ref',
+      columnType: 'int',
+      columnName: 'service_price_id'
     },
 
     isActive: {

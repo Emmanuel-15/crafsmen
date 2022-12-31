@@ -36,12 +36,14 @@ module.exports = {
     },
 
     serviceTypeId: {
-      model: 'servicetype',
+      type: 'ref',
+      columnType: 'int',
       columnName: 'service_type_id'
     },
 
     serviceImage: {
       type: 'string',
+      allowNull: true,
       columnName: 'service_image'
     },
 

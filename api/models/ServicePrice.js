@@ -54,7 +54,6 @@ module.exports = {
 
     unitPrice: {
       type: 'number',
-      allowNull: true,
       columnName: 'unit_price'
     },
 

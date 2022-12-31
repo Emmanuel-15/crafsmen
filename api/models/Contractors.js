@@ -37,19 +37,16 @@ module.exports = {
 
     contractorName: {
       type: 'string',
-      allowNull: true,
       columnName: 'contractor_name'
     },
 
     contractorAddress: {
       type: 'string',
-      allowNull: true,
       columnName: 'contractor_address'
     },
 
     contactNumber1: {
       type: 'string',
-      allowNull: true,
       columnName: 'contact_number1'
     },
 
