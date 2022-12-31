@@ -82,8 +82,6 @@ module.exports = {
       columnType: 'timestamptz',
       autoUpdatedAt: true,
       columnName: 'modified_date'
-    },
-
+    }
   }
 };
-

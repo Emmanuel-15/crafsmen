@@ -16,7 +16,6 @@ module.exports = {
     getAll: async function (req, res) {
         try {
             await ServicePrice.find({ isActive: true })
-                .populate('serviceTypeId')
                 .exec((err, data) => {
                     if (err || !data)
                         return res.ok("NO_SERVICE_PRICES_FOUND");
@@ -133,6 +132,12 @@ module.exports = {
             return res.badRequest(Utils.jsonErr(validations));
 
         try {
+            if (!await Services.findOne({ serviceId: newServicePrice.serviceId, isActive: true }))
+                return res.badRequest(Utils.jsonErr("SERVICE_ID_NOT_PRESENT"));
+
+            if (!await Contractors.findOne({ contractorId: newServicePrice.contractorId, isActive: true }))
+                return res.badRequest(Utils.jsonErr("CONTRACTOR_ID_NOT_PRESENT"));
+
             const check = await ServicePrice.findOne({ serviceId: newServicePrice.serviceId, contractorId: newServicePrice.contractorId, isActive: true });
 
             if (check)
@@ -148,7 +153,6 @@ module.exports = {
                 });
 
         } catch (err) {
-            console.log("I am err: ", err)
             return res.serverError(Utils.jsonErr("EXCEPTION"));
         }
     },
@@ -169,6 +173,10 @@ module.exports = {
             return res.badRequest(Utils.jsonErr(validReq));
 
         const id = req.param("id");
+
+        if (isNaN(id))
+            return res.badRequest(Utils.jsonErr("INVALID_ID"));
+
         const updateServicePrice = {
             unit: req.body.unit,
             unitPrice: req.body.unitPrice,
@@ -207,9 +215,6 @@ module.exports = {
         if (validations)
             return res.badRequest(Utils.jsonErr(validations));
 
-        if (isNaN(id))
-            return res.badRequest(Utils.jsonErr("INVALID_ID"));
-
         try {
             const check = await ServicePrice.findOne({ servicePriceId: id, isActive: true });
 
@@ -225,7 +230,6 @@ module.exports = {
                 });
 
         } catch (err) {
-            console.log("err: ", err)
             return res.serverError(Utils.jsonErr("EXCEPTION"));
         }
     },
@@ -249,17 +253,17 @@ module.exports = {
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
         try {
-            const check = await ServicePrice.findOne({ servicePriceId: req.param('id'), isActive: true })
+            const check = await ServicePrice.findOne({ servicePriceId: req.param('id'), isActive: true });
 
             if (!check)
-                return res.badRequest(Utils.jsonErr("SERVICE_PRICES_NOT_FOUND"));
+                return res.badRequest(Utils.jsonErr("SERVICE_PRICE_NOT_FOUND"));
 
             await ServicePrice.updateOne({ servicePriceId: req.param('id') }).set({ isActive: false })
                 .exec((err) => {
                     if (err)
-                        return res.badRequest(Utils.jsonErr("ERROR_WHILE_DELETING_SERVICE_PRICES"));
+                        return res.badRequest(Utils.jsonErr("ERROR_WHILE_DELETING_SERVICE_PRICE"));
 
-                    res.ok("SERVICE_PRICES_DELTED");
+                    res.ok("SERVICE_PRICE_DELTED");
                 });
         }
         catch (e) {

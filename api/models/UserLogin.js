@@ -151,8 +151,8 @@ module.exports = {
 
     customToJSON: function () {
         // Return a shallow copy of this record with the loginPassword removed.
-        return _.omit(this, ['loginUsername', 'loginPassword', 'createdDate', 'modifiedDate', 'dtLastLogin',
-            'userImage', 'hashCode', 'isAdmin', 'isActive', 'resetPassword']);
+        return _.omit(this, ['loginUsername', 'loginPassword', 'createdDate', 'modifiedDate',
+            'dtLastLogin', 'hashCode', 'isAdmin', 'isActive', 'resetPassword']);
     },
 
     beforeCreate: function (values, next) {

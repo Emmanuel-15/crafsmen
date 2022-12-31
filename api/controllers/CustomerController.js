@@ -159,12 +159,13 @@ module.exports = {
             userAddress: req.body.userAddress,
             userEmail: req.body.userEmail,
             userContactNumber: req.body.userContactNumber,
-            userGender: req.body.userGender
+            userGender: req.body.userGender,
+            userImage: req.body.userImage
         }
 
         const schema = {
             type: 'object',
-            required: ['userName', 'userAddress', 'userGender'],
+            // required: ['userName', 'userAddress', 'userGender'],
             properties: {
                 userName: {
                     type: 'string',
@@ -201,14 +202,20 @@ module.exports = {
                     errorMessage: {
                         type: 'INVALID_AGE',
                     }
+                },
+                userImage: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'INVALID_IMG_PATH',
+                    }
                 }
 
             }, errorMessage: {
-                required: {
-                    userName: 'NAME_IS_REQUIRED',
-                    userAddress: 'ADDRESS_IS_REQUIRED',
-                    userGender: 'GENDER_IS_REQUIRED'
-                }
+                // required: {
+                //     userName: 'NAME_IS_REQUIRED',
+                //     userAddress: 'ADDRESS_IS_REQUIRED',
+                //     userGender: 'GENDER_IS_REQUIRED'
+                // }
             }
         }
 

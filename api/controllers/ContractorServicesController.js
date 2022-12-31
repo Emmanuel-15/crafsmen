@@ -16,17 +16,27 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
+        const query = `SELECT contractor_service_id AS "contractorServiceId",
+            ContractorServices.is_active AS "isActive",
+            contractor_id AS "contractorId",
+            ContractorServices.service_id AS "serviceId",
+            Services.service_title AS "serviceTitle",
+            ContractorServices.created_date AS "CreatedDate",
+            ContractorServices.modified_date AS "ModifiedDate"
+            FROM ContractorServices, Services
+            WHERE ContractorServices.service_id = Services.service_id 
+            AND ContractorServices.is_active = true
+            ORDER BY ContractorServices.contractor_service_id DESC`;
+
         try {
-            await ContractorServices.find({ isActive: true })
-                .populate('contractorId')
-                .populate('serviceId')
-                .sort('contractorServiceId DESC')
-                .exec((err, data) => {
-                    if (err || !data)
-                        return res.ok("NO_CONTRACTOR_SERVICES_FOUND");
-                    else
-                        return res.ok("CONTRACTOR_SERVICES", data);
-                });
+            await ContractorServices.getDatastore().sendNativeQuery(query, function (err, data) {
+                if (err)
+                    return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_CONTRACTOR_SERVICES"));
+                else if (!data || data.rows.length == 0)
+                    return res.ok("NO_CONTRACTOR_SERVICES_FOUND");
+                else
+                    res.ok("CONTRACTOR_SERVICES", data.rows);
+            });
 
         } catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
@@ -48,17 +58,28 @@ module.exports = {
         if (isNaN(req.param('id')))
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
+        const query = `SELECT contractor_service_id AS "contractorServiceId",
+            ContractorServices.is_active AS "isActive",
+            contractor_id AS "contractorId",
+            ContractorServices.service_id AS "serviceId",
+            Services.service_title AS "serviceTitle",
+            ContractorServices.created_date AS "CreatedDate",
+            ContractorServices.modified_date AS "ModifiedDate"
+            FROM ContractorServices, Services
+            WHERE ContractorServices.service_id = Services.service_id 
+            AND ContractorServices.is_active = true
+            AND ContractorServices.contractor_service_id = $1
+            ORDER BY ContractorServices.contractor_service_id DESC`;
+
         try {
-            await ContractorServices
-                .findOne({ contractorServiceId: req.param('id'), isActive: true })
-                .populate('contractorId')
-                .populate('serviceId')
-                .exec((err, data) => {
-                    if (err || !data)
-                        res.ok("NO_CONTRACTOR_SERVICES_FOUND");
-                    else
-                        res.ok("CONTRACTOR_SERVICES", data);
-                });
+            await ContractorServices.getDatastore().sendNativeQuery(query, [req.param('id')], function (err, data) {
+                if (err)
+                    return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_CONTRACTOR_SERVICES"));
+                else if (data && data.rows.length == 0)
+                    return res.ok("NO_CONTRACTOR_SERVICES_FOUND");
+                else
+                    res.ok("CONTRACTOR_SERVICES", data.rows);
+            });
 
         } catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));

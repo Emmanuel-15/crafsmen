@@ -314,8 +314,6 @@ module.exports = {
         if (validReq)
             return res.badRequest(Utils.jsonErr(validReq));
 
-        const id = req.param('id');
-
         if (isNaN(req.param('id')))
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
@@ -335,7 +333,7 @@ module.exports = {
                 bookings.contractor_id = $1
             LIMIT (1);`;
 
-            const id_in_use = await Contractors.getDatastore().sendNativeQuery(query, [id]);
+            const id_in_use = await Contractors.getDatastore().sendNativeQuery(query, [req.param('id')]);
 
             if (id_in_use && id_in_use.rows.length > 0)
                 return res.badRequest(Utils.jsonErr("CONTRACTOR_ID_IN_USE"));

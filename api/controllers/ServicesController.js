@@ -42,7 +42,7 @@ module.exports = {
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_SERVICES"));
                 else
                     res.ok("SERVICES", data.rows);
-            })
+            });
 
         } catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
@@ -64,15 +64,31 @@ module.exports = {
         if (isNaN(req.param('id')))
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
+        const query = `SELECT service_id AS "serviceId",
+            service_image AS "serviceImage",
+            service_title AS "serviceTitle",
+            service_description AS "serviceDescription",
+            service_except AS "serviceExcept",
+            is_active AS "isActive",
+            Services.service_type_id AS "serviceTypeId",
+            ServiceType.service_type AS "serviceType",
+            Services.created_date AS "CreatedDate",
+            services.modified_date AS "ModifiedDate"
+            FROM Services, ServiceType
+            WHERE  Services.service_type_id = ServiceType.service_type_id 
+            AND is_active = true
+            AND Services.service_id = $1
+            ORDER BY Services.service_id DESC`;
+
         try {
-            await Services
-                .findOne({ serviceId: req.param('id'), isActive: true })
-                .exec((err, data) => {
-                    if (err || !data)
-                        res.ok("NO_SERVICE_FOUND");
-                    else
-                        res.ok("SERVICE", data);
-                });
+            await Services.getDatastore().sendNativeQuery(query, [req.param('id')], function (err, data) {
+                if (err)
+                    return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_SERVICES"));
+                else if (!data || data.rows.length == 0)
+                    return res.ok("NO_SERVICES_FOUND");
+                else
+                    res.ok("SERVICES", data.rows);
+            });
 
         } catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
@@ -98,6 +114,7 @@ module.exports = {
             serviceTypeId: req.body.serviceTypeId,
             serviceTitle: req.body.serviceTitle,
             serviceDescription: req.body.serviceDescription,
+            serviceImage: req.body.serviceImage,
             serviceExcept: req.body.serviceExcept
         };
 
@@ -121,6 +138,12 @@ module.exports = {
                     type: 'string',
                     errorMessage: {
                         type: 'DESCRIPTION_SHOULD_BE_CHARACTERS'
+                    }
+                },
+                serviceImage: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'INVALID_IMAGE_PATH'
                     }
                 },
                 serviceExcept: {
@@ -193,6 +216,7 @@ module.exports = {
             serviceTypeId: req.body.serviceTypeId,
             serviceTitle: req.body.serviceTitle,
             serviceDescription: req.body.serviceDescription,
+            serviceImage: req.body.serviceImage,
             serviceExcept: req.body.serviceExcept
         };
 
@@ -215,6 +239,12 @@ module.exports = {
                     type: 'string',
                     errorMessage: {
                         type: 'DESCRIPTION_SHOULD_BE_CHARACTERS'
+                    }
+                },
+                serviceImage: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'INVALID_IMAGE_PATH'
                     }
                 },
                 serviceExcept: {
@@ -240,10 +270,12 @@ module.exports = {
             if (!serviceExists)
                 return res.badRequest(Utils.jsonErr("NO_SERVICE_FOUND"));
 
-            const check = await Services.findOne({ serviceTitle: updateService.serviceTitle, isActive: true });
+            if (updateService.serviceTitle) {
+                const check = await Services.findOne({ serviceTitle: updateService.serviceTitle, isActive: true });
 
-            if (check)
-                return res.badRequest(Utils.jsonErr("SERVICE_ALREADY_EXISTS"));
+                if (check)
+                    return res.badRequest(Utils.jsonErr("SERVICE_ALREADY_EXISTS"));
+            }
 
             await Services.updateOne({ serviceId: id }).set(updateService)
                 .exec((err) => {
@@ -281,6 +313,21 @@ module.exports = {
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
         try {
+            const query = `SELECT services.service_id
+            FROM services
+                LEFT JOIN contractorservices ON contractorservices.service_id = services.service_id
+                LEFT JOIN serviceprice ON serviceprice.service_id = services.service_id
+            WHERE contractorservices.service_id = $1 OR
+                serviceprice.service_id = $1
+            LIMIT (1);`;
+
+            const id_in_use = await Contractors.getDatastore().sendNativeQuery(query, [req.param('id')]);
+
+            console.log("query: ", id_in_use)
+
+            if (id_in_use && id_in_use.rows.length > 0)
+                return res.badRequest(Utils.jsonErr("SERVICE_ID_IN_USE"));
+
             const check = await Services.findOne({ serviceId: req.param('id'), isActive: true });
 
             if (!check)
