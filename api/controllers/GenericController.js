@@ -23,7 +23,7 @@ module.exports = {
             maxBytes: 10000000,
 
             // skipper default upload directory .tmp/uploads/
-            dirname: '../../uploads/' + year + '/' + monthNames[month] + '/' + date,
+            dirname: '../../public/uploads/' + year + '/' + monthNames[month] + '/' + date,
 
             saveAs: function (file, cb) {
                 if (file.byteCount > 10000000)

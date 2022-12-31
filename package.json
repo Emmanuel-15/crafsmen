@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "eslint": "8.30.0",
-    "grunt-sync": "0.8.2"
+    "grunt-sync": "^0.8.2"
   },
   "scripts": {
     "start": "node app.js",

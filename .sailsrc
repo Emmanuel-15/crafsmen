@@ -7,6 +7,6 @@
     "sails-generate": "2.0.6"
   },
   "paths": {
-        "public": "uploads"
-    }
+    "public": "public"
+  }
 }

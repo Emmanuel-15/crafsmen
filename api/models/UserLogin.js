@@ -94,6 +94,7 @@ module.exports = {
 
         userImage: {
             type: 'string',
+            allowNull: true,
             columnName: 'user_image'
         },
 
