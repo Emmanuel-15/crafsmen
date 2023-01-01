@@ -153,8 +153,7 @@ module.exports = {
 
     customToJSON: function () {
         // Return a shallow copy of this record with the creatain fields removed.
-        return _.omit(this, ['loginUsername', 'loginPassword', 'createdDate', 'modifiedDate',
-            'dtLastLogin', 'hashCode', 'isAdmin', 'isActive', 'resetPassword']);
+        return _.omit(this, ['loginUsername', 'loginPassword', 'resetPassword', 'hashCode', 'isAdmin', 'isActive', 'modifiedDate']);
     },
 
     beforeCreate: function (values, next) {

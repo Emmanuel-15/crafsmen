@@ -17,19 +17,19 @@ module.exports = {
      */
     getAll: async function (req, res) {
         const query = `SELECT contractor_service_id AS "contractorServiceId",
-            ContractorServices.is_active AS "isActive",
-            contractor_id AS "contractorId",
-            ContractorServices.service_id AS "serviceId",
+            Contractors.contractor_name AS "contractor_name",
             Services.service_title AS "serviceTitle",
-            ContractorServices.created_date AS "CreatedDate",
-            ContractorServices.modified_date AS "ModifiedDate"
-            FROM ContractorServices, Services
-            WHERE ContractorServices.service_id = Services.service_id 
+            ContractorServices.created_date AS "createdDate"
+            FROM ContractorServices, Services, Contractors
+            WHERE ContractorServices.service_id = Services.service_id
+            AND ContractorServices.contractor_id = Contractors.contractor_id
+            AND ContractorServices.service_id = Services.service_id
             AND ContractorServices.is_active = true
             ORDER BY ContractorServices.contractor_service_id DESC`;
 
         try {
             await ContractorServices.getDatastore().sendNativeQuery(query, function (err, data) {
+                console.log(err)
                 if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_CONTRACTOR_SERVICES"));
                 else if (!data || data.rows.length == 0)
@@ -59,17 +59,14 @@ module.exports = {
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
         const query = `SELECT contractor_service_id AS "contractorServiceId",
-            ContractorServices.is_active AS "isActive",
-            contractor_id AS "contractorId",
-            ContractorServices.service_id AS "serviceId",
+            Contractors.contractor_name AS "contractor_name",
             Services.service_title AS "serviceTitle",
-            ContractorServices.created_date AS "CreatedDate",
-            ContractorServices.modified_date AS "ModifiedDate"
-            FROM ContractorServices, Services
-            WHERE ContractorServices.service_id = Services.service_id 
+            ContractorServices.created_date AS "createdDate"
+            FROM ContractorServices, Services, Contractors
+            WHERE ContractorServices.service_id = Services.service_id
+            AND ContractorServices.contractor_id = Contractors.contractor_id
             AND ContractorServices.is_active = true
-            AND ContractorServices.contractor_service_id = $1
-            ORDER BY ContractorServices.contractor_service_id DESC`;
+            AND ContractorServices.contractor_service_id = $1`;
 
         try {
             await ContractorServices.getDatastore().sendNativeQuery(query, [req.param('id')], function (err, data) {

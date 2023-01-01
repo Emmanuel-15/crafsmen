@@ -26,13 +26,11 @@ module.exports = {
             service_title AS "serviceTitle",
             service_description AS "serviceDescription",
             service_except AS "serviceExcept",
-            is_active AS "isActive",
             Services.service_type_id AS "serviceTypeId",
             ServiceType.service_type AS "serviceType",
-            Services.created_date AS "CreatedDate",
-            services.modified_date AS "ModifiedDate"
+            Services.created_date AS "createdDate"
             FROM Services, ServiceType
-            WHERE  Services.service_type_id = ServiceType.service_type_id 
+            WHERE Services.service_type_id = ServiceType.service_type_id 
             AND is_active = true
             ORDER BY Services.service_id DESC`;
 
@@ -69,11 +67,9 @@ module.exports = {
             service_title AS "serviceTitle",
             service_description AS "serviceDescription",
             service_except AS "serviceExcept",
-            is_active AS "isActive",
             Services.service_type_id AS "serviceTypeId",
             ServiceType.service_type AS "serviceType",
-            Services.created_date AS "CreatedDate",
-            services.modified_date AS "ModifiedDate"
+            Services.created_date AS "CreatedDate"
             FROM Services, ServiceType
             WHERE  Services.service_type_id = ServiceType.service_type_id 
             AND is_active = true

@@ -14,15 +14,30 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
+        const query = `SELECT booking_id AS "bookingId",
+            UserLogin.user_name AS "userName",
+            Contractors.contractor_name AS "contractorName",
+            Services.service_title AS "serviceTitle",
+            booking_date_time_from AS "bookingDateTimeFrom",
+            booking_date_time_to AS "bookingDateTimeTo",
+            ServicePrice.discount_price AS "discountPrice",
+            ServicePrice.unit_price AS "unitPrice",
+            Bookings.created_date AS "createdDate"
+            FROM Bookings, UserLogin, Contractors, Services, ServicePrice
+            WHERE Bookings.user_id = UserLogin.user_id
+            AND Bookings.contractor_id = Contractors.contractor_id
+            AND Bookings.service_id = Services.service_id
+            AND Bookings.service_price_id = ServicePrice.service_price_id
+            AND Bookings.is_active = true`;
+
         try {
-            await Bookings.find({ isActive: true })
-                .sort('bookingDateTimeFrom ASC')
-                .exec((err, data) => {
-                    if (err || data.length == 0)
-                        return res.ok("NO_BOOKINGS_FOUND");
-                    else
-                        return res.ok("BOOKINGS", data);
-                });
+            await Bookings.getDatastore().sendNativeQuery(query, function (err, data) {
+                console.log(err, data)
+                if (err || !data)
+                    return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_BOOKINGS"));
+                else
+                    return res.ok("BOOKINGS", data.rows);
+            });
 
         } catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
@@ -44,15 +59,31 @@ module.exports = {
         if (isNaN(req.param('id')))
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
+        const query = `SELECT booking_id AS "bookingId",
+            UserLogin.user_name AS "userName",
+            Contractors.contractor_name AS "contractorName",
+            Services.service_title AS "serviceTitle",
+            booking_date_time_from AS "bookingDateTimeFrom",
+            booking_date_time_to AS "bookingDateTimeTo",
+            ServicePrice.discount_price AS "discountPrice",
+            ServicePrice.unit_price AS "unitPrice",
+            Bookings.created_date AS "createdDate"
+            FROM Bookings, UserLogin, Contractors, Services, ServicePrice
+            WHERE Bookings.user_id = UserLogin.user_id
+            AND Bookings.contractor_id = Contractors.contractor_id
+            AND Bookings.service_id = Services.service_id
+            AND Bookings.service_price_id = ServicePrice.service_price_id
+            AND Bookings.is_active = true
+            AND Bookings.booking_id = $1`;
+
         try {
-            await Bookings
-                .findOne({ bookingId: req.param('id'), isActive: true })
-                .exec((err, data) => {
-                    if (err || !data)
-                        res.ok("NO_BOOKING_FOUND");
-                    else
-                        res.ok("BOOKINGS", data);
-                });
+            await Bookings.getDatastore().sendNativeQuery(query, [req.param('id')], function (err, data) {
+                console.log(err, data)
+                if (err || !data)
+                    return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_BOOKINGS"));
+                else
+                    return res.ok("BOOKINGS", data.rows);
+            });
 
         } catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));

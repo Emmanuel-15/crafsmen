@@ -80,5 +80,10 @@ module.exports = {
       autoUpdatedAt: true,
       columnName: 'modified_date'
     }
-  }
+  },
+
+  customToJSON: function () {
+    // Return a shallow copy of this record with the creatain fields removed.
+    return _.omit(this, ['isActive', 'modifiedDate']);
+  },
 };

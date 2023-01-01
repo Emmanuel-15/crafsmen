@@ -14,14 +14,29 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
+        const query = `SELECT service_price_id AS "servicePriceId",
+        Services.service_title AS "serviceTitle",
+        Contractors.contractor_name AS "contractorName",
+        unit,
+        unit_price AS "unitPrice",
+        discount_price AS "discountPrice",
+        ServicePrice.created_date As "createdDate"
+        FROM ServicePrice, Services, Contractors
+        WHERE ServicePrice.service_id = Services.service_id
+        AND ServicePrice.contractor_id = Contractors.contractor_id
+        AND ServicePrice.is_active = true
+        ORDER BY service_price_id ASC`;
+
         try {
-            await ServicePrice.find({ isActive: true })
-                .exec((err, data) => {
-                    if (err || !data)
-                        return res.ok("NO_SERVICE_PRICES_FOUND");
-                    else
-                        return res.ok("SERVICE_PRICES", data);
-                });
+            await ServicePrice.getDatastore().sendNativeQuery(query, function (err, data) {
+                console.log(err)
+                if (err)
+                    return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_SERVICE_PRICE"));
+                else if (data && data.rows.length == 0)
+                    return res.ok("NO_SERVICE_PRICE_FOUND");
+                else
+                    res.ok("SERVICE_PRICE", data.rows);
+            });
 
         } catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
@@ -43,15 +58,29 @@ module.exports = {
         if (isNaN(req.param('id')))
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
+
+        const query = `SELECT service_price_id AS "servicePriceId",
+            Services.service_title AS "serviceTitle",
+            Contractors.contractor_name AS "contractorName",
+            unit,
+            unit_price AS "unitPrice",
+            discount_price AS "discountPrice",
+            ServicePrice.created_date As "createdDate"
+            FROM Services, Contractors, ServicePrice
+            WHERE ServicePrice.service_id = Services.service_id
+            AND ServicePrice.contractor_id = Contractors.contractor_id
+            AND ServicePrice.is_active = true
+            AND ServicePrice.service_price_id = $1`;
+
         try {
-            await ServicePrice
-                .findOne({ servicePriceId: req.param('id'), isActive: true })
-                .exec((err, data) => {
-                    if (err || !data)
-                        res.ok("NO_SERVICE_PRICE_FOUND");
-                    else
-                        res.ok("SERVICE_PRICE", data);
-                });
+            await ServicePrice.getDatastore().sendNativeQuery(query, [req.param('id')], function (err, data) {
+                if (err)
+                    return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_CONTRACTOR_SERVICES"));
+                else if (data && data.rows.length == 0)
+                    return res.ok("NO_SERVICE_PRICE_FOUND");
+                else
+                    res.ok("SERVICE_PRICE", data.rows);
+            });
 
         } catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
