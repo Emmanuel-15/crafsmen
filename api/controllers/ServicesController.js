@@ -41,7 +41,7 @@ module.exports = {
                 if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_SERVICES"));
                 else
-                    res.ok("SERVICES", data.rows);
+                    return res.ok("SERVICES", data.rows);
             });
 
         } catch (err) {
