@@ -35,11 +35,16 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
+        const pageNo = (req.query.page) ? (req.query.page) : 0;
+
         try {
             await Contractors.find({ isActive: true })
                 .sort('contractorId DESC')
+                .paginate(pageNo, 10)
                 .exec((err, data) => {
-                    if (err || data.length == 0)
+                    if (err || !data)
+                        return res.ok("ERROR_WHILE_FETCHING_CONTRACTORS");
+                    else if (data.length == 0)
                         return res.ok("NO_CONTRACTORS_FOUND");
                     else
                         return res.ok("CONTRACTORS", data);

@@ -14,22 +14,24 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
+        const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0;
+
         const query = `SELECT service_price_id AS "servicePriceId",
-        Services.service_title AS "serviceTitle",
-        Contractors.contractor_name AS "contractorName",
-        unit,
-        unit_price AS "unitPrice",
-        discount_price AS "discountPrice",
-        ServicePrice.created_date As "createdDate"
-        FROM ServicePrice, Services, Contractors
-        WHERE ServicePrice.service_id = Services.service_id
-        AND ServicePrice.contractor_id = Contractors.contractor_id
-        AND ServicePrice.is_active = true
-        ORDER BY service_price_id ASC`;
+                        Services.service_title AS "serviceTitle",
+                        Contractors.contractor_name AS "contractorName",
+                        unit,
+                        unit_price AS "unitPrice",
+                        discount_price AS "discountPrice",
+                        ServicePrice.created_date As "createdDate"
+                        FROM ServicePrice, Services, Contractors
+                        WHERE ServicePrice.service_id = Services.service_id
+                        AND ServicePrice.contractor_id = Contractors.contractor_id
+                        AND ServicePrice.is_active = true
+                        ORDER BY service_price_id ASC
+                        LIMIT (10) OFFSET $1`;
 
         try {
-            await ServicePrice.getDatastore().sendNativeQuery(query, function (err, data) {
-                console.log(err)
+            await ServicePrice.getDatastore().sendNativeQuery(query, [pageNo], function (err, data) {
                 if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_SERVICE_PRICE"));
                 else if (data && data.rows.length == 0)
@@ -57,7 +59,6 @@ module.exports = {
 
         if (isNaN(req.param('id')))
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
-
 
         const query = `SELECT service_price_id AS "servicePriceId",
             Services.service_title AS "serviceTitle",

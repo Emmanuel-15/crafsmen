@@ -16,18 +16,16 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
-        // let { page, limit } = req.query;
+        const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0;
 
-        // if (!page) page = 1;
-
-        // if (!limit) limit = 10;
-
-        // .paginate({page: 2, limit: 10})
         try {
             await ServiceType.find()
                 .sort('serviceTypeId DESC')
+                .paginate(pageNo, 10)
                 .exec((err, data) => {
-                    if (err || !data)
+                    if (err)
+                        return res.ok("ERROR_WHILE_FETCHING_SERVICE_TYPE");
+                    else if (!data || data.length == 0)
                         return res.ok("NO_SERVICE_TYPE_FOUND");
                     else
                         return res.ok("SERVICE_TYPE", data);

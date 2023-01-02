@@ -14,27 +14,32 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
+        const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0;
+
         const query = `SELECT booking_id AS "bookingId",
-            UserLogin.user_name AS "userName",
-            Contractors.contractor_name AS "contractorName",
-            Services.service_title AS "serviceTitle",
-            booking_date_time_from AS "bookingDateTimeFrom",
-            booking_date_time_to AS "bookingDateTimeTo",
-            ServicePrice.discount_price AS "discountPrice",
-            ServicePrice.unit_price AS "unitPrice",
-            Bookings.created_date AS "createdDate"
-            FROM Bookings, UserLogin, Contractors, Services, ServicePrice
-            WHERE Bookings.user_id = UserLogin.user_id
-            AND Bookings.contractor_id = Contractors.contractor_id
-            AND Bookings.service_id = Services.service_id
-            AND Bookings.service_price_id = ServicePrice.service_price_id
-            AND Bookings.is_active = true`;
+                        UserLogin.user_name AS "userName",
+                        Contractors.contractor_name AS "contractorName",
+                        Services.service_title AS "serviceTitle",
+                        booking_date_time_from AS "bookingDateTimeFrom",
+                        booking_date_time_to AS "bookingDateTimeTo",
+                        ServicePrice.discount_price AS "discountPrice",
+                        ServicePrice.unit_price AS "unitPrice",
+                        Bookings.created_date AS "createdDate"
+                        FROM Bookings, UserLogin, Contractors, Services, ServicePrice
+                        WHERE Bookings.user_id = UserLogin.user_id
+                        AND Bookings.contractor_id = Contractors.contractor_id
+                        AND Bookings.service_id = Services.service_id
+                        AND Bookings.service_price_id = ServicePrice.service_price_id
+                        AND Bookings.is_active = true
+                        ORDER BY Bookings.booking_date_time_from ASC
+                        LIMIT (10) OFFSET $1`;
 
         try {
-            await Bookings.getDatastore().sendNativeQuery(query, function (err, data) {
-                console.log(err, data)
-                if (err || !data)
+            await Bookings.getDatastore().sendNativeQuery(query, [pageNo], function (err, data) {
+                if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_BOOKINGS"));
+                else if (!data || data.rows.length == 0)
+                    return res.ok("NO_BOOKINGS_FOUND");
                 else
                     return res.ok("BOOKINGS", data.rows);
             });
@@ -78,7 +83,6 @@ module.exports = {
 
         try {
             await Bookings.getDatastore().sendNativeQuery(query, [req.param('id')], function (err, data) {
-                console.log(err, data)
                 if (err || !data)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_BOOKINGS"));
                 else

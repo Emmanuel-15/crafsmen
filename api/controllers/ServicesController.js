@@ -21,6 +21,8 @@ module.exports = {
         if (validReq)
             return res.badRequest(Utils.jsonErr(validReq));
 
+        const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0;
+
         const query = `SELECT service_id AS "serviceId",
             service_image AS "serviceImage",
             service_title AS "serviceTitle",
@@ -32,12 +34,15 @@ module.exports = {
             FROM Services, ServiceType
             WHERE Services.service_type_id = ServiceType.service_type_id 
             AND is_active = true
-            ORDER BY Services.service_id DESC`;
+            ORDER BY Services.service_id DESC
+            LIMIT (10) OFFSET $1`;
 
         try {
-            await Services.getDatastore().sendNativeQuery(query, function (err, data) {
+            await Services.getDatastore().sendNativeQuery(query, [pageNo], function (err, data) {
                 if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_SERVICES"));
+                else if (!data || data.rows.length == 0)
+                    return res.ok("NO_SERVICE_TYPE_FOUND");
                 else
                     return res.ok("SERVICES", data.rows);
             });
@@ -318,8 +323,6 @@ module.exports = {
             LIMIT (1);`;
 
             const id_in_use = await Contractors.getDatastore().sendNativeQuery(query, [req.param('id')]);
-
-            console.log("query: ", id_in_use)
 
             if (id_in_use && id_in_use.rows.length > 0)
                 return res.badRequest(Utils.jsonErr("SERVICE_ID_IN_USE"));

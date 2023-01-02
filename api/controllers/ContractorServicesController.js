@@ -16,20 +16,21 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
+        const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0;
+
         const query = `SELECT contractor_service_id AS "contractorServiceId",
             Contractors.contractor_name AS "contractor_name",
             Services.service_title AS "serviceTitle",
             ContractorServices.created_date AS "createdDate"
             FROM ContractorServices, Services, Contractors
-            WHERE ContractorServices.service_id = Services.service_id
-            AND ContractorServices.contractor_id = Contractors.contractor_id
+            WHERE ContractorServices.contractor_id = Contractors.contractor_id
             AND ContractorServices.service_id = Services.service_id
             AND ContractorServices.is_active = true
-            ORDER BY ContractorServices.contractor_service_id DESC`;
+            ORDER BY ContractorServices.contractor_service_id DESC
+            LIMIT (10) OFFSET $1`;
 
         try {
-            await ContractorServices.getDatastore().sendNativeQuery(query, function (err, data) {
-                console.log(err)
+            await ContractorServices.getDatastore().sendNativeQuery(query, [pageNo], function (err, data) {
                 if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_CONTRACTOR_SERVICES"));
                 else if (!data || data.rows.length == 0)
