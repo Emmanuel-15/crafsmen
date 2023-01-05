@@ -13,7 +13,8 @@
 module.exports = {
 
   jwt_secret: 'SECRET123',
-  refresh_secret: 'SECRET123456'
+  refresh_secret: 'SECRET123456',
+  API_KEY: 'g0wDHt3X51KxMLJ6pBAFY7EcafNQTUd4ZIOkyGihR2uSjVsCqn5u9Ld3saDkWi2RvfrAzEh86GycbMU7'
 
   /***************************************************************************
    * Set the default database connection for models in the development       *

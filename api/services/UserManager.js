@@ -2,11 +2,13 @@ const jwt = require('jsonwebtoken');
 const shortid = require('shortid');
 const moment = require('moment');
 const farmhash = require('farmhash');
+const otpGenerator = require('otp-generator')
 
 const API_ERRORS = require('../constants/APIErrors');
 // const { exits, login } = require('../controllers/UserController');
 const { hash } = require('bcrypt');
 const { find } = require('sails-postgresql');
+const APIErrors = require('../constants/APIErrors');
 
 const LOCK_INTERVAL_SEC = 120;
 const LOCK_TRY_COUNT = 5;
@@ -375,33 +377,37 @@ module.exports = {
 
 
     otpViaEmail: function (findObj, emailOrPhone) {
-        return new Promise(async (resolve) => {
+        return new Promise(async (resolve, reject) => {
             const user = await UserLogin.findOne(findObj);
 
-            if (user) {
-                // email service...
+            const otp = otpGenerator.generate(4, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
 
-                const otp = 1234;
+            if (user) {
+                const emailOtp = await Nodemailer.sendOtp(otp, emailOrPhone); // sending email to registered user
+
+                if (!emailOtp)
+                    return reject(APIErrors.ERROR_SENDING_OTP);
 
                 await UserLogin.updateOne(findObj).set({ hashCode: otp });
 
                 resolve();
 
             } else {
-                // email service...
+                const emailOtp = await Nodemailer.sendOtp(otp, emailOrPhone); // sending email to new user
+
+                if (!emailOtp)
+                    return reject(APIErrors.ERROR_SENDING_OTP);
 
                 const userInput = emailOrPhone;
-                const otp = 1234;
 
                 await Temp.create({ emailOrPhone: userInput, otp: otp });
 
                 resolve();
-
             }
         })
     },
 
-    otpViaPhone: function (findObj, emailOrPhone) {
+    otpViaSms: function (findObj, emailOrPhone) {
         return new Promise(async (resolve) => {
             const user = await UserLogin.findOne(findObj);
 
@@ -415,7 +421,8 @@ module.exports = {
                 resolve();
 
             } else {
-                // SMS service...
+                // https://www.npmjs.com/package/fast-two-sms
+                // you can use fast-two-sms npm or any npm of ur choice for sms service
 
                 const userInput = emailOrPhone;
                 const otp = 1234;
@@ -423,7 +430,6 @@ module.exports = {
                 await Temp.create({ emailOrPhone: userInput, otp: otp });
 
                 resolve();
-
             }
         })
     }

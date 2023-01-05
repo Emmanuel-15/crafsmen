@@ -45,14 +45,21 @@ module.exports = {
             await UserManager
                 .otpViaEmail(findObj, emailOrPhone)
                 .then(() => {
-                    return res.ok("OTP_SENT_SUCCESS");
-                });
+                    return res.ok("OTP_SENT_SUCCESSFULLY");
+                })
+                .catch(err => {
+                    if (err == API_ERRORS.ERROR_SENDING_OTP)
+                        return res.badRequest(Utils.jsonErr(API_ERRORS.ERROR_SENDING_OTP));
+                    else
+                        return res.serverError(Utils.jsonErr(err));
+
+                });;
 
         } else {
             await UserManager
-                .otpViaPhone(findObj, emailOrPhone)
+                .otpViaSms(findObj, emailOrPhone)
                 .then(() => {
-                    return res.ok("OTP_SENT_SUCCESS");
+                    return res.ok("OTP_SENT_SUCCESSFULLY");
                 });
         }
     },

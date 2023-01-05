@@ -157,7 +157,7 @@ module.exports = {
     },
 
     beforeCreate: function (values, next) {
-        if (values.loginPassword.length == 0)
+        if (values.loginPassword == null || values.loginPassword.length == 0)
             next();
         else {
             generatePasswordHash(values.loginPassword)
