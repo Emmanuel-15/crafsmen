@@ -232,14 +232,18 @@ module.exports = {
                 },
                 serviceTitle: {
                     type: 'string',
+                    minLength: 1,
                     errorMessage: {
-                        type: 'TITLE_SHOULD_BE_CHARACTERS'
+                        type: 'TITLE_SHOULD_BE_CHARACTERS',
+                        minLength: 'SERVICE_TITLE_IS_REQUIRED'
                     }
                 },
                 serviceDescription: {
                     type: 'string',
+                    minLength: 1,
                     errorMessage: {
-                        type: 'DESCRIPTION_SHOULD_BE_CHARACTERS'
+                        type: 'DESCRIPTION_SHOULD_BE_CHARACTERS',
+                        minLength: 'SERVICE_DESCRIPTION_IS_REQUIRED'
                     }
                 },
                 serviceImage: {
@@ -250,8 +254,10 @@ module.exports = {
                 },
                 serviceExcept: {
                     type: 'string',
+                    minLength: 1,
                     errorMessage: {
-                        type: 'EXCEPT_SHOULD_BE_CHARACTERS'
+                        type: 'EXCEPT_SHOULD_BE_CHARACTERS',
+                        minLength: 'SERVICE_EXCEPT_IS_REQUIRED'
                     }
                 }
 
@@ -271,11 +277,11 @@ module.exports = {
             if (!serviceExists)
                 return res.badRequest(Utils.jsonErr("NO_SERVICE_FOUND"));
 
-            if (updateService.serviceTitle) {
+            if (updateService.serviceTitle != serviceExists.serviceTitle) {
                 const check = await Services.findOne({ serviceTitle: updateService.serviceTitle, isActive: true });
 
                 if (check)
-                    return res.badRequest(Utils.jsonErr("SERVICE_ALREADY_EXISTS"));
+                    return res.badRequest(Utils.jsonErr("SERVICE_TITLE_EXISTS"));
             }
 
             await Services.updateOne({ serviceId: id }).set(updateService)

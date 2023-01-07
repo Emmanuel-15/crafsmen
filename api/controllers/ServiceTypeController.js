@@ -156,8 +156,10 @@ module.exports = {
             properties: {
                 serviceType: {
                     type: 'string',
+                    minLength: 1,
                     errorMessage: {
-                        type: 'INVALID_SERVICE_TYPE'
+                        type: 'INVALID_SERVICE_TYPE',
+                        minLength: 'SERVICE_TYPE_IS_REQUIRED'
                     }
                 }
             }, errorMessage: {
@@ -179,10 +181,13 @@ module.exports = {
             if (!idExists)
                 return res.badRequest(Utils.jsonErr("NO_SERVICE_TYPE_FOUND"));
 
-            const ServiceExists = await ServiceType.findOne({ serviceType: updateServiceType.serviceType });
+            if (idExists.serviceType != updateServiceType.serviceType) {
+                const ServiceExists = await ServiceType.findOne({ serviceType: updateServiceType.serviceType });
 
-            if (ServiceExists)
-                return res.badRequest(Utils.jsonErr("SERVICE_TYPE_ALREADY_EXISTS"));
+                if (ServiceExists)
+                    return res.badRequest(Utils.jsonErr("SERVICE_TYPE_ALREADY_EXISTS"));
+
+            }
 
             await ServiceType.updateOne({ serviceTypeId: id }).set(updateServiceType)
                 .exec((err) => {
