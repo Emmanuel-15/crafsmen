@@ -177,17 +177,21 @@ module.exports = {
                 userName: {
                     type: 'string',
                     maxLength: 20,
+                    minLength: 1,
                     errorMessage: {
                         type: 'INVALID_NAME',
-                        maxLength: 'NAME_SHOULD_NOT_EXCEED_20_CHARACTERS'
+                        maxLength: 'NAME_SHOULD_NOT_EXCEED_20_CHARACTERS',
+                        minLength: 'NAME_IS_REQUIRED'
                     }
                 },
                 userAddress: {
                     type: 'string',
                     maxLength: 40,
+                    minLength: 1,
                     errorMessage: {
                         type: 'INVALID_ADDRESS',
-                        maxLength: 'ADDRESS_SHOULD_NOT_EXCEED_40_CHARACTERS'
+                        maxLength: 'ADDRESS_SHOULD_NOT_EXCEED_40_CHARACTERS',
+                        minLength: 'ADDRESS_IS_REQUIRED'
                     }
                 },
                 userEmail: {

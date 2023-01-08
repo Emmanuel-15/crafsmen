@@ -17,17 +17,17 @@ module.exports = {
         // const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0;
 
         const query = `SELECT service_price_id AS "servicePriceId",
-                        Services.service_title AS "serviceTitle",
-                        Contractors.contractor_name AS "contractorName",
-                        unit,
-                        unit_price AS "unitPrice",
-                        discount_price AS "discountPrice",
-                        ServicePrice.created_date As "createdDate"
-                        FROM ServicePrice, Services, Contractors
-                        WHERE ServicePrice.service_id = Services.service_id
-                        AND ServicePrice.contractor_id = Contractors.contractor_id
-                        AND ServicePrice.is_active = true
-                        ORDER BY service_price_id ASC`;
+            Services.service_title AS "serviceTitle",
+            Contractors.contractor_name AS "contractorName",
+            unit,
+            unit_price AS "unitPrice",
+            discount_price AS "discountPrice",
+            ServicePrice.created_date As "createdDate"
+            FROM ServicePrice, Services, Contractors
+            WHERE ServicePrice.service_id = Services.service_id
+            AND ServicePrice.contractor_id = Contractors.contractor_id
+            AND ServicePrice.is_active = true
+            ORDER BY service_price_id ASC`;
 
         try {
             await ServicePrice.getDatastore().sendNativeQuery(query, function (err, data) {
@@ -217,10 +217,8 @@ module.exports = {
             properties: {
                 unit: {
                     type: 'string',
-                    minLength: 1,
                     errorMessage: {
                         type: 'INVALID_UNIT',
-                        minLength: 'UNIT_IS_REQUIRED'
                     }
                 },
                 unitPrice: {

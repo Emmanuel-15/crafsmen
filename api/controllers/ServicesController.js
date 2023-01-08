@@ -21,7 +21,7 @@ module.exports = {
         if (validReq)
             return res.badRequest(Utils.jsonErr(validReq));
 
-        // const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0;
+        // const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0; // pagination
 
         const query = `SELECT service_id AS "serviceId",
             service_image AS "serviceImage",
@@ -169,7 +169,7 @@ module.exports = {
         if (validations)
             return res.badRequest(Utils.jsonErr(validations));
 
-        const check = await Services.findOne({ serviceTitle: newService.serviceTitle });
+        const check = await Services.findOne({ serviceTitle: newService.serviceTitle, isActive: true });
 
         if (check)
             return res.forbidden(Utils.jsonErr("SERVICE_ALREADY_EXISTS"));

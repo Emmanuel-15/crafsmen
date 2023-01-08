@@ -8,22 +8,22 @@
 const Utils = require("../services/Utils");
 
 function doesNameExist(name) {
-    return Contractors.findOne({ contractorName: name });
+    return Contractors.findOne({ contractorName: name, isActive: true });
 }
 
 function doesNumberExist(number, col) {
     let obj;
 
     if (col)
-        obj = { contactNumber1: number };
+        obj = { contactNumber1: number, isActive: true };
     else
-        obj = { contactNumber2: number };
+        obj = { contactNumber2: number, isActive: true };
 
     return Contractors.findOne(obj);
 }
 
 function doesEmailExist(email) {
-    return Contractors.findOne({ contractorEmail: email });
+    return Contractors.findOne({ contractorEmail: email, isActive: true });
 }
 
 module.exports = {

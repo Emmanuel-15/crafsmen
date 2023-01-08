@@ -222,20 +222,36 @@ module.exports = {
         try {
             updateContractorService.isActive = true;
 
-            const check = await ContractorServices.findOne(updateContractorService);
+            const idExists = await ContractorServices.findOne({ contractorServiceId: id, isActive: true });
 
-            if (check)
-                return res.badRequest(Utils.jsonErr("CONTRACTOR_SERVICES_ALREADY_EXISTS"));
+            if (!idExists)
+                return res.badRequest(Utils.jsonErr("CONTRACTOR_SERVICE_ID_NOT_FOUND"))
+
+            if (idExists.contractorId != updateContractorService.contractorId || idExists.serviceId != updateContractorService.serviceId) {
+                const check = await ContractorServices.findOne(updateContractorService);
+
+                if (check)
+                    return res.badRequest(Utils.jsonErr("CONTRACTOR_SERVICES_ALREADY_EXISTS"));
+            }
 
             await ContractorServices.updateOne({ contractorServiceId: id }).set(updateContractorService)
                 .exec((err) => {
-                    if (err)
-                        return res.badRequest(Utils.jsonErr("ERROR_UPDATING_CONTRACTOR_SERVICES"));
+                    if (err) {
+                        if (err.raw && err.raw.code && err.raw.code === '23503' && err.raw.constraint == 'contractors_contractorId_fkey')
+                            return res.badRequest(Utils.jsonErr("CONTRACTOR_ID_DOES_NOT_EXIST"));
+
+                        else if (err.raw && err.raw.code && err.raw.code === '23503' && err.raw.constraint == 'services_serviceId_fkey')
+                            return res.badRequest(Utils.jsonErr("SERVICE_ID_DOES_NOT_EXIST"));
+
+                        else
+                            return res.badRequest(Utils.jsonErr("ERROR_UPDATING_CONTRACTOR_SERVICES"));
+                    }
                     else
-                        return res.ok("CONTRACTOR_SERVICES_UPDATED");
+                        return res.ok("CONTRACTOR_SERVICE_UPDATED");
                 });
 
         } catch (err) {
+            console.log("err: ", err)
             return res.serverError(Utils.jsonErr("EXCEPTION"));
         }
     },
