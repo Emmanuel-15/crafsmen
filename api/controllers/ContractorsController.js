@@ -11,15 +11,18 @@ function doesNameExist(name) {
     return Contractors.findOne({ contractorName: name, isActive: true });
 }
 
-function doesNumberExist(number, col) {
-    let obj;
+async function doesNumberExist(number) {
 
-    if (col)
-        obj = { contactNumber1: number, isActive: true };
+    let result = false;
+
+    if (await Contractors.findOne({ contactNumber1: number }))
+        result = true;
+    else if (await Contractors.findOne({ contactNumber2: number }))
+        result = true;
     else
-        obj = { contactNumber2: number, isActive: true };
+        result = false;
 
-    return Contractors.findOne(obj);
+    return result;
 }
 
 function doesEmailExist(email) {
@@ -173,7 +176,7 @@ module.exports = {
         if (await doesNameExist(newContractor.contractorName))
             return res.forbidden(Utils.jsonErr("NAME_ALREADY_IN_USE"));
 
-        if (await doesNumberExist(newContractor.contactNumber1, 1))
+        if (await doesNumberExist(newContractor.contactNumber1))
             return res.forbidden(Utils.jsonErr("CONTACT_NUMBER_1_ALREADY_IN_USE"));
 
         if (newContractor.contactNumber2 && await doesNumberExist(newContractor.contactNumber2))
@@ -213,6 +216,7 @@ module.exports = {
             return res.badRequest(Utils.jsonErr(validReq));
 
         const id = req.param("id");
+        let idExists = null;
 
         if (isNaN(id))
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
@@ -231,17 +235,21 @@ module.exports = {
                 contractorName: {
                     type: 'string',
                     maxLength: 20,
+                    minLength: 1,
                     errorMessage: {
                         type: 'INVALID_NAME',
-                        maxLength: 'NAME_SHOULD_NOT_EXCEED_20_CHARACTERS'
+                        maxLength: 'NAME_SHOULD_NOT_EXCEED_20_CHARACTERS',
+                        minLength: 'NAME_IS_REQUIRED'
                     }
                 },
                 contractorAddress: {
                     type: 'string',
                     maxLength: 40,
+                    minLength: 1,
                     errorMessage: {
                         type: 'INVALID_ADDRESS',
-                        maxLength: 'ADDRESS_SHOULD_NOT_EXCEED_40_CHARACTERS'
+                        maxLength: 'ADDRESS_SHOULD_NOT_EXCEED_40_CHARACTERS',
+                        minLength: 'NAME_IS_REQUIRED'
                     }
                 },
                 contactNumber1: {
@@ -273,7 +281,7 @@ module.exports = {
             return res.badRequest(Utils.jsonErr(validations));
 
         try {
-            const idExists = await Contractors.findOne({ contractorId: id, isActive: true });
+            idExists = await Contractors.findOne({ contractorId: id, isActive: true });
 
             if (!idExists)
                 return res.badRequest(Utils.jsonErr("NO_CONTRACTOR_FOUND"));
@@ -288,11 +296,11 @@ module.exports = {
         if (updateContractor.contractorName && await doesNameExist(updateContractor.contractorName))
             return res.forbidden(Utils.jsonErr("NAME_ALREADY_IN_USE"));
 
-        if (updateContractor.contactNumber1 && await doesNumberExist(updateContractor.contactNumber1, 1))
-            return res.forbidden(Utils.jsonErr("CONTACT_NUMBER_1_ALREADY_IN_USE"));
+        // if (updateContractor.contactNumber1 && await doesNumberExist(updateContractor.contactNumber1))
+        //     return res.forbidden(Utils.jsonErr("CONTACT_NUMBER_1_ALREADY_IN_USE"));
 
-        if (updateContractor.contactNumber2 && await doesNumberExist(updateContractor.contactNumber2))
-            return res.forbidden(Utils.jsonErr("CONTACT_NUMBER_2_ALREADY_IN_USE"));
+        // if (updateContractor.contactNumber2 && await doesNumberExist(updateContractor.contactNumber2))
+        //     return res.forbidden(Utils.jsonErr("CONTACT_NUMBER_2_ALREADY_IN_USE"));
 
         if (updateContractor.contractorEmail && await doesEmailExist(updateContractor.contractorEmail))
             return res.forbidden(Utils.jsonErr("EMAIL_ALREADY_IN_USE"));
