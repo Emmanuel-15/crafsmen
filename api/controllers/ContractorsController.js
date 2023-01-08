@@ -35,12 +35,11 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
-        const pageNo = (req.query.page) ? (req.query.page) : 0;
+        // const pageNo = (req.query.page) ? (req.query.page) : 0;
 
         try {
             await Contractors.find({ isActive: true })
                 .sort('contractorId DESC')
-                .paginate(pageNo, 10)
                 .exec((err, data) => {
                     if (err || !data)
                         return res.ok("ERROR_WHILE_FETCHING_CONTRACTORS");
@@ -114,14 +113,18 @@ module.exports = {
             properties: {
                 contractorName: {
                     type: 'string',
+                    maxLength: 20,
                     errorMessage: {
-                        type: 'INVALID_NAME'
+                        type: 'INVALID_NAME',
+                        maxLength: 'NAME_SHOULD_NOT_EXCEED_20_CHARACTERS'
                     }
                 },
                 contractorAddress: {
                     type: 'string',
+                    maxLength: 40,
                     errorMessage: {
-                        type: 'INVALID_ADDRESS'
+                        type: 'INVALID_ADDRESS',
+                        maxLength: 'ADDRESS_SHOULD_NOT_EXCEED_40_CHARACTERS'
                     }
                 },
                 contactNumber1: {
@@ -227,14 +230,18 @@ module.exports = {
             properties: {
                 contractorName: {
                     type: 'string',
+                    maxLength: 20,
                     errorMessage: {
-                        type: 'INVALID_NAME'
+                        type: 'INVALID_NAME',
+                        maxLength: 'NAME_SHOULD_NOT_EXCEED_20_CHARACTERS'
                     }
                 },
                 contractorAddress: {
                     type: 'string',
+                    maxLength: 40,
                     errorMessage: {
-                        type: 'INVALID_ADDRESS'
+                        type: 'INVALID_ADDRESS',
+                        maxLength: 'ADDRESS_SHOULD_NOT_EXCEED_40_CHARACTERS'
                     }
                 },
                 contactNumber1: {

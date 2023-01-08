@@ -14,7 +14,7 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
-        const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0;
+        // const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0;
 
         const query = `SELECT booking_id AS "bookingId",
                         UserLogin.user_name AS "userName",
@@ -31,11 +31,10 @@ module.exports = {
                         AND Bookings.service_id = Services.service_id
                         AND Bookings.service_price_id = ServicePrice.service_price_id
                         AND Bookings.is_active = true
-                        ORDER BY Bookings.booking_date_time_from ASC
-                        LIMIT (10) OFFSET $1`;
+                        ORDER BY Bookings.booking_date_time_from ASC`;
 
         try {
-            await Bookings.getDatastore().sendNativeQuery(query, [pageNo], function (err, data) {
+            await Bookings.getDatastore().sendNativeQuery(query, function (err, data) {
                 if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_BOOKINGS"));
                 else if (!data || data.rows.length == 0)

@@ -16,12 +16,11 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
-        const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0;
+        // const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0;
 
         try {
             await ServiceType.find()
                 .sort('serviceTypeId DESC')
-                .paginate(pageNo, 10)
                 .exec((err, data) => {
                     if (err)
                         return res.ok("ERROR_WHILE_FETCHING_SERVICE_TYPE");

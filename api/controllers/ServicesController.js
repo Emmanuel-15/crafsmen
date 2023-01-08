@@ -21,7 +21,7 @@ module.exports = {
         if (validReq)
             return res.badRequest(Utils.jsonErr(validReq));
 
-        const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0;
+        // const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0;
 
         const query = `SELECT service_id AS "serviceId",
             service_image AS "serviceImage",
@@ -34,11 +34,10 @@ module.exports = {
             FROM Services, ServiceType
             WHERE Services.service_type_id = ServiceType.service_type_id 
             AND is_active = true
-            ORDER BY Services.service_id DESC
-            LIMIT (10) OFFSET $1`;
+            ORDER BY Services.service_id DESC`;
 
         try {
-            await Services.getDatastore().sendNativeQuery(query, [pageNo], function (err, data) {
+            await Services.getDatastore().sendNativeQuery(query, function (err, data) {
                 if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_SERVICES"));
                 else if (!data || data.rows.length == 0)

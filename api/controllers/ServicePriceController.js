@@ -14,7 +14,7 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
-        const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0;
+        // const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0;
 
         const query = `SELECT service_price_id AS "servicePriceId",
                         Services.service_title AS "serviceTitle",
@@ -27,11 +27,10 @@ module.exports = {
                         WHERE ServicePrice.service_id = Services.service_id
                         AND ServicePrice.contractor_id = Contractors.contractor_id
                         AND ServicePrice.is_active = true
-                        ORDER BY service_price_id ASC
-                        LIMIT (10) OFFSET $1`;
+                        ORDER BY service_price_id ASC`;
 
         try {
-            await ServicePrice.getDatastore().sendNativeQuery(query, [pageNo], function (err, data) {
+            await ServicePrice.getDatastore().sendNativeQuery(query, function (err, data) {
                 if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_SERVICE_PRICE"));
                 else if (data && data.rows.length == 0)
@@ -218,14 +217,18 @@ module.exports = {
             properties: {
                 unit: {
                     type: 'string',
+                    minLength: 1,
                     errorMessage: {
-                        type: 'INVALID_UNIT'
+                        type: 'INVALID_UNIT',
+                        minLength: 'UNIT_IS_REQUIRED'
                     }
                 },
                 unitPrice: {
                     type: 'number',
+                    minimum: 10,
                     errorMessage: {
-                        type: 'INVALID_PRICE'
+                        type: 'INVALID_PRICE',
+                        minimum: 'MINIMUM_UNIT_PRICE_VALUE_MUST_BE_10'
                     }
                 },
                 discountPrice: {
