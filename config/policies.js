@@ -27,7 +27,8 @@ module.exports.policies = {
 
     'servicesController': {
         'getAll': true,
-        'get': true
+        'get': true,
+        'getDetails': true
     },
 
     'serviceTypeController': {
