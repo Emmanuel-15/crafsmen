@@ -349,5 +349,55 @@ module.exports = {
         catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
         }
+    },
+
+    getDetails: async function (req, res) {
+        const validReq = await Utils.isValidRequest(req, true, false);
+
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
+
+        if (isNaN(req.param('id')))
+            return res.badRequest(Utils.jsonErr("INVALID_ID"));
+
+        const query = `SELECT service_id AS "serviceId",
+        service_image AS "serviceImage",
+        service_title AS "serviceTitle",
+        service_description AS "serviceDescription",
+        ServiceType.service_type AS "serviceType"
+        FROM Services, ServiceType
+        WHERE Services.service_type_id = ServiceType.service_type_id 
+        AND is_active = true
+        AND Services.service_id = $1
+        ORDER BY Services.service_id DESC`;
+
+        const query2 = `SELECT service_price_id AS "servicePriceId",
+        Contractors.contractor_name AS "contractorName",
+        unit,
+        unit_price AS "unitPrice",
+        discount_price AS "discountPrice"
+        FROM Services, Contractors, ServicePrice
+        WHERE ServicePrice.service_id = Services.service_id
+        AND ServicePrice.contractor_id = Contractors.contractor_id
+        AND ServicePrice.is_active = true
+        AND Services.service_id = $1`;
+
+        try {
+            if (!await Services.findOne({ serviceId: req.param('id'), isActive: true }))
+                return res.badRequest(Utils.jsonErr("NO_SERVICE_FOUND"));
+
+            const service = await Services.getDatastore().sendNativeQuery(query, [req.param('id')]);
+
+            const prices = await ServicePrice.getDatastore().sendNativeQuery(query2, [req.param('id')]);
+
+            let group = service.rows[0];
+
+            group.prices = prices.rows;
+
+            return res.ok("SERVICE_DETAILS", group);
+
+        } catch (err) {
+            return res.serverError("EXECPTION");
+        }
     }
 };

@@ -29,6 +29,7 @@ module.exports.routes = {
     'POST   /api/v1/entrance/services': { controller: 'ServicesController', action: 'create' },
     'PUT   /api/v1/entrance/services/:id': { controller: 'ServicesController', action: 'update' },
     'DELETE   /api/v1/entrance/services/:id': { controller: 'ServicesController', action: 'delete' },
+    'GET   /api/v1/entrance/service-details/:id': { controller: 'ServicesController', action: 'getDetails' },
 
     // service-type
     'GET   /api/v1/entrance/service-type': { controller: 'ServiceTypeController', action: 'getAll' },
