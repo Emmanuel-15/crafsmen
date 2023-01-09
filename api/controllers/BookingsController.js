@@ -399,7 +399,7 @@ module.exports = {
                 else if (data.rows.length == 0)
                     return res.badRequest(Utils.jsonErr("NO_BOOKINGS_FOUND"));
                 else
-                    return res.ok("BOOKINGS", data);
+                    return res.ok("BOOKINGS", data.rows);
             })
 
         } catch (err) {
