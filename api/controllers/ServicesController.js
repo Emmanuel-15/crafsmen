@@ -397,7 +397,7 @@ module.exports = {
             return res.ok("SERVICE_DETAILS", group);
 
         } catch (err) {
-            return res.serverError("EXECPTION");
+            return res.serverError("EXCEPTION");
         }
     }
 };

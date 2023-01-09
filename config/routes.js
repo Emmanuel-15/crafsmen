@@ -65,6 +65,7 @@ module.exports.routes = {
     'POST   /api/v1/entrance/bookings': { controller: 'BookingsController', action: 'create' },
     'PUT   /api/v1/entrance/bookings/:id': { controller: 'BookingsController', action: 'update' },
     'DELETE   /api/v1/entrance/bookings/:id': { controller: 'BookingsController', action: 'delete' },
+    'GET   /api/v1/entrance/customer-bookings': { controller: 'BookingsController', action: 'customerBookings' },
 
     //generic controller
     'POST    /api/v1/entrance/upload-image': { controller: 'GenericController', action: 'upload' }

@@ -5,6 +5,8 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+const Utils = require("../services/Utils");
+
 module.exports = {
 
     /**
@@ -368,6 +370,40 @@ module.exports = {
         }
         catch (e) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
+        }
+    },
+
+    customerBookings: async function (req, res) {
+        const query = `SELECT booking_id AS "bookingId",
+                        UserLogin.user_name AS "userName",
+                        Contractors.contractor_name AS "contractorName",
+                        Services.service_title AS "serviceTitle",
+                        booking_date_time_from AS "bookingDateTimeFrom",
+                        booking_date_time_to AS "bookingDateTimeTo",
+                        ServicePrice.discount_price AS "discountPrice",
+                        ServicePrice.unit_price AS "unitPrice",
+                        Bookings.created_date AS "createdDate"
+                        FROM Bookings, UserLogin, Contractors, Services, ServicePrice
+                        WHERE Bookings.user_id = UserLogin.user_id
+                        AND Bookings.contractor_id = Contractors.contractor_id
+                        AND Bookings.service_id = Services.service_id
+                        AND Bookings.service_price_id = ServicePrice.service_price_id
+                        AND Bookings.is_active = true
+                        AND Bookings.user_id = $1
+                        ORDER BY Bookings.booking_date_time_from ASC`;
+
+        try {
+            await Bookings.getDatastore().sendNativeQuery(query, [req.user.userId], function (err, data) {
+                if (err)
+                    return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_CUSTOMER_BOOKINGS"));
+                else if (data.rows.length == 0)
+                    return res.badRequest(Utils.jsonErr("NO_BOOKINGS_FOUND"));
+                else
+                    return res.ok("BOOKINGS", data);
+            })
+
+        } catch (err) {
+            return res.serverError(Utils.jsonErr("EXCEPTION"))
         }
     }
 };
