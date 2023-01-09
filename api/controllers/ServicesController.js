@@ -372,6 +372,7 @@ module.exports = {
         ORDER BY Services.service_id DESC`;
 
         const query2 = `SELECT service_price_id AS "servicePriceId",
+        Contractors.contractor_id AS "contractorId",
         Contractors.contractor_name AS "contractorName",
         unit,
         unit_price AS "unitPrice",
