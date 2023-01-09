@@ -241,14 +241,14 @@ module.exports = {
         if (updateCustomerDetails.userEmail) {
             const checkEmail = await UserLogin.findOne({ userEmail: updateCustomerDetails.userEmail });
 
-            if (checkEmail.userId != req.user.userId)
+            if (checkEmail && checkEmail.userId != req.user.userId)
                 return res.badRequest(Utils.jsonErr("EMAIL_ALREADY_IN_USE"));
         }
 
         if (updateCustomerDetails.userContactNumber) {
             const checkPhone = await UserLogin.findOne({ userContactNumber: updateCustomerDetails.userContactNumber });
 
-            if (checkPhone.userId != req.user.userId)
+            if (checkPhone && checkPhone.userId != req.user.userId)
                 return res.badRequest(Utils.jsonErr("PHONE_NUMBER_ALREADY_IN_USE"));
         }
 
