@@ -116,7 +116,7 @@ module.exports = {
             servicePriceId: req.body.servicePriceId
         };
 
-        if (new Date(newBooking.bookingDateTimeTo) > new Date(newBooking.bookingDateTimeFrom))
+        if (new Date(newBooking.bookingDateTimeTo) < new Date(newBooking.bookingDateTimeFrom))
             return res.badRequest(Utils.jsonErr("INCORRECT_BOOKING_DATE_TIME_TO"));
 
         const schema = {
@@ -154,7 +154,7 @@ module.exports = {
                     format: 'date-time',
                     errorMessage: {
                         type: 'INVALID_DATE',
-                        format: 'INVALID_BOOKING_DATE_TIME_FROM'
+                        format: 'INVALID_BOOKING_DATE_TIME_TO'
                     }
                 },
                 servicePriceId: {
@@ -277,7 +277,7 @@ module.exports = {
                     format: 'date-time',
                     errorMessage: {
                         type: 'INVALID_DATE',
-                        format: 'INVALID_BOOKING_DATE_TIME_FROM'
+                        format: 'INVALID_BOOKING_DATE_TIME_TO'
                     }
                 },
                 servicePriceId: {
