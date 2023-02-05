@@ -107,7 +107,7 @@ module.exports = {
 
         if (user_table) {
             if (user_table.hashCode != otp)
-                return res.unauthorized("INVALID_OTP");
+                return res.unauthorized(Utils.jsonErr("INVALID_OTP"));
             else {
                 UserManager._generateToken(user_table, (token) => {
                     return res.ok("VERIFIED", { token });

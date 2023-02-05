@@ -224,7 +224,7 @@ module.exports = {
      */
     update: async function (req, res) {
         if (req.user.isAdmin != true)
-            return res.forbidden("NOT_ALLOWED");
+            return res.forbidden(Utils.jsonErr("NOT_ALLOWED"));
 
         const validReq = await Utils.isValidRequest(req, true, true);
 
@@ -344,7 +344,7 @@ module.exports = {
      */
     delete: async function (req, res) {
         if (req.user.isAdmin != true)
-            return res.forbidden("NOT_ALLOWED");
+            return res.forbidden(Utils.jsonErr("NOT_ALLOWED"));
 
         const validReq = await Utils.isValidRequest(req, true, false);
 
