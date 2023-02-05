@@ -5,6 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const md5 = require('md5');
+const Utils = require('../services/Utils');
 
 module.exports = {
     upload: function (req, res) {
@@ -50,11 +51,11 @@ module.exports = {
             }
         }, function whenDone(err, uploadedFiles) {
             if (err)
-                return res.serverError(err);
+                return res.serverError(Utils.jsonErr("ERROR_WHILE_UPLOADING_IMAGE"));
 
             // If no files were uploaded, respond with an error.
             if (uploadedFiles.length === 0)
-                return res.badRequest('NO_FILE_WAS_UPLOADED');
+                return res.badRequest(Utils.jsonErr("NO_FILE_WAS_UPLOADED"));
 
             return res.ok("IMAGE_UPLOADED", uploadedFiles[0].fd);
         });

@@ -116,7 +116,7 @@ module.exports = {
 
         } else {
             if (temp_table.otp != otp)
-                return res.unauthorized("INVALID_OTP");
+                return res.unauthorized(Utils.jsonErr("INVALID_OTP"));
             else {
                 obj.isActive = true;
                 await UserLogin.create(obj);
@@ -139,7 +139,9 @@ module.exports = {
             await UserLogin.findOne({ userId: req.user.userId })
                 .exec((err, data) => {
                     if (err)
-                        return res.ok("ERROR_WHILE_FETCHING_USER_DETAILS");
+                        return res.badRequest("ERROR_WHILE_FETCHING_USER_DETAILS");
+                    else if (!data)
+                        return res.ok("NO_USER_DETAILS_FOUND");
                     else
                         return res.ok("USER_DETAILS", data);
                 });

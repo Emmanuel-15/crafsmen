@@ -13,7 +13,7 @@
  */
 
 module.exports = function serverError(data, options) {
-    console.log("Server Error");
+    // console.log("Server Error");
     // Get access to `req`, `res`, & `sails`
     var req = this.req;
     var res = this.res;

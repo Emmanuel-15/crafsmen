@@ -73,7 +73,7 @@ module.exports = {
                 if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_CONTRACTOR_SERVICES"));
                 else if (data && data.rows.length == 0)
-                    return res.ok("NO_CONTRACTOR_SERVICES_FOUND");
+                    return res.ok("NO_CONTRACTOR_SERVICES_FOUND", data.rows);
                 else
                     res.ok("CONTRACTOR_SERVICES", data.rows);
             });
@@ -251,7 +251,6 @@ module.exports = {
                 });
 
         } catch (err) {
-            console.log("err: ", err)
             return res.serverError(Utils.jsonErr("EXCEPTION"));
         }
     },

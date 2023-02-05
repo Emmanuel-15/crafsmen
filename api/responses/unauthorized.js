@@ -21,7 +21,7 @@
  * ```
  */
 module.exports = function unauthorized(message) {
-    console.log("No Authorised");
+    // console.log("No Authorised");
     var req = this.req;
     var res = this.res;
 

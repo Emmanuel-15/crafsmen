@@ -34,7 +34,7 @@ module.exports = {
                 if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_SERVICE_PRICE"));
                 else if (data && data.rows.length == 0)
-                    return res.ok("NO_SERVICE_PRICE_FOUND");
+                    return res.ok("NO_SERVICE_PRICE_FOUND", data.rows);
                 else
                     res.ok("SERVICE_PRICE", data.rows);
             });
@@ -77,7 +77,7 @@ module.exports = {
                 if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_CONTRACTOR_SERVICES"));
                 else if (data && data.rows.length == 0)
-                    return res.ok("NO_SERVICE_PRICE_FOUND");
+                    return res.ok("NO_SERVICE_PRICE_FOUND", data.rows);
                 else
                     res.ok("SERVICE_PRICE", data.rows);
             });

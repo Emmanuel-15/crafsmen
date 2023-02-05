@@ -44,8 +44,8 @@ module.exports = {
             await Contractors.find({ isActive: true })
                 .sort('contractorId DESC')
                 .exec((err, data) => {
-                    if (err || !data)
-                        return res.ok("ERROR_WHILE_FETCHING_CONTRACTORS");
+                    if (err)
+                        return res.badRequest("ERROR_WHILE_FETCHING_CONTRACTORS");
                     else if (data.length == 0)
                         return res.ok("NO_CONTRACTORS_FOUND");
                     else
@@ -76,8 +76,10 @@ module.exports = {
             await Contractors
                 .findOne({ contractorId: req.param('id'), isActive: true })
                 .exec((err, data) => {
-                    if (err || !data)
-                        res.ok("NO_CONTRACTOR_FOUND");
+                    if (err)
+                        res.badRequest("ERROR_WHILE_FETCHING_CONTRACTOR");
+                    else if (data.length == 0)
+                        return res.ok("NO_CONTRACTORS_FOUND");
                     else
                         res.ok("CONTRACTOR", data);
                 });

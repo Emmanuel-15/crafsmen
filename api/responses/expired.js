@@ -21,7 +21,7 @@
  * ```
  */
 module.exports = function expired() {
-    console.log("Expired");
+    // console.log("Expired");
     var req = this.req;
     var res = this.res;
 

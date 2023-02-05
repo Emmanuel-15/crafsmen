@@ -16,7 +16,7 @@
  */
 
 module.exports = function badRequest(data, options) {
-    console.log("Bad Request");
+    // console.log("Bad Request");
     // Get access to `req`, `res`, & `sails`
     var req = this.req;
     var res = this.res;

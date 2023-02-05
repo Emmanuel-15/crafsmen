@@ -13,7 +13,7 @@
  */
 
 module.exports = function forbidden(message, data, options) {
-    console.log("Forbidden");
+    // console.log("Forbidden");
     // Get access to `req`, `res`, & `sails`
     var req = this.req;
     var res = this.res;

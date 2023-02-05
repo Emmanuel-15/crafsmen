@@ -23,9 +23,9 @@ module.exports = {
                 .sort('serviceTypeId DESC')
                 .exec((err, data) => {
                     if (err)
-                        return res.ok("ERROR_WHILE_FETCHING_SERVICE_TYPE");
+                        return res.badRequest("ERROR_WHILE_FETCHING_SERVICE_TYPE");
                     else if (!data || data.length == 0)
-                        return res.ok("NO_SERVICE_TYPE_FOUND");
+                        return res.ok("NO_SERVICE_TYPE_FOUND", data);
                     else
                         return res.ok("SERVICE_TYPE", data);
                 });
@@ -54,8 +54,10 @@ module.exports = {
             await ServiceType
                 .findOne({ serviceTypeId: req.param('id') })
                 .exec((err, data) => {
-                    if (err || !data)
-                        res.ok("NO_SERVICE_TYPE_FOUND");
+                    if (err)
+                        res.badRequest("ERROR_WHILE_FETCHING_SERVICE_TYPE");
+                    else if (!data || data.length == 0)
+                        return res.ok("NO_SERVICE_TYPE_FOUND", data);
                     else
                         res.ok("SERVICE_TYPE", data);
                 });

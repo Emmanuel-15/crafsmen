@@ -12,7 +12,7 @@
  */
 
 module.exports = function sendOK(message, result, options) {
-    console.log("ok");
+    // console.log("ok");
     // Get access to `req`, `res`, & `sails`
     var req = this.req;
     var res = this.res;

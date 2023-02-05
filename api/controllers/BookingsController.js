@@ -40,7 +40,7 @@ module.exports = {
                 if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_BOOKINGS"));
                 else if (!data || data.rows.length == 0)
-                    return res.ok("NO_BOOKINGS_FOUND");
+                    return res.ok("NO_BOOKINGS_FOUND", data.rows);
                 else
                     return res.ok("BOOKINGS", data.rows);
             });
@@ -84,8 +84,10 @@ module.exports = {
 
         try {
             await Bookings.getDatastore().sendNativeQuery(query, [req.param('id')], function (err, data) {
-                if (err || !data)
+                if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_BOOKINGS"));
+                else if (!data || data.rows.length == 0)
+                    return res.ok("NO_BOOKINGS_FOUND", data.rows);
                 else
                     return res.ok("BOOKINGS", data.rows);
             });
