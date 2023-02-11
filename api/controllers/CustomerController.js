@@ -26,7 +26,7 @@ module.exports = {
             return res.forbidden(Utils.jsonErr("NOT_ALLOWED"));
 
         try {
-            UserLogin.find({ isAdmin: false })
+            UserLogin.find({ isAdmin: false, isActive: true })
                 .exec((err, data) => {
                     if (err)
                         return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_CUSTOMERS"));
