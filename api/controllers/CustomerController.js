@@ -20,6 +20,24 @@ module.exports = {
      * @param res
      * @returns {*}
      */
+
+    getAll: async function (req, res) {
+        if (req.user.isAdmin != true)
+            return res.forbidden(Utils.jsonErr("NOT_ALLOWED"));
+
+        try {
+            UserLogin.find({ isAdmin: false })
+                .exec((err, data) => {
+                    if (err)
+                        return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_CUSTOMERS"));
+                    else
+                        return res.ok("CUSTOMERS", data);
+                })
+        } catch (err) {
+            return res.serverError(Utils.jsonErr("EXCEPTION"));
+        }
+    },
+
     create: async function (req, res) {
         const validReq = await Utils.isValidRequest(req, false, true);
 
@@ -264,6 +282,33 @@ module.exports = {
                         return res.ok("UPDATED");
                 });
 
+        } catch (err) {
+            return res.serverError(Utils.jsonErr("EXCEPTION"));
+        }
+    },
+
+    delete: async function (req, res) {
+        if (req.user.isAdmin != true)
+            return res.forbidden(Utils.jsonErr("NOT_ALLOWED"));
+
+        const validReq = await Utils.isValidRequest(req, true, false);
+
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
+
+        try {
+            const check = await UserLogin.findOne({ userId: req.param('id'), isActive: true });
+
+            if (!check)
+                return res.badRequest(Utils.jsonErr("NO_CUSTOMER_FOUND"));
+
+            await UserLogin.updateOne({ userId: req.param('id') }).set({ isActive: false })
+                .exec((err) => {
+                    if (err)
+                        return res.badRequest(Utils.jsonErr("ERROR_WHILE_DELETING_CUSTOMER"));
+                    else
+                        return res.ok("CUSTOMER_DELETED");
+                })
         } catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
         }
