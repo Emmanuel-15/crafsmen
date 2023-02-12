@@ -16,6 +16,8 @@ module.exports = {
      * @returns {*}
      */
     getAll: async function (req, res) {
+        if (req.user.isAdmin != true)
+            return res.forbidden(Utils.jsonErr("NOT_ALLOWED"));
         // const pageNo = (req.query.page) ? ((req.query.page) * 10) : 0;
 
         const query = `SELECT booking_id AS "bookingId",
@@ -26,6 +28,7 @@ module.exports = {
                         booking_date_time_to AS "bookingDateTimeTo",
                         ServicePrice.discount_price AS "discountPrice",
                         ServicePrice.unit_price AS "unitPrice",
+                        booking_status AS "bookingStatus",
                         Bookings.created_date AS "createdDate"
                         FROM Bookings, UserLogin, Contractors, Services, ServicePrice
                         WHERE Bookings.user_id = UserLogin.user_id
@@ -73,6 +76,7 @@ module.exports = {
             booking_date_time_to AS "bookingDateTimeTo",
             ServicePrice.discount_price AS "discountPrice",
             ServicePrice.unit_price AS "unitPrice",
+            booking_status AS "bookingStatus",
             Bookings.created_date AS "createdDate"
             FROM Bookings, UserLogin, Contractors, Services, ServicePrice
             WHERE Bookings.user_id = UserLogin.user_id
@@ -115,7 +119,8 @@ module.exports = {
             serviceId: req.body.serviceId,
             bookingDateTimeFrom: req.body.bookingDateTimeFrom,
             bookingDateTimeTo: req.body.bookingDateTimeTo,
-            servicePriceId: req.body.servicePriceId
+            servicePriceId: req.body.servicePriceId,
+            bookingStatus: "PENDING"
         };
 
         if (new Date(newBooking.bookingDateTimeTo) < new Date(newBooking.bookingDateTimeFrom))
@@ -242,7 +247,8 @@ module.exports = {
             serviceId: req.body.serviceId,
             bookingDateTimeFrom: req.body.bookingDateTimeFrom,
             bookingDateTimeTo: req.body.bookingDateTimeTo,
-            servicePriceId: req.body.servicePriceId
+            servicePriceId: req.body.servicePriceId,
+            bookingStatus: req.body.bookingStatus
         };
 
         if (updateBooking.bookingDateTimeFrom && !updateBooking.bookingDateTimeTo)
@@ -287,6 +293,12 @@ module.exports = {
                     errorMessage: {
                         type: 'INVALID_SERVICE_PRICE_ID'
                     }
+                },
+                bookingStatus: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'INVALID_BOOKING_STATUS'
+                    }
                 }
             }
         };
@@ -302,17 +314,19 @@ module.exports = {
             if (!idExists)
                 return res.badRequest(Utils.jsonErr("NO_BOOKING_FOUND"));
 
-            if (updateBooking.bookingDateTimeFrom && updateBooking.bookingDateTimeTo) {
-                const contractorNotAvailable = await Bookings.find({
-                    bookingId: { '!=': id },
-                    contractorId: req.body.contractorId,
-                    isActive: true,
-                    bookingDateTimeTo: { '>=': req.body.bookingDateTimeFrom }
-                }).limit(1);
+            // logic to check if contractor is availble or not.
 
-                if (contractorNotAvailable.length !== 0)
-                    return res.badRequest(Utils.jsonErr("CONTRACTOR_NOT_AVAILABLE"));
-            }
+            // if (updateBooking.bookingDateTimeFrom && updateBooking.bookingDateTimeTo) {
+            //     const contractorNotAvailable = await Bookings.find({
+            //         bookingId: { '!=': id },
+            //         contractorId: req.body.contractorId,
+            //         isActive: true,
+            //         bookingDateTimeTo: { '>=': req.body.bookingDateTimeFrom }
+            //     }).limit(1);
+
+            //     if (contractorNotAvailable.length !== 0)
+            //         return res.badRequest(Utils.jsonErr("CONTRACTOR_NOT_AVAILABLE"));
+            // }
 
             await Bookings.updateOne({ bookingId: id }).set(updateBooking)
                 .exec((err) => {
@@ -362,7 +376,7 @@ module.exports = {
             if (!check)
                 return res.badRequest(Utils.jsonErr("BOOKING_NOT_FOUND"));
 
-            ServiceType.updateOne({ serviceTypeId: req.param('id') }).set({ isActive: false })
+            Bookings.updateOne({ BookingId: req.param('id') }).set({ isActive: false })
                 .exec((err) => {
                     if (err)
                         return res.badRequest(Utils.jsonErr("ERROR_WHILE_DELETING_BOOKING"));
@@ -384,6 +398,7 @@ module.exports = {
                         booking_date_time_to AS "bookingDateTimeTo",
                         ServicePrice.discount_price AS "discountPrice",
                         ServicePrice.unit_price AS "unitPrice",
+                        booking_status AS "bookingStatus",
                         Bookings.created_date AS "createdDate"
                         FROM Bookings, UserLogin, Contractors, Services, ServicePrice
                         WHERE Bookings.user_id = UserLogin.user_id
@@ -405,7 +420,35 @@ module.exports = {
             })
 
         } catch (err) {
-            return res.serverError(Utils.jsonErr("EXCEPTION"))
+            return res.serverError(Utils.jsonErr("EXCEPTION"));
+        }
+    },
+
+    cancelBookings: async function (req, res) {
+        const validReq = await Utils.isValidRequest(req, true, false);
+
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
+
+        if (isNaN(req.param('id')))
+            return res.badRequest(Utils.jsonErr("INVALID_ID"));
+
+        try {
+            const check = await Bookings.findOne({ bookingId: req.param('id'), isActive: true, bookingStatus: "CANCEL" });
+
+            if (check)
+                return res.badRequest(Utils.jsonErr("BOOKING_ALREADY_CANCELLED"));
+
+            Bookings.updateOne({ bookingId: req.param('id') }).set({ bookingStatus: "CANCEL" })
+                .exec((err) => {
+                    console.log(err)
+                    if (err)
+                        return res.badRequest(Utils.jsonErr("ERROR_WHILE_CANCELLING_BOOKING"));
+
+                    res.ok("BOOKING_CANCELLED");
+                });
+        } catch (err) {
+            return res.serverError(Utils.jsonErr("EXCEPTION"));
         }
     }
 };

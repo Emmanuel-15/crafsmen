@@ -65,6 +65,11 @@ module.exports = {
       columnName: 'booking_date_time_to'
     },
 
+    bookingStatus: {
+      type: 'string',
+      columnName: 'booking_status'
+    },
+
     servicePriceId: {
       type: 'ref',
       columnType: 'int',

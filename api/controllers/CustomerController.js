@@ -27,6 +27,7 @@ module.exports = {
 
         try {
             UserLogin.find({ isAdmin: false, isActive: true })
+                .sort('userId DESC')
                 .exec((err, data) => {
                     if (err)
                         return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_CUSTOMERS"));
