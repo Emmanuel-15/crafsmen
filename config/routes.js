@@ -70,8 +70,11 @@ module.exports.routes = {
 
     'GET   /api/v1/entrance/customer-bookings': { controller: 'BookingsController', action: 'customerBookings' },
     'DELETE   /api/v1/entrance/cancel-bookings/:id': { controller: 'BookingsController', action: 'cancelBookings' },
-    'GET   /api/v1/entrance/bookings-count': { controller: 'BookingsController', action: 'bookingsCount' },
 
     //generic controller
-    'POST    /api/v1/entrance/upload-image': { controller: 'GenericController', action: 'upload' }
+    'POST    /api/v1/entrance/upload-image': { controller: 'GenericController', action: 'upload' },
+
+    //dashboard controller
+    'GET   /api/v1/entrance/dashboard-count': { controller: 'BookingsController', action: 'dashboardCount' },
+
 };

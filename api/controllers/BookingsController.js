@@ -7,6 +7,7 @@
 
 const moment = require("moment");
 const Utils = require("../services/Utils");
+var Sails = require('sails');
 
 module.exports = {
 
@@ -454,26 +455,27 @@ module.exports = {
         }
     },
 
-    bookingsCount: async function (req, res) {
+    dashboardCount: async function (req, res) {
         if (req.user.isAdmin != true)
             return res.forbidden(Utils.jsonErr("NOT_ALLOWED"));
 
         let today = moment(new Date()).format("YYYY-MM-DD");
 
+        let query = `select 
+         (select count(*) from Userlogin where is_admin = false) as customerCount,
+         (select count(*) from Contractors) as contractorCount,
+         (select count(*) from Services) as serviceCount,
+         (select count(*) from Bookings where created_date >= '${today}') as bookingCount`;
+
         try {
-            await Bookings.count({
-                createdDate: {
-                    '>=': today
-                }
-            })
+            await Sails.sendNativeQuery(query)
                 .exec((err, data) => {
                     if (err)
                         return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_RECORDS"));
-                    else if (data && data.length == 0)
-                        return res.ok("NO_BOOKINGS", data);
                     else
-                        return res.ok("BOOKINGS", data);
-                })
+                        return res.ok("BOOKINGS", data.rows);
+                });
+
         } catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
         }
