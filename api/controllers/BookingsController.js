@@ -5,6 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+const moment = require("moment");
 const Utils = require("../services/Utils");
 
 module.exports = {
@@ -40,6 +41,7 @@ module.exports = {
 
         try {
             await Bookings.getDatastore().sendNativeQuery(query, function (err, data) {
+                console.log(data)
                 if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_BOOKINGS"));
                 else if (!data || data.rows.length == 0)
@@ -447,6 +449,31 @@ module.exports = {
 
                     res.ok("BOOKING_CANCELLED");
                 });
+        } catch (err) {
+            return res.serverError(Utils.jsonErr("EXCEPTION"));
+        }
+    },
+
+    bookingsCount: async function (req, res) {
+        if (req.user.isAdmin != true)
+            return res.forbidden(Utils.jsonErr("NOT_ALLOWED"));
+
+        let today = moment(new Date()).format("YYYY-MM-DD");
+
+        try {
+            await Bookings.count({
+                createdDate: {
+                    '>=': today
+                }
+            })
+                .exec((err, data) => {
+                    if (err)
+                        return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_RECORDS"));
+                    else if (data && data.length == 0)
+                        return res.ok("NO_BOOKINGS", data);
+                    else
+                        return res.ok("BOOKINGS", data);
+                })
         } catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
         }
