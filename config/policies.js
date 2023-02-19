@@ -41,6 +41,10 @@ module.exports.policies = {
         'validate': true
     },
 
+    'genericController': {
+        'contactUs': true
+    }
+
     // '*': ['isValidRequest', 'jwtAuth'],
 
     // 'userController': {

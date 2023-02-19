@@ -73,6 +73,7 @@ module.exports.routes = {
 
     //generic controller
     'POST    /api/v1/entrance/upload-image': { controller: 'GenericController', action: 'upload' },
+    'POST    /api/v1/entrance/contact-us': { controller: 'GenericController', action: 'contactUs' },
 
     //dashboard controller
     'GET   /api/v1/entrance/dashboard-count': { controller: 'BookingsController', action: 'dashboardCount' },

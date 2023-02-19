@@ -6,6 +6,8 @@
  */
 const md5 = require('md5');
 const Utils = require('../services/Utils');
+const validator = require('validator');
+const Nodemailer = require('../services/Nodemailer');
 
 module.exports = {
     upload: function (req, res) {
@@ -59,5 +61,71 @@ module.exports = {
 
             return res.ok("IMAGE_UPLOADED", uploadedFiles[0].fd);
         });
+    },
+
+    contactUs: async function (req, res) {
+
+        const newForm = {
+            name: req.body.name,
+            email: req.body.email,
+            subject: req.body.subject,
+            message: req.body.message
+        }
+
+        const schema = {
+            type: 'object',
+            required: ['name', 'email', 'subject', 'message'],
+            properties: {
+                name: {
+                    type: 'string',
+                    maxLength: 30,
+                    errorMessage: {
+                        type: 'INVALID_NAME',
+                        maxLength: 'NAME_SHOULD_NOT_EXCEED_30_CHARACTERS'
+                    }
+                },
+                email: {
+                    type: 'string',
+                    format: 'email',
+                    errorMessage: {
+                        type: 'EMAIL_SHOUL_BE_STRING',
+                        format: 'INVALID_EMAIL'
+                    }
+                },
+                subject: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'INVALID_SUBJECT',
+                    }
+                },
+                message: {
+                    type: 'string',
+                    errorMessage: {
+                        type: 'INVALID_MESSAGE',
+                    }
+                }
+
+            }, errorMessage: {
+                required: {
+                    name: 'NAME_IS_REQUIRED',
+                    email: 'EMAIL_IS_REQUIRED',
+                    subject: 'SUBJECT_IS_REQUIRED',
+                    message: 'MESSAGE_IS_REQUIRED'
+                }
+            }
+        }
+
+        const validations = Utils.validate(schema, newForm);
+
+        if (validations)
+            return res.badRequest(Utils.jsonErr(validations));
+
+        const mail = await Nodemailer.contactUs(newForm);
+
+        if (!mail)
+            return res.badRequest(Utils.jsonErr("ERROR_SENDING_MAIL"));
+        else
+            return res.ok("MAIL_SENT");
+
     }
 };

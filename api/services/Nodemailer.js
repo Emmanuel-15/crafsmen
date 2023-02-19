@@ -48,5 +48,23 @@ module.exports = {
                     resolve(info.response);
             })
         })
+    },
+
+    contactUs(newForm) {
+        return new Promise(async (resolve, reject) => {
+            var mailOptions = {
+                from: 'dragonsarvesh15@gmail.com',
+                to: "sarveshpadwalkar19@gmail.com",
+                subject: newForm.subject,
+                text: "From: " + newForm.name + "\nEmail: " + newForm.email + "\nMessage: " + newForm.message,
+            };
+
+            await transporter.sendMail(mailOptions, (error, info) => {
+                if (error)
+                    reject(error);
+                else
+                    resolve(info.response);
+            })
+        })
     }
 };
