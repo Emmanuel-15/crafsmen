@@ -372,5 +372,33 @@ module.exports = {
         catch (err) {
             return res.serverError(Utils.jsonErr("EXCEPTION"));
         }
+    },
+
+    checkAvailability: async function (req, res) {
+        const validReq = await Utils.isValidRequest(req, true, false);
+
+        if (validReq)
+            return res.badRequest(Utils.jsonErr(validReq));
+
+        if (isNaN(req.param('id')))
+            return res.badRequest(Utils.jsonErr("INVALID_ID"));
+
+        try {
+            await Bookings.find({
+                select: ['contractorId', 'bookingDateTimeFrom', 'bookingDateTimeTo', 'bookingStatus'],
+                where: {
+                    contractorId: req.param('id'),
+                    bookingStatus: { '!=': 'CANCEL' }
+                }
+            })
+                .exec((err, data) => {
+                    if (err)
+                        return res.badRequest("ERROR_WHILE_CHECKING_AVAILABILITY");
+                    else
+                        return res.ok("AVAILABILITY", data);
+                })
+        } catch (err) {
+            return res.serverError(Utils.jsonErr("EXCEPTION"));
+        }
     }
 };

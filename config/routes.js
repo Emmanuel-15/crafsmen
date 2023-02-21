@@ -53,6 +53,7 @@ module.exports.routes = {
     'POST   /api/v1/entrance/contractors': { controller: 'ContractorsController', action: 'create' },
     'PUT   /api/v1/entrance/contractors/:id': { controller: 'ContractorsController', action: 'update' },
     'DELETE   /api/v1/entrance/contractors/:id': { controller: 'ContractorsController', action: 'delete' },
+    'GET   /api/v1/entrance/contractor-availability/:id': { controller: 'ContractorsController', action: 'checkAvailability' },
 
     // contractor-services
     'GET   /api/v1/entrance/contractor-services': { controller: 'ContractorServicesController', action: 'getAll' },
