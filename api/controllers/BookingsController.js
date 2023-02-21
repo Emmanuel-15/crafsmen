@@ -191,14 +191,21 @@ module.exports = {
         if (validations)
             return res.badRequest(Utils.jsonErr(validations));
 
-        try {
-            const contractorNotAvailable = await Bookings.find({
-                contractorId: req.body.contractorId,
-                isActive: true,
-                bookingDateTimeTo: { '>=': req.body.bookingDateTimeFrom }
-            }).limit(1);
+        const query = `select* from bookings 
+                        where is_active = true and
+                        booking_status != 'CANCEL' and
+                        contractor_id = $1 and
+                        ($2 between DATE(booking_date_time_from) and DATE(booking_date_time_to) OR
+                         $3 between DATE(booking_date_time_from) and DATE(booking_date_time_to))`;
 
-            if (contractorNotAvailable.length !== 0)
+        try {
+            const contractorNotAvailable = await Bookings.getDatastore().sendNativeQuery(query, [
+                newBooking.contractorId,
+                moment(newBooking.bookingDateTimeFrom).format('YYYY-MM-DD'),
+                moment(newBooking.bookingDateTimeTo).format('YYYY-MM-DD')
+            ]);
+
+            if (contractorNotAvailable && contractorNotAvailable.rows && contractorNotAvailable.rows.length !== 0)
                 return res.badRequest(Utils.jsonErr("CONTRACTOR_NOT_AVAILABLE"));
 
             await Bookings
@@ -377,7 +384,7 @@ module.exports = {
             const check = await Bookings.findOne({ bookingId: req.param('id'), isActive: true });
 
             if (!check)
-                return res.badRequest(Utils.jsonErr("BOOKING_NOT_FOUND"));
+                return res.badRequest(Utils.jsonErr("NO_BOOKING_FOUND"));
 
             Bookings.updateOne({ BookingId: req.param('id') }).set({ isActive: false })
                 .exec((err) => {
@@ -417,7 +424,7 @@ module.exports = {
                 if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_CUSTOMER_BOOKINGS"));
                 else if (data.rows.length == 0)
-                    return res.badRequest(Utils.jsonErr("NO_BOOKINGS_FOUND"));
+                    return res.badRequest(Utils.jsonErr("NO_BOOKING_FOUND"));
                 else
                     return res.ok("BOOKINGS", data.rows);
             })
