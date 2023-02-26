@@ -43,6 +43,10 @@ module.exports.policies = {
 
     'genericController': {
         'contactUs': true
+    },
+
+    'contractorsController': {
+        'checkAvailability': true
     }
 
     // '*': ['isValidRequest', 'jwtAuth'],
