@@ -319,23 +319,23 @@ module.exports = {
             return res.badRequest(Utils.jsonErr("INVALID_ID"));
 
         try {
-            const query = `SELECT services.service_id
-            FROM services
-                LEFT JOIN contractorservices ON contractorservices.service_id = services.service_id
-                LEFT JOIN serviceprice ON serviceprice.service_id = services.service_id
-            WHERE contractorservices.service_id = $1 OR
-                serviceprice.service_id = $1
-            LIMIT (1);`;
-
-            const id_in_use = await Contractors.getDatastore().sendNativeQuery(query, [req.param('id')]);
-
-            if (id_in_use && id_in_use.rows.length > 0)
-                return res.badRequest(Utils.jsonErr("SERVICE_ID_IN_USE"));
-
             const check = await Services.findOne({ serviceId: req.param('id'), isActive: true });
 
             if (!check)
                 return res.badRequest(Utils.jsonErr("SERVICE_NOT_FOUND"));
+
+            // const query = `SELECT services.service_id
+            // FROM services
+            //     LEFT JOIN contractorservices ON contractorservices.service_id = services.service_id
+            //     LEFT JOIN serviceprice ON serviceprice.service_id = services.service_id
+            // WHERE contractorservices.service_id = $1 OR
+            //     serviceprice.service_id = $1
+            // LIMIT (1);`;
+
+            // const id_in_use = await Contractors.getDatastore().sendNativeQuery(query, [req.param('id')]);
+
+            // if (id_in_use && id_in_use.rows.length > 0)
+            //     return res.badRequest(Utils.jsonErr("SERVICE_ID_IN_USE"));
 
             Services.updateOne({ serviceId: req.param('id') })
                 .set({ isActive: false })
