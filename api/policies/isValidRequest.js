@@ -1,6 +1,6 @@
 // policies/isLoggedIn.js
 module.exports = async function (req, res, next) {
-    console.log("I am in isValidRequest:::")
+    // console.log("I am in isValidRequest:::")
 
     // If `req.me` is set, then we know that this request originated
     // from a logged-in user.  So we can safely proceed to the next policy--

@@ -42,7 +42,6 @@ module.exports = {
 
         try {
             await Bookings.getDatastore().sendNativeQuery(query, function (err, data) {
-                console.log(data)
                 if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_BOOKINGS"));
                 else if (!data || data.rows.length == 0)
@@ -451,7 +450,6 @@ module.exports = {
 
             Bookings.updateOne({ bookingId: req.param('id') }).set({ bookingStatus: "CANCEL" })
                 .exec((err) => {
-                    console.log(err)
                     if (err)
                         return res.badRequest(Utils.jsonErr("ERROR_WHILE_CANCELLING_BOOKING"));
 
