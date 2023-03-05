@@ -193,7 +193,7 @@ module.exports = {
         let check = moment(newBooking.bookingDateTimeTo).diff(moment(newBooking.bookingDateTimeFrom), "days") + 1;
 
         if (check && check > 5)
-            return res.badRequest(Utils.jsonErr("MIN_BOOKING_PERIOD_5_DAYS"));
+            return res.badRequest(Utils.jsonErr("MAX_BOOKING_PERIOD_5_DAYS"));
 
         // console.log("Check: ", check);
 
