@@ -190,6 +190,13 @@ module.exports = {
         if (validations)
             return res.badRequest(Utils.jsonErr(validations));
 
+        let check = moment(newBooking.bookingDateTimeTo).diff(moment(newBooking.bookingDateTimeFrom), "days") + 1;
+
+        if (check && check > 5)
+            return res.badRequest(Utils.jsonErr("MIN_BOOKING_PERIOD_5_DAYS"));
+
+        // console.log("Check: ", check);
+
         const query = `select* from bookings 
                         where is_active = true and
                         booking_status != 'CANCEL' and
