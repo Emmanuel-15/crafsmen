@@ -118,18 +118,18 @@ module.exports = {
             properties: {
                 contractorName: {
                     type: 'string',
-                    maxLength: 20,
+                    maxLength: 40,
                     errorMessage: {
                         type: 'INVALID_NAME',
-                        maxLength: 'NAME_SHOULD_NOT_EXCEED_20_CHARACTERS'
+                        maxLength: 'NAME_SHOULD_NOT_EXCEED_40_CHARACTERS'
                     }
                 },
                 contractorAddress: {
                     type: 'string',
-                    maxLength: 40,
+                    maxLength: 100,
                     errorMessage: {
                         type: 'INVALID_ADDRESS',
-                        maxLength: 'ADDRESS_SHOULD_NOT_EXCEED_40_CHARACTERS'
+                        maxLength: 'ADDRESS_SHOULD_NOT_EXCEED_100_CHARACTERS'
                     }
                 },
                 contactNumber1: {

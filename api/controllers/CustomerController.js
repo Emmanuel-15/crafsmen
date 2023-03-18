@@ -197,11 +197,11 @@ module.exports = {
             properties: {
                 userName: {
                     type: 'string',
-                    maxLength: 20,
+                    maxLength: 40,
                     minLength: 1,
                     errorMessage: {
                         type: 'INVALID_NAME',
-                        maxLength: 'NAME_SHOULD_NOT_EXCEED_20_CHARACTERS',
+                        maxLength: 'NAME_SHOULD_NOT_EXCEED_40_CHARACTERS',
                         minLength: 'NAME_IS_REQUIRED'
                     }
                 },
