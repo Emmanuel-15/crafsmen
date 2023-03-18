@@ -49,9 +49,10 @@ module.exports.datastores = {
          *                                                                          *
          ***************************************************************************/
         adapter: 'sails-postgresql',
-        url: 'postgres://crafsmen:LgHYyHMJRcMB5Ey0YN3VUnetnkJbujjL@dpg-ceio7uta499eu9229oe0-a.singapore-postgres.render.com/crafsmen_7jcf',
+        url: 'postgres://craftsmen_user:s8UFhhvMkLC8SWmymHiRbiXIPVSlrUBL@dpg-cgapoht269v4icvg80dg-a.singapore-postgres.render.com/craftsmen',
 
-        // url: 'postgres://crafsmen:fRLyPGN0SPjRnjwhYWwVTVUNbM8ILm7c@dpg-ceepuvta499e21p87jag-a.singapore-postgres.render.com/crafsmen',
+        // old database expiry: 23rd march 2023.
+        // url: 'postgres://crafsmen:LgHYyHMJRcMB5Ey0YN3VUnetnkJbujjL@dpg-ceio7uta499eu9229oe0-a.singapore-postgres.render.com/crafsmen_7jcf',
 
         ssl: { sslmode: 'require', rejectUnauthorized: false },
     },
