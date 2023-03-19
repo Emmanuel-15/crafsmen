@@ -246,11 +246,11 @@ module.exports = {
                 },
                 contractorAddress: {
                     type: 'string',
-                    maxLength: 40,
+                    maxLength: 100,
                     minLength: 1,
                     errorMessage: {
                         type: 'INVALID_ADDRESS',
-                        maxLength: 'ADDRESS_SHOULD_NOT_EXCEED_40_CHARACTERS',
+                        maxLength: 'ADDRESS_SHOULD_NOT_EXCEED_100_CHARACTERS',
                         minLength: 'NAME_IS_REQUIRED'
                     }
                 },
