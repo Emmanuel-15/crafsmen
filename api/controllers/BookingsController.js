@@ -31,6 +31,7 @@ module.exports = {
                         ServicePrice.discount_price AS "discountPrice",
                         ServicePrice.unit_price AS "unitPrice",
                         booking_status AS "bookingStatus",
+                        booking_address AS "bookingAddress",
                         Bookings.created_date AS "createdDate"
                         FROM Bookings, UserLogin, Contractors, Services, ServicePrice
                         WHERE Bookings.user_id = UserLogin.user_id
@@ -79,6 +80,7 @@ module.exports = {
             ServicePrice.discount_price AS "discountPrice",
             ServicePrice.unit_price AS "unitPrice",
             booking_status AS "bookingStatus",
+            booking_address AS "bookingAddress",
             Bookings.created_date AS "createdDate"
             FROM Bookings, UserLogin, Contractors, Services, ServicePrice
             WHERE Bookings.user_id = UserLogin.user_id
@@ -122,7 +124,8 @@ module.exports = {
             bookingDateTimeFrom: req.body.bookingDateTimeFrom,
             bookingDateTimeTo: req.body.bookingDateTimeTo,
             servicePriceId: req.body.servicePriceId,
-            bookingStatus: "PENDING"
+            bookingStatus: "PENDING",
+            bookingAddress: req.body.bookingAddress
         };
 
         if (new Date(newBooking.bookingDateTimeTo) < new Date(newBooking.bookingDateTimeFrom))
@@ -130,7 +133,7 @@ module.exports = {
 
         const schema = {
             type: 'object',
-            required: ['userId', 'contractorId', 'serviceId', 'bookingDateTimeFrom', 'bookingDateTimeTo', 'servicePriceId'],
+            required: ['userId', 'contractorId', 'serviceId', 'bookingDateTimeFrom', 'bookingDateTimeTo', 'servicePriceId', 'bookingAddress'],
             properties: {
                 userId: {
                     type: 'number',
@@ -171,6 +174,16 @@ module.exports = {
                     errorMessage: {
                         type: 'INVALID_SERVICE_PRICE_ID'
                     }
+                },
+                bookingAddress: {
+                    type: 'string',
+                    maxLength: 100,
+                    minLength: 1,
+                    errorMessage: {
+                        type: 'INVALID_ADDRESS',
+                        maxLength: 'ADDRESS_SHOULD_NOT_EXCEED_100_CHARACTERS',
+                        minLength: 'ADDRESS_IS_REQUIRED'
+                    }
                 }
 
             }, errorMessage: {
@@ -180,7 +193,8 @@ module.exports = {
                     serviceId: 'SERVICE_ID_IS_REQUIRED',
                     bookingDateTimeFrom: 'BOOKING_DATE_TIME_FROM_IS_REQUIRED',
                     bookingDateTimeTo: 'BOOKING_DATE_TIME_TO_IS_REQUIRED',
-                    servicePriceId: 'SERVICE_PRICE_ID_IS_REQUIRED'
+                    servicePriceId: 'SERVICE_PRICE_ID_IS_REQUIRED',
+                    bookingAddress: 'BOOKING_ADDRESS_IS_REQUIRED'
                 }
             }
         };
@@ -415,6 +429,7 @@ module.exports = {
                         ServicePrice.discount_price AS "discountPrice",
                         ServicePrice.unit_price AS "unitPrice",
                         booking_status AS "bookingStatus",
+                        booking_address AS "bookingAddress",
                         Bookings.created_date AS "createdDate"
                         FROM Bookings, UserLogin, Contractors, Services, ServicePrice
                         WHERE Bookings.user_id = UserLogin.user_id

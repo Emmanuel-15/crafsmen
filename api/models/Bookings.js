@@ -65,6 +65,11 @@ module.exports = {
       columnName: 'booking_date_time_to'
     },
 
+    bookingAddress: {
+      type: 'string',
+      columnName: 'booking_address'
+    },
+
     bookingStatus: {
       type: 'string',
       columnName: 'booking_status'
