@@ -104,33 +104,33 @@ module.exports = {
 
             switch (status) {
                 case 'CONFIRM':
-                    subject = "Booking confirmed",
-                        message = "Hello " + userData.userName + ", \nYour booking for '" + serviceData.serviceTitle + "' Service with Booking ID '" + bookingData.bookingId +
+                    subject = "Booking confirmed";
+                    message = "Hello " + userData.userName + ", \nYour booking for '" + serviceData.serviceTitle + "' Service with Booking ID '" + bookingData.bookingId +
                         "' Has been confirmed. \nWe are looking forward to serve you soon. \nThank you for choosing Craftsmen.";
                     break;
 
                 case 'IN-PROGRESS':
-                    subject = "Booking In-progress",
-                        message = "Hello " + userData.userName + ", \nYour booking for '" + serviceData.serviceTitle + "' Service with Booking ID '" + bookingData.bookingId +
+                    subject = "Booking In-progress";
+                    message = "Hello " + userData.userName + ", \nYour booking for '" + serviceData.serviceTitle + "' Service with Booking ID '" + bookingData.bookingId +
                         "' is in progress. And will be completed soon. \nThank you for choosing Craftsmen.";
                     break;
 
                 case 'PENDING':
-                    subject = "Booking pending",
-                        message = "Hello " + userData.userName + ", \nYour booking for '" + serviceData.serviceTitle + "' Service with Booking ID '" + bookingData.bookingId +
+                    subject = "Booking pending";
+                    message = "Hello " + userData.userName + ", \nYour booking for '" + serviceData.serviceTitle + "' Service with Booking ID '" + bookingData.bookingId +
                         "' is still pending and will be approved soon. \nWe are looking forward to serve you soon. \nThank you for choosing Craftsmen.";
                     break;
 
                 case 'COMPLETE':
-                    subject = "Booking completed",
-                        message = "Hello " + userData.userName + ", \nYour booking for '" + serviceData.serviceTitle + "' Service with Booking ID '" + bookingData.bookingId +
+                    subject = "Booking completed";
+                    message = "Hello " + userData.userName + ", \nYour booking for '" + serviceData.serviceTitle + "' Service with Booking ID '" + bookingData.bookingId +
                         "' has been completed. \nWe hope you liked our service. Please do rate our work by clicking on the link provided below." +
                         "\n http://localhost:3000/contact-us \nThank you for choosing Craftsmen.";
                     break;
 
                 case 'CANCEL':
-                    subject = "Booking cancelled",
-                        message = "Hello " + userData.userName + ", \nYour booking for '" + serviceData.serviceTitle + "' Service with Booking ID '" + bookingData.bookingId +
+                    subject = "Booking cancelled";
+                    message = "Hello " + userData.userName + ", \nYour booking for '" + serviceData.serviceTitle + "' Service with Booking ID '" + bookingData.bookingId +
                         "' has been cancelled. Please contact Craftsmen for more details about the cancelled booking. \nThank you for choosing Craftsmen.";
                     break;
 

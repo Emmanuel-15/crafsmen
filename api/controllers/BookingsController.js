@@ -376,7 +376,7 @@ module.exports = {
                             return res.badRequest(Utils.jsonErr("ERROR_UPDATING_BOOKING"));
                     }
                     else {
-                        Nodemailer.bookingStatus(id, updateBooking.bookingStatus);
+                        Nodemailer.bookingStatus(id, updateBooking.booking_status);
                         return res.ok("BOOKING_UPDATED");
                     }
                 });
