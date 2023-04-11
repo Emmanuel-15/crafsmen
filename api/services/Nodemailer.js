@@ -71,16 +71,16 @@ module.exports = {
     bookingCreated(data) {
         return new Promise(async (resolve, reject) => {
 
-            let userData = await UserLogin.findOne({ select: ['userEmail', 'userName'], where: { userId: data.userId } });
-            let serviceData = await Services.findOne({ serviceId: data.serviceId })
-            let contractorData = await Contractors.findOne({ contractorId: data.contractorId });
+            let userData = await UserLogin.findOne({ select: ['userEmail', 'userName'], where: { userId: data.user_id } });
+            let serviceData = await Services.findOne({ serviceId: data.service_id })
+            let contractorData = await Contractors.findOne({ contractorId: data.contractor_id });
 
             var mailOptions = {
                 from: 'dragonsarvesh15@gmail.com',
                 to: userData.userEmail,
                 subject: "Booking created",
-                text: "Hello " + userData.userName + ",\nYour booking for " + serviceData.serviceTitle + " service from " + data.bookingDateTimeFrom +
-                    " to " + data.bookingDateTimeTo + " with " + contractorData.contractorName + " has been created successfully." +
+                text: "Hello " + userData.userName + ",\nYour booking for " + serviceData.serviceTitle + " service from " + data.booking_date_time_from +
+                    " to " + data.booking_date_time_to + " with " + contractorData.contractorName + " has been created successfully." +
                     " We are looking forward to serve you soon.\nThank you for choosing Craftsmen." + "\nPlease check your email for further notifications."
             };
 
