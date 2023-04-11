@@ -244,8 +244,10 @@ module.exports = {
                         else
                             return res.badRequest(Utils.jsonErr("ERROR_WHILE_CREATING_BOOKING"));
                     }
-                    else
+                    else {
+                        Nodemailer.bookingCreated(newBooking);
                         return res.created("BOOKING_CREATED");
+                    }
                 });
 
         } catch (err) {
@@ -373,8 +375,10 @@ module.exports = {
                         else
                             return res.badRequest(Utils.jsonErr("ERROR_UPDATING_BOOKING"));
                     }
-                    else
+                    else {
+                        Nodemailer.bookingStatus(id, updateBooking.bookingStatus);
                         return res.ok("BOOKING_UPDATED");
+                    }
                 });
 
         } catch (err) {
@@ -475,6 +479,7 @@ module.exports = {
                     if (err)
                         return res.badRequest(Utils.jsonErr("ERROR_WHILE_CANCELLING_BOOKING"));
 
+                    Nodemailer.bookingCancelled(req.param('id'));
                     res.ok("BOOKING_CANCELLED");
                 });
         } catch (err) {
