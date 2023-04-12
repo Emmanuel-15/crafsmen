@@ -11,8 +11,8 @@ const transporter = nodemailer.createTransport({
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-        user: "dragonsarvesh15@gmail.com", // replace this email before showing my friend
-        pass: "yqtgzqofhkvthbhc", // app password generated through google
+        user: "craftsmen167@gmail.com", // replace this email before showing my friend
+        pass: "ffyqklrmupwjrmnu", // app password generated through google
     }
 });
 
@@ -26,7 +26,7 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
 
             var mailOptions = {
-                from: 'dragonsarvesh15@gmail.com',
+                from: 'craftsmen167@gmail.com',
                 to: email,
                 subject: "OTP",
                 text: "Hello user, Your one time password (otp) is " + otp + ". This OTP is confidential. For security reasons, DO NOT share the OTP with anyone.",
@@ -42,6 +42,7 @@ module.exports = {
             };
 
             await transporter.sendMail(mailOptions, (error, info) => {
+                console.log("err, info: ", error, info);
                 if (error)
                     reject(error);
                 else
@@ -53,8 +54,8 @@ module.exports = {
     contactUs(newForm) {
         return new Promise(async (resolve, reject) => {
             var mailOptions = {
-                from: 'dragonsarvesh15@gmail.com',
-                to: "sarveshpadwalkar19@gmail.com",
+                from: 'craftsmen167@gmail.com',
+                to: "saibandekar10@gmail.com",
                 subject: newForm.subject,
                 text: "From: " + newForm.name + "\nEmail: " + newForm.email + "\nMessage: " + newForm.message,
             };
@@ -76,7 +77,7 @@ module.exports = {
             let contractorData = await Contractors.findOne({ contractorId: data.contractor_id });
 
             var mailOptions = {
-                from: 'dragonsarvesh15@gmail.com',
+                from: 'craftsmen167@gmail.com',
                 to: userData.userEmail,
                 subject: "Booking created",
                 text: "Hello " + userData.userName + ",\nYour booking for " + serviceData.serviceTitle + " service from " + data.booking_date_time_from +
@@ -139,7 +140,7 @@ module.exports = {
             }
 
             var mailOptions = {
-                from: 'dragonsarvesh15@gmail.com',
+                from: 'craftsmen167@gmail.com',
                 to: userData.userEmail,
                 subject: subject,
                 text: message
@@ -163,7 +164,7 @@ module.exports = {
             let userData = await UserLogin.findOne({ select: ['userEmail', 'userName'], where: { userId: bookingData.userId } });
 
             var mailOptions = {
-                from: 'dragonsarvesh15@gmail.com',
+                from: 'craftsmen167@gmail.com',
                 to: userData.userEmail,
                 subject: "Booking Deleted",
                 text: "Hello " + userData.userName + ",\nYour booking for " + serviceData.serviceTitle + " service from " + bookingData.bookingDateTimeFrom +

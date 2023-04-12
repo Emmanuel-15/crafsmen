@@ -448,8 +448,6 @@ module.exports = {
             await Bookings.getDatastore().sendNativeQuery(query, [req.user.userId], function (err, data) {
                 if (err)
                     return res.badRequest(Utils.jsonErr("ERROR_WHILE_FETCHING_CUSTOMER_BOOKINGS"));
-                else if (data.rows.length == 0)
-                    return res.badRequest(Utils.jsonErr("NO_BOOKING_FOUND"));
                 else
                     return res.ok("BOOKINGS", data.rows);
             })
