@@ -50,7 +50,7 @@ module.exports = {
         default: {
 
             adapter: 'sails-postgresql',
-            url: 'postgres://craftsmen_user:s8UFhhvMkLC8SWmymHiRbiXIPVSlrUBL@dpg-cgapoht269v4icvg80dg-a.singapore-postgres.render.com/craftsmen',
+            url: 'postgres://craftsmen_user:jHD1kTwZBTmaPioNNtWDzNlztaHcwIEc@dpg-ck28ms7hdsdc7393ivgg-a.singapore-postgres.render.com/craftsmen_db',
 
             // old database expiry: 23rd march 2023.
             // url: 'postgres://crafsmen:LgHYyHMJRcMB5Ey0YN3VUnetnkJbujjL@dpg-ceio7uta499eu9229oe0-a.singapore-postgres.render.com/crafsmen_7jcf',
