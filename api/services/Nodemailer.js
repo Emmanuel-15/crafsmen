@@ -42,7 +42,7 @@ module.exports = {
             };
 
             await transporter.sendMail(mailOptions, (error, info) => {
-                console.log("err, info: ", error, info);
+                // console.log("err, info: ", error, info);
                 if (error)
                     reject(error);
                 else
